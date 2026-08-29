@@ -1,0 +1,985 @@
+{
+  "name": "Asistente Empresarial Fisioterapeuta Li (Telegram + IA local)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "userIds": "={{ $vars.telegramAuthorizedUserIds }}"
+        }
+      },
+      "id": "92168814-6164-4c41-a96c-ce26489ec65b",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        64,
+        128
+      ],
+      "webhookId": "6effbd6b-dd0a-4872-8ccb-550c6557bf74",
+      "credentials": {
+        "telegramApi": {
+          "id": "zKvERIaENpRcBdJQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "auth",
+              "leftValue": "={{ $json.message.from.id }}",
+              "rightValue": "={{ $vars.telegramAuthorizedUserIds }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "edfdfa72-a827-4874-a75a-c294bd6b0202",
+      "name": "¿Usuario autorizado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "=Eres el asistente empresarial de \"Fisioterapeuta Li\". Interpretas instrucciones en lenguaje natural del administrador autorizado y usas las herramientas conectadas para gestionar el negocio.\n\nHerramientas disponibles:\n- consultar_agenda: ver sesiones y comprobar disponibilidad en un rango de fechas.\n- agendar_sesion: crear una sesión en el calendario (solo tras verificar disponibilidad con consultar_agenda).\n- buscar_cliente: buscar un cliente por su nombre completo en la base de datos y obtener su correo si está registrado.\n- enviar_correo: enviar confirmaciones o recordatorios por Gmail.\n- crear_carpeta: crear carpetas en Google Drive.\n- buscar_archivos: buscar documentos en Google Drive.\n\nReglas:\n1. La fecha y hora actual es {{ $now }} (zona horaria America/Bogota). Interpreta expresiones como \"mañana\" o \"el viernes\" respecto a esa fecha y convierte a ISO 8601.\n2. Antes de agendar, comprueba disponibilidad con consultar_agenda y avisa si hay conflicto de horario.\n3. Para cualquier cita SIEMPRE debes conocer el NOMBRE COMPLETO del cliente. Si no lo tienes, pídelo antes de continuar.\n4. Cómo determinar el correo para la confirmación de la cita:\n   a. Con el nombre completo, usa buscar_cliente para comprobar si el cliente ya está registrado en la base de datos.\n   b. Si buscar_cliente devuelve un correo (el cliente existe), usa ESE correo para enviar la confirmación; no lo inventes ni pidas otro.\n   c. Si buscar_cliente NO devuelve resultados (cliente no registrado), pide al administrador el correo del cliente antes de enviar la confirmación.\n   d. Nunca inventes ni adivines una dirección de correo.\n5. Después de agendar la cita con agendar_sesion, envía la confirmación con enviar_correo al correo determinado en la regla 4, indicando cliente, servicio y fecha/hora.\n6. Si falta información para completar una acción (cliente, fecha, hora, destinatario), pregunta antes de ejecutar.\n7. Antes de operaciones sensibles (enviar correos, crear/modificar citas) confirma con el usuario lo que vas a hacer.\n8. Responde siempre en español, de forma breve y clara, e informa el resultado de cada acción.",
+          "maxIterations": 10
+        }
+      },
+      "id": "0bc04fdf-c789-4d8f-b71d-ba0cc6a734d2",
+      "name": "Asistente Fisioterapeuta Li",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3.1",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "927c0746-7ec8-4008-a3a4-e1e9f5613c63",
+      "name": "Ollama (IA local)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        224,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "id": "d4849eae-7eb8-45d6-b340-6533bbe61e45",
+      "name": "Memoria de conversación",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+          "mode": "id"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('timeMin', 'Inicio del rango en formato ISO 8601') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('timeMax', 'Fin del rango en formato ISO 8601') }}",
+        "options": {}
+      },
+      "id": "605146f4-4cbf-4ee4-89ee-ec89c870f700",
+      "name": "consultar_agenda",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        336
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xIlaZ99cvo7DPLxQ",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Crea una sesión/cita en Google Calendar. Requiere título, fecha/hora de inicio y de fin. Úsala solo tras confirmar disponibilidad.",
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('start', 'Fecha y hora de inicio en formato ISO 8601') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('end', 'Fecha y hora de fin en formato ISO 8601') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('description', 'Notas o detalles de la sesión') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('summary', 'Título de la sesión, ej. \"Sesión con Laura\"') }}"
+        }
+      },
+      "id": "f23724d2-395e-4dd1-9665-a6704730d4be",
+      "name": "agendar_sesion",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        336
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xIlaZ99cvo7DPLxQ",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Busca un cliente por su nombre completo en la base de datos de citas y devuelve su correo si está registrado. Úsala antes de enviar una confirmación para saber si el cliente ya tiene correo guardado.",
+        "operation": "executeQuery",
+        "query": "SELECT nombre, email FROM citas WHERE lower(nombre) = lower($1) ORDER BY creado_en DESC LIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre', 'Nombre completo del cliente a buscar', 'string') }}"
+        }
+      },
+      "id": "fc2105a5-572c-42d2-9f61-8abdbc123592",
+      "name": "buscar_cliente",
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.7,
+      "position": [
+        736,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Envía un correo electrónico por Gmail, por ejemplo una confirmación o recordatorio de cita.",
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('sendTo', 'Dirección de correo del destinatario') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('subject', 'Asunto del correo') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message', 'Cuerpo del correo') }}",
+        "options": {}
+      },
+      "id": "03f6e58a-0979-46c3-abaf-f9a8729bace5",
+      "name": "enviar_correo",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        400
+      ],
+      "webhookId": "250a1084-8692-48ad-8cf6-91fc1941bf0c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qKqjcbhC49OXi3y2",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Crea una carpeta en Google Drive para organizar documentos empresariales.",
+        "resource": "folder",
+        "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', 'Nombre de la carpeta a crear') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive",
+          "cachedResultName": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "75f40d48-7945-470c-840b-f3c73bf5394d",
+      "name": "crear_carpeta",
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        864,
+        336
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "tNpsvSeBgJrXXp2p",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Busca archivos y carpetas en Google Drive por nombre. Úsala para encontrar documentos, por ejemplo de facturación.",
+        "resource": "fileFolder",
+        "queryString": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('queryString', 'Texto a buscar en el nombre del archivo o carpeta') }}",
+        "limit": 20,
+        "filter": {},
+        "options": {
+          "fields": [
+            "id",
+            "name",
+            "mimeType",
+            "webViewLink"
+          ]
+        }
+      },
+      "id": "8c66bb7d-3a6b-418e-b0da-e3413a016b02",
+      "name": "buscar_archivos",
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        992,
+        336
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "tNpsvSeBgJrXXp2p",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "4e92ac93-7d74-426a-bb8c-f2662681ae83",
+      "name": "Responder por Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        112
+      ],
+      "webhookId": "14570e79-3179-43a9-87f9-c60597b163d8",
+      "credentials": {
+        "telegramApi": {
+          "id": "zKvERIaENpRcBdJQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reserva-cita",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0acc6349-8d2c-4c38-8618-8a125e940851",
+      "name": "Webhook Reserva Web",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        640
+      ],
+      "webhookId": "a1b2c3d4-web-reserva-fisio-0001"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || {};\nconst requeridos = ['nombre', 'email', 'telefono', 'servicio', 'inicio', 'fin'];\nconst faltantes = requeridos.filter(c => body[c] === undefined || body[c] === null || String(body[c]).trim() === '');\nlet valido = true;\nlet motivo = '';\nif (faltantes.length > 0) {\n  valido = false;\n  motivo = 'Faltan campos obligatorios: ' + faltantes.join(', ') + '.';\n} else {\n  const inicio = new Date(body.inicio);\n  const fin = new Date(body.fin);\n  if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) {\n    valido = false;\n    motivo = 'La fecha de inicio o de fin no tiene un formato válido (usa ISO 8601).';\n  } else if (inicio.getTime() <= Date.now()) {\n    valido = false;\n    motivo = 'El horario solicitado ya pasó. Elige una fecha y hora futuras.';\n  } else if (fin.getTime() <= inicio.getTime()) {\n    valido = false;\n    motivo = 'La hora de fin debe ser posterior a la hora de inicio.';\n  }\n}\nreturn [{ json: { valido, motivo, ...body } }];"
+      },
+      "id": "c1ef6492-a724-4952-a989-954993d3597d",
+      "name": "Validar entrada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "valido",
+              "leftValue": "={{ $json.valido }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a026c899-617a-4333-8260-ff1e0ca21814",
+      "name": "¿Datos válidos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "lifisioterapeuta395@gmail.com",
+          "mode": "id"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $json.inicio }}",
+        "timeMax": "={{ $json.fin }}",
+        "options": {}
+      },
+      "id": "3cffdab3-25b8-46ca-83f0-f9394a305700",
+      "name": "Consultar disponibilidad",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        640
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xIlaZ99cvo7DPLxQ",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const eventos = $('Consultar disponibilidad').all().filter(i => i.json && i.json.id);\nconst datos = $('Validar entrada').first().json;\nreturn [{ json: { conflicto: eventos.length > 0, eventos: eventos.length, ...datos } }];"
+      },
+      "id": "06c44055-79b0-4a0e-afdf-419d73887678",
+      "name": "Evaluar disponibilidad",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.conflicto }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ece3556b-844d-4fd4-a650-1e94e69eef34",
+      "name": "¿Horario ocupado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"ocupado\",\"mensaje\":\"Ese horario ya no está disponible, por favor elige otro.\"}",
+        "options": {
+          "responseCode": 409
+        }
+      },
+      "id": "630c5145-46be-4f8d-a0d0-0d8edb0bba77",
+      "name": "Responder horario ocupado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "<__PLACEHOLDER_VALUE__Chat ID de Telegram del administrador para confirmaciones__>",
+        "message": "=¿Confirmas agendar a {{ $json.nombre }} para \"{{ $json.servicio }}\" el {{ $json.inicio }}?",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "✅ Confirmar",
+            "disapproveLabel": "❌ Rechazar"
+          }
+        },
+        "chatApproval": true,
+        "approverIds": "={{ $vars.telegramAuthorizedUserIds }}",
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeAmount": 30,
+              "resumeUnit": "minutes"
+            }
+          }
+        }
+      },
+      "id": "fe4b8362-26c0-42a0-9a82-21494916d364",
+      "name": "Confirmar por Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        928
+      ],
+      "webhookId": "f4890028-ac3b-4f3a-aea6-b56c0340854d",
+      "credentials": {
+        "telegramApi": {
+          "id": "zKvERIaENpRcBdJQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "confirmado",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "49d2da2d-3ea7-4f77-ac6f-e87377522552",
+      "name": "¿Confirmado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "lifisioterapeuta395@gmail.com",
+          "mode": "id"
+        },
+        "start": "={{ $('Evaluar disponibilidad').item.json.inicio }}",
+        "end": "={{ $('Evaluar disponibilidad').item.json.fin }}",
+        "additionalFields": {
+          "description": "=Reserva web\nCliente: {{ $('Evaluar disponibilidad').item.json.nombre }}\nEmail: {{ $('Evaluar disponibilidad').item.json.email }}\nTeléfono: {{ $('Evaluar disponibilidad').item.json.telefono }}\nServicio: {{ $('Evaluar disponibilidad').item.json.servicio }}",
+          "summary": "={{ $('Evaluar disponibilidad').item.json.servicio }} - {{ $('Evaluar disponibilidad').item.json.nombre }}"
+        }
+      },
+      "id": "cab324fd-cf7e-4fc7-9a7a-25df7e7d7caf",
+      "name": "Crear evento en Calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        736
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xIlaZ99cvo7DPLxQ",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO citas (nombre, email, telefono, servicio, inicio, fin, event_id, creado_en) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING id;",
+        "options": {
+          "queryReplacement": "={{ $('Evaluar disponibilidad').item.json.nombre }},{{ $('Evaluar disponibilidad').item.json.email }},{{ $('Evaluar disponibilidad').item.json.telefono }},{{ $('Evaluar disponibilidad').item.json.servicio }},{{ $('Evaluar disponibilidad').item.json.inicio }},{{ $('Evaluar disponibilidad').item.json.fin }},{{ $json.id }}"
+        }
+      },
+      "id": "0081f2bb-7100-491d-bd02-addb759c706b",
+      "name": "Guardar cita en BD",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1120,
+        736
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Evaluar disponibilidad').item.json.email }}",
+        "subject": "=Confirmación de tu cita - {{ $('Evaluar disponibilidad').item.json.servicio }}",
+        "emailType": "text",
+        "message": "=Hola {{ $('Evaluar disponibilidad').item.json.nombre }},\n\nTu cita de \"{{ $('Evaluar disponibilidad').item.json.servicio }}\" ha sido confirmada para el {{ $('Evaluar disponibilidad').item.json.inicio }}.\n\n¡Te esperamos!\nFisioterapeuta Li",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8f38dfbc-84f5-4a4d-95ec-7b5e1729fbcb",
+      "name": "Correo de confirmación",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        736
+      ],
+      "webhookId": "062e16c3-37ce-439d-a266-99a3c4896aac",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qKqjcbhC49OXi3y2",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"ok\",\"mensaje\":\"Cita confirmada\",\"inicio\":\"{{ $('Evaluar disponibilidad').item.json.inicio }}\"}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "243f77e0-3245-4caf-ae50-9d5124e1a5e9",
+      "name": "Responder reserva confirmada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1568,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"error\",\"mensaje\":\"La cita se agendó en el calendario pero hubo un problema al guardarla en la base de datos. Contacta al administrador.\"}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "5cac8dc5-9150-4ebb-9272-13a194fd036e",
+      "name": "Responder error BD",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2016,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"cancelada\",\"mensaje\":\"La reserva no fue confirmada por el administrador.\"}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "a8ab6839-ce7c-4048-8534-93debd1954c7",
+      "name": "Responder cancelada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1568,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"error\",\"mensaje\":\"{{ $json.motivo }}\"}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "9a279990-02a1-44a6-8a02-b6d0df97a769",
+      "name": "Responder datos inválidos",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        832
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "¿Usuario autorizado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Usuario autorizado?": {
+      "main": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asistente Fisioterapeuta Li": {
+      "main": [
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama (IA local)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria de conversación": {
+      "ai_memory": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultar_agenda": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agendar_sesion": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar_cliente": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar_correo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "crear_carpeta": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar_archivos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente Fisioterapeuta Li",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Reserva Web": {
+      "main": [
+        [
+          {
+            "node": "Validar entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar entrada": {
+      "main": [
+        [
+          {
+            "node": "¿Datos válidos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Datos válidos?": {
+      "main": [
+        [
+          {
+            "node": "Consultar disponibilidad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder datos inválidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar disponibilidad": {
+      "main": [
+        [
+          {
+            "node": "Evaluar disponibilidad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluar disponibilidad": {
+      "main": [
+        [
+          {
+            "node": "¿Horario ocupado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Horario ocupado?": {
+      "main": [
+        [
+          {
+            "node": "Responder horario ocupado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirmar por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmar por Telegram": {
+      "main": [
+        [
+          {
+            "node": "¿Confirmado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Confirmado?": {
+      "main": [
+        [
+          {
+            "node": "Crear evento en Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder cancelada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear evento en Calendar": {
+      "main": [
+        [
+          {
+            "node": "Guardar cita en BD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar cita en BD": {
+      "main": [
+        [
+          {
+            "node": "Correo de confirmación",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder error BD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Correo de confirmación": {
+      "main": [
+        [
+          {
+            "node": "Responder reserva confirmada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cfdfcda3-69a5-49cc-a309-a480ec099ba0",
+  "meta": {
+    "instanceId": "999f47de93f9a7c2e940b3809d29000c671baffae2167fb588b4609526127e8b"
+  },
+  "nodeGroups": [
+    {
+      "id": "07828edd-dc01-441c-bf6f-964283df09c3",
+      "name": "Reservas web",
+      "nodeIds": [
+        "c1ef6492-a724-4952-a989-954993d3597d",
+        "a026c899-617a-4333-8260-ff1e0ca21814",
+        "9a279990-02a1-44a6-8a02-b6d0df97a769",
+        "3cffdab3-25b8-46ca-83f0-f9394a305700",
+        "06c44055-79b0-4a0e-afdf-419d73887678",
+        "ece3556b-844d-4fd4-a650-1e94e69eef34",
+        "630c5145-46be-4f8d-a0d0-0d8edb0bba77",
+        "fe4b8362-26c0-42a0-9a82-21494916d364",
+        "49d2da2d-3ea7-4f77-ac6f-e87377522552",
+        "a8ab6839-ce7c-4048-8534-93debd1954c7",
+        "cab324fd-cf7e-4fc7-9a7a-25df7e7d7caf",
+        "0081f2bb-7100-491d-bd02-addb759c706b",
+        "5cac8dc5-9150-4ebb-9272-13a194fd036e",
+        "8f38dfbc-84f5-4a4d-95ec-7b5e1729fbcb",
+        "243f77e0-3245-4caf-ae50-9d5124e1a5e9"
+      ],
+      "description": "Valida la entrada web, comprueba disponibilidad, pide confirmación por Telegram con botones inline, agenda en Calendar, guarda en PostgreSQL (con"
+    }
+  ],
+  "id": "mGdY6tlgj0NXqYPe",
+  "tags": []
+}
