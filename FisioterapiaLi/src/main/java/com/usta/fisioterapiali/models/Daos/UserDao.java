@@ -1,0 +1,16 @@
+package com.usta.fisioterapiali.models.Daos;
+
+import com.usta.fisioterapiali.entities.UserEntity;
+import com.usta.fisioterapiali.enums.TipoUsuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface UserDao extends JpaRepository<UserEntity, Long> {
+    Optional<UserEntity> findByEmail(String email);
+    Optional<UserEntity> findByTelegramUserId(String telegramUserId);
+    boolean existsByEmail(String email);
+    List<UserEntity> findByRol(TipoUsuario rol);
+    List<UserEntity> findAllByOrderByNombreAsc();
+}
