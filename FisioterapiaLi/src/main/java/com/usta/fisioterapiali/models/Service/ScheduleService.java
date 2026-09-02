@@ -18,6 +18,6 @@ public interface ScheduleService {
     void deleteById(Long id);
 
     Optional<ScheduleEntity> findByDiaSemana(Integer diaSemana);
-
+    List<ScheduleEntity> findBySede(String sede);
     List<ScheduleEntity> findAllOrderByDiaSemanaAsc();
 }

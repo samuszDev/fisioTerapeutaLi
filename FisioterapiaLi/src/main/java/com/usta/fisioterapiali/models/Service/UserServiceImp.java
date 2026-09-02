@@ -63,4 +63,16 @@ public class UserServiceImp implements UserService {
     public boolean existsByEmail(String email) {
         return userDao.existsByEmail(email);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<UserEntity> findByDocumento(String documento) {
+        return userDao.findByDocumento(documento);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByDocumento(String documento) {
+        return userDao.existsByDocumento(documento);
+    }
 }

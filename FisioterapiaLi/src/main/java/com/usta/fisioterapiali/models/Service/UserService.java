@@ -15,4 +15,6 @@ public interface UserService {
     Optional<UserEntity> findByEmail(String email);
     List<UserEntity> findByRol(TipoUsuario rol);
     boolean existsByEmail(String email);
+    Optional<UserEntity> findByDocumento(String documento);
+    boolean existsByDocumento(String documento);
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Entity
@@ -29,4 +30,17 @@ public class ServiceEntity implements Serializable {
 
     @Column(name="estado_servicio", nullable = false)
     private boolean estadoS = true;
+
+    @NotNull
+    @Positive
+    @Column(name="precio_individual", nullable = false)
+    private Double precioIndividual;
+
+    @OneToMany(mappedBy = "servicio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PlanEntity> planes;
+
+    public ServiceEntity(){
+
+    }
+
 }
