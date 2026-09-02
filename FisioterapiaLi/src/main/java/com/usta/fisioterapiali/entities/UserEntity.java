@@ -4,10 +4,9 @@ import com.usta.fisioterapiali.enums.TipoUsuario;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -46,11 +45,36 @@ public class UserEntity implements Serializable {
     private String email;
 
 
+    @Size(max=20)
+    @Column(name="documento", length = 20)
+    private String documento;
+
+    @Size(max=20)
+    @Column(name="telefono", length = 20)
+    private String telefono;
+
+    @Column(name="fecha_nacimiento")
+    private LocalDate fechaNacimiento;
+
+    @Size(max=20)
+    @Column(name="genero", length = 20)
+    private String genero;
+
+    @Size(max=150)
+    @Column(name="contacto_emergencia", length = 150)
+    private String contactoEmergencia;
+
+    @Size(max=60)
+    @Column(name="referido_por", length = 60)
+    private String referidoPor;
+
+    @Min(0)
+    @Max(5)
+    @Column(name="contador_referidos", columnDefinition = "integer default 0")
+    private Integer contadorReferidos = 0;
+
     public UserEntity(){
 
     }
-
-
-
 
 }

@@ -56,4 +56,10 @@ public class ScheduleServiceImp implements ScheduleService {
     public List<ScheduleEntity> findAllOrderByDiaSemanaAsc() {
         return scheduleDao.findAllByOrderByDiaSemanaAsc();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleEntity> findBySede(String sede) {
+        return scheduleDao.findBySede(sede);
+    }
 }

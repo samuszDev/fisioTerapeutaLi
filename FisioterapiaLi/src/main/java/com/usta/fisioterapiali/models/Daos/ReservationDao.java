@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationDao extends JpaRepository<ReservationEntity, Long> {
-    List<ReservationEntity> findByUsuarioIdUsuario(Long idUsuario);
-    List<ReservationEntity> findByServicioIdServicio(Long idServicio);
-    List<ReservationEntity> findByEstadoRTrue();
-    Optional<ReservationEntity> findByGoogleCalendarId(String googleCalendarId);
+
+    List<ReservationEntity> findByUsuario_IdUsuario(Long idUsuario);
+    List<ReservationEntity> findByServicio_IdServicio(Long idServicio);
+    List<ReservationEntity> findBySede(String sede);
+    List<ReservationEntity> findByPagoConfirmado(Boolean pagoConfirmado);
     List<ReservationEntity> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
+    Optional<ReservationEntity> findByGoogleCalendarId(String googleCalendarId);
     List<ReservationEntity> findAllByOrderByFechaInicioAsc();
 }

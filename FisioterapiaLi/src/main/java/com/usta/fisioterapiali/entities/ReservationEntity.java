@@ -1,5 +1,6 @@
 package com.usta.fisioterapiali.entities;
 
+import com.usta.fisioterapiali.enums.MetodoPago;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,12 +42,35 @@ public class ReservationEntity implements Serializable {
     @Column(name="estado_reserva", nullable = false)
     private boolean estadoR = true;
 
+    @NotBlank
+    @Size(max = 50)
+    @Column(name="sede", nullable = false, length = 50)
+    private String sede;
+
+
+    @Column(name="pago_confirmado", nullable = false)
+    private Boolean pagoConfirmado = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="metodo_pago", length = 30)
+    private MetodoPago metodoPago;
+
+    @Size(max = 30)
+    @Column(name="estado_cita", nullable = false, length = 30)
+    private String estadoCita = "PENDIENTE";
+
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="id_usuario", nullable = false)
     private UserEntity usuario;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="id_servicio",nullable = false)
-    private ServiceEntity Servicio;
+    @JoinColumn(name="id_servicio", nullable = false)
+    private ServiceEntity servicio;
+
+    public ReservationEntity() {
+
+    }
+
 
 }

@@ -49,31 +49,36 @@ public class ReservationServiceImp implements ReservationService {
     @Override
     @Transactional(readOnly = true)
     public List<ReservationEntity> findByUsuarioId(Long idUsuario) {
-        return reservationDao.findByUsuarioIdUsuario(idUsuario);
+        return reservationDao.findByUsuario_IdUsuario(idUsuario);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReservationEntity> findByServicioId(Long idServicio) {
-        return reservationDao.findByServicioIdServicio(idServicio);
+        return reservationDao.findByServicio_IdServicio(idServicio);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservationEntity> findActiveReservations() {
-        return reservationDao.findByEstadoRTrue();
+    public List<ReservationEntity> findBySede(String sede) {
+        return reservationDao.findBySede(sede);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ReservationEntity> findByGoogleCalendarId(String googleCalendarId) {
-        return reservationDao.findByGoogleCalendarId(googleCalendarId);
+    public List<ReservationEntity> findByPagoConfirmado(Boolean pagoConfirmado) {
+        return reservationDao.findByPagoConfirmado(pagoConfirmado);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReservationEntity> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin) {
         return reservationDao.findByFechaInicioBetween(inicio, fin);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<ReservationEntity> findByGoogleCalendarId(String googleCalendarId) {
+        return reservationDao.findByGoogleCalendarId(googleCalendarId);
     }
 
     @Override

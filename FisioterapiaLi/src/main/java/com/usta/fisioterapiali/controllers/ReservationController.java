@@ -70,6 +70,9 @@ public class ReservationController {
         existingReservation.setFechaInicio(reservationDetails.getFechaInicio());
         existingReservation.setFechaFin(reservationDetails.getFechaFin());
         existingReservation.setGoogleCalendarId(reservationDetails.getGoogleCalendarId());
+        existingReservation.setSede(reservationDetails.getSede());
+        existingReservation.setPagoConfirmado(reservationDetails.getPagoConfirmado());
+        existingReservation.setMetodoPago(reservationDetails.getMetodoPago());
         existingReservation.setEstadoR(reservationDetails.isEstadoR());
         existingReservation.setUsuario(reservationDetails.getUsuario());
         existingReservation.setServicio(reservationDetails.getServicio());
