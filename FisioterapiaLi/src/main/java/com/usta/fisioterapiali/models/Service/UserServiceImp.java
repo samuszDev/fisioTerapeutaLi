@@ -48,9 +48,10 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<UserEntity> findByEmail(String email) {
+    public UserEntity findByEmail(String email) {
         return userDao.findByEmail(email);
     }
+
 
     @Override
     @Transactional(readOnly = true)
