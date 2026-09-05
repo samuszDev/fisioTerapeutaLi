@@ -10,6 +10,9 @@
     <link rel="stylesheet" th:href="@{/css/layoutUser.css}">
     <link rel="stylesheet" th:href="@{/css/service.css}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -88,6 +91,137 @@
         <span>Carrera 10 No 26-91</span>
     </div>
 </div>
+
+<!-- Fondo ambiental desenfocado -->
+<div class="ambient-background">
+    <div class="ambient-bg-image"></div>
+    <div class="ambient-glow-left"></div>
+    <div class="ambient-vignette"></div>
+</div>
+
+<!-- Collage  -->
+<main class="collage-stage" id="collageStage">
+
+    <!-- Imagen de fondo -->
+    <img th:src="@{/images/Fondo_collage.png}" alt="Fondo Collage" class="collage-bg">
+    <!-- Foto 1 -->
+    <article class="photo-item photo-1" data-title="Atención y Fisioterapia Geriátrica">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/Imagen1.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 2 -->
+    <article class="photo-item photo-2" data-title="Terapia Manual en Camilla">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/Imagen2.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 9 (NUEVA) -->
+    <article class="photo-item photo-9" data-title="Valoración Clínica y Diagnóstico Funcional">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/Imagen3.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 3 -->
+    <article class="photo-item photo-3" data-title="Rehabilitación y Movilidad en Colchoneta">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/Imagen4.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 4 -->
+    <article class="photo-item photo-4" data-title="Asistencia y Recuperación Deportiva">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/Imagen5.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 5 -->
+    <article class="photo-item photo-5" data-title="Entrenamiento Cardiovascular Terapéutico">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/Imagen6.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 6 -->
+    <article class="photo-item photo-6" data-title="Estimulación Temprana y Psicomotricidad">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/Imagen7.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 8 (NUEVA) -->
+    <article class="photo-item photo-8" data-title="Movilización Articular y Flexibilidad">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+    <!-- Foto 7 -->
+    <article class="photo-item photo-7" data-title="Ejercicios Funcionales y Control Postural">
+        <div class="torn-paper">
+            <div class="photo-media">
+                <img th:src="@{/images/.png}" alt="Fisioterapia" class="collage-photo">
+            </div>
+        </div>
+    </article>
+</main>
+
+<!-- Modal Lightbox -->
+<div class="lightbox-modal" id="lightboxModal" role="dialog" aria-modal="true">
+    <div class="lightbox-card">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar modal">&times;</button>
+        <img src="" alt="" class="lightbox-img" id="lightboxImg">
+        <p class="lightbox-title" id="lightboxTitle"></p>
+    </div>
+</div>
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const items = document.querySelectorAll('.photo-item');
+        const modal = document.getElementById('lightboxModal');
+        const modalImg = document.getElementById('lightboxImg');
+        const modalTitle = document.getElementById('lightboxTitle');
+        const modalClose = document.getElementById('lightboxClose');
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                const img = item.querySelector('img');
+                const title = item.dataset.title || img.alt || '';
+
+                modalImg.src = img.src;
+                modalImg.alt = img.alt;
+                modalTitle.textContent = title;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        const closeModal = () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    });
+</script>
+
 <footer th:replace="~{layout/layoutUser :: footer}"></footer>
 </body>
 </html>
