@@ -1,6 +1,5 @@
 package com.usta.fisioterapiali.security;
 
-
 import com.usta.fisioterapiali.handler.LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +21,6 @@ public class SecurityConfiguration {
     private LoginSuccessHandler loginSuccessHandler;
 
 
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Autowired
     public void configurerGlobal(AuthenticationManagerBuilder build, BCryptPasswordEncoder passwordEncoder) throws Exception {
@@ -35,22 +31,23 @@ public class SecurityConfiguration {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // Acceso público para todos los roles y anónimos
-                        // Se pondría aquello que todos los usuarios podrían ver antes de autenticarse
-                        .requestMatchers("/", "/vermas").permitAll()
+                        // Acceso público para recursos estáticos, inicio, login y registro
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/", "/vermas", "/login", "/register").permitAll()
 
-                        // Acceso para VENDEDOR y ADMINISTRADOR
-                        .requestMatchers("/products", "/sales").hasAnyRole("VENDEDOR", "ADMINISTRADOR")
+                        // Acceso para FISIOTERAPEUTA y ADMINISTRADOR
+                        .requestMatchers("/fisio/**", "/citas/**").hasAnyRole("FISIO", "ADMIN")
 
-                        // Acceso solo para ADMINISTRADOR
-                        .requestMatchers("/products/new", "/products/delete", "/products/edit", "/users", "/dashboard")
-                        .hasRole("ADMINISTRADOR")
+                        // Acceso para CLIENTE y ADMINISTRADOR
+                        .requestMatchers("/cliente/**", "/perfil/**").hasAnyRole("CLIENTE", "ADMIN")
 
-                        .anyRequest().permitAll()
+                        // Acceso exclusivo para ADMINISTRADOR
+                        .requestMatchers("/admin/**", "/users/**", "/dashboard/**").hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error")
                         .successHandler(loginSuccessHandler)
                         .permitAll()
