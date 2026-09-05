@@ -1,6 +1,5 @@
 html, body{
     overflow-x: hidden;
-    max-width: 100%;
 }
 
 body {
@@ -95,7 +94,7 @@ nav {
     justify-content: center;
     width: 145px;
     height: 40px;
-    background: #e7ba45;
+    background: radial-gradient(circle at 50% 50%, #f3da90, #b69334, #b69334);
     color: #111;
     text-decoration: none;
     font-size: 14px;
@@ -106,6 +105,24 @@ nav {
 
 .btn-reservar:hover {
     transform: scale(1.04);
+}
+
+/* MENÚ HAMBURGUESA (solo visible en móvil) */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.menu-toggle span {
+    width: 26px;
+    height: 3px;
+    background: #111;
+    border-radius: 2px;
 }
 
 :root{
@@ -121,6 +138,9 @@ nav {
 
 .site-footer{
     position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
     background: var(--navy);
     color: var(--text-light);
     padding-top: 90px;
@@ -245,7 +265,7 @@ nav {
 .contact-number{
     font-weight: 700;
     font-size: 1.3rem;
-    margin: 6px 0 0 0;
+    margin: 10px 0 0 0;
 }
 
 .about-block p{
@@ -263,25 +283,108 @@ nav {
     margin: 0;
 }
 
-.signature{
-    font-family: 'Brush Script MT', cursive;
-    color: var(--teal);
-    font-size: 1.6rem;
+.about-block .signature{
+    font-family: 'Great Vibes', cursive;
+    color: #ba9868;
+    font-size: 3rem;
     margin: 4px 0 0 0;
+    text-align: right;
 }
 
+/* ===== RESPONSIVE HEADER ===== */
+@media (max-width: 768px) {
+    .header {
+        width: 90%;
+        border-radius: 20px;
+        height: 55px;
+        padding: 0 18px;
+    }
+
+    .logo {
+        width: auto;
+    }
+
+    .logo img {
+        width: 50px;
+        height: 36px;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    nav {
+        position: absolute;
+        top: 62px;
+        left: 0;
+        width: 100%;
+        background: rgba(26, 58, 99, 0.97);
+        border-radius: 16px;
+        display: none;
+        padding: 10px 0;
+    }
+
+    nav.menu-abierto {
+        display: block;
+    }
+
+    .menu {
+        flex-direction: column;
+        gap: 0;
+        align-items: flex-start;
+        padding: 0 20px;
+    }
+
+    .menu li {
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .menu a {
+        color: #fff;
+        display: block;
+        padding: 12px 0;
+    }
+
+    .header-botones {
+        display: none;
+    }
+}
+
+/* ===== RESPONSIVE FOOTER ===== */
 @media (max-width: 900px){
     .footer-grid{
         grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        padding: 0 8%;
     }
     .footer-logo{
         right: 50%;
         transform: translateX(50%);
     }
+    .about-block .signature{
+        text-align: left;
+    }
 }
 
 @media (max-width: 560px){
+    .site-footer{
+        padding-top: 70px;
+    }
     .footer-grid{
         grid-template-columns: 1fr;
+        padding: 0 8%;
+        gap: 28px;
+    }
+    .footer-logo{
+        width: 100px;
+        height: 100px;
+        top: -45px;
+    }
+    .contact-number{
+        font-size: 1.15rem;
+    }
+    .about-block .signature{
+        font-size: 2.2rem;
     }
 }
