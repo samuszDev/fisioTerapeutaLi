@@ -69,7 +69,7 @@ nav {
 }
 
 .menu a:hover {
-    color: #f1b73c;
+    color: #a68337;
 }
 
 .menu a.active-link::after {
@@ -79,7 +79,7 @@ nav {
     bottom: 0;
     width: 100%;
     height: 2px;
-    background: #ffa82f;
+    background: #a68337;
 }
 
 .header-botones {
