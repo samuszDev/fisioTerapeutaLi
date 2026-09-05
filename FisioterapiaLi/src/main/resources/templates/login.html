@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Login'">Login</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="m-0 p-0 font-sans min-h-screen"
+      style="background: url('/images/auto_fondo.jpg') center/cover no-repeat fixed;">
+
+<div class="min-h-screen flex items-center justify-center px-4"
+     style="background: linear-gradient(to right, rgba(0,0,0,0.82) 40%, rgba(0,0,0,0.45) 100%);">
+
+    <div class="w-full max-w-4xl flex rounded-2xl overflow-hidden shadow-2xl"
+         style="min-height: 520px;">
+
+        <!-- Lado izquierdo: bienvenida -->
+        <div class="hidden md:flex flex-col justify-center px-12 py-10 w-1/2"
+             style="background: rgba(0,0,0,0.35);">
+            <div class="flex items-center gap-3 mb-10">
+                <img th:src="@{/images/logo.png}" alt="Logo"
+                     onerror="this.style.display='none'"
+                     class="h-8 object-contain" />
+                <span class="text-white text-xl font-bold tracking-widest uppercase"
+                      style="letter-spacing: 0.3em;">Tesla</span>
+            </div>
+            <h1 class="text-white font-bold leading-tight mb-4"
+                style="font-size: 2.6rem;">Welcome<br>Back</h1>
+            <p class="text-gray-300 text-sm leading-relaxed" style="max-width: 280px;">
+                Accede al panel de administración para gestionar productos, ventas y usuarios.
+            </p>
+            <div class="flex gap-4 mt-10">
+            <span class="text-gray-400 hover:text-white cursor-pointer transition-colors">
+                <i class="fa-brands fa-facebook text-lg"></i>
+            </span>
+                <span class="text-gray-400 hover:text-white cursor-pointer transition-colors">
+                <i class="fa-brands fa-x-twitter text-lg"></i>
+            </span>
+                <span class="text-gray-400 hover:text-white cursor-pointer transition-colors">
+                <i class="fa-brands fa-instagram text-lg"></i>
+            </span>
+                <span class="text-gray-400 hover:text-white cursor-pointer transition-colors">
+                <i class="fa-brands fa-youtube text-lg"></i>
+            </span>
+            </div>
+        </div>
+
+        <!-- Lado derecho: formulario -->
+        <div class="flex flex-col justify-center px-10 py-10 w-full md:w-1/2"
+             style="background: rgba(15,15,15,0.75); backdrop-filter: blur(8px);">
+
+            <h2 class="text-white text-2xl font-bold text-center mb-8 uppercase"
+                style="letter-spacing: 0.2em;">Sign In</h2>
+
+            <!-- Mensaje de error desde Spring Security (/login?error) -->
+            <div th:if="${param.error}"
+                 class="mb-4 px-4 py-3 rounded-lg text-sm text-red-300 border border-red-700"
+                 style="background: rgba(180,0,0,0.2);">
+                Correo o contraseña incorrectos. Intenta de nuevo.
+            </div>
+
+            <!-- Mensaje de logout desde Spring Security (/login?logout) -->
+            <div th:if="${param.logout}"
+                 class="mb-4 px-4 py-3 rounded-lg text-sm text-green-300 border border-green-700"
+                 style="background: rgba(0,120,0,0.2);">
+                Sesión cerrada correctamente.
+            </div>
+
+            <!-- Mensaje flash desde LoginSuccessHandler -->
+            <div th:if="${success}"
+                 class="mb-4 px-4 py-3 rounded-lg text-sm text-green-300 border border-green-700"
+                 style="background: rgba(0,120,0,0.2);">
+                <span th:text="${success}"></span>
+            </div>
+
+            <!-- action="/login" requerido por Spring Security -->
+            <form th:action="@{/login}" method="post" class="flex flex-col gap-5">
+
+                <!-- CSRF token - obligatorio con Spring Security -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <!-- Email -->
+                <div class="flex flex-col gap-1">
+                    <label for="username" class="text-gray-400 text-xs uppercase tracking-widest">
+                        Email Address
+                    </label>
+                    <input type="email"
+                           id="username"
+                           name="username"
+                           placeholder="correo@gmail.com"
+                           required
+                           class="w-full px-4 py-3 rounded-lg text-white text-sm border border-gray-600 focus:outline-none focus:border-red-500 transition-colors"
+                           style="background: rgba(255,255,255,0.07);" />
+                </div>
+
+                <!-- Password -->
+                <div class="flex flex-col gap-1 relative">
+                    <label for="password" class="text-gray-400 text-xs uppercase tracking-widest">
+                        Password
+                    </label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           placeholder="••••••••"
+                           required
+                           class="w-full px-4 py-3 pr-11 rounded-lg text-white text-sm border border-gray-600 focus:outline-none focus:border-red-500 transition-colors"
+                           style="background: rgba(255,255,255,0.07);" />
+                    <button type="button"
+                            onclick="togglePassword('password', this)"
+                            class="absolute right-3 bottom-3 text-gray-400 hover:text-white transition-colors">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+
+                <!-- Remember me -->
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="remember" name="remember-me"
+                           class="accent-red-600 w-4 h-4 cursor-pointer" />
+                    <label for="remember" class="text-gray-400 text-sm cursor-pointer">Remember Me</label>
+                </div>
+
+                <button type="submit"
+                        class="w-full py-3 rounded-lg font-bold text-white text-sm uppercase tracking-widest transition-all hover:opacity-85 active:scale-95"
+                        style="background: #cc0000; letter-spacing: 0.15em;">
+                    Sign in now
+                </button>
+
+                <div class="flex flex-col items-center gap-2 mt-1">
+                    <p class="text-gray-500 text-xs">
+                        ¿No tienes cuenta?
+                        <a th:href="@{/register}" class="text-red-500 hover:text-red-400 transition-colors">
+                            Regístrate aquí
+                        </a>
+                    </p>
+                </div>
+            </form>
+
+            <p class="text-center text-gray-600 text-xs mt-6">
+                By clicking "Sign In Now" you agree to our
+                <span class="underline cursor-pointer hover:text-gray-400 transition-colors">TERMS OF SERVICE</span>
+                |
+                <span class="underline cursor-pointer hover:text-gray-400 transition-colors">PRIVACY POLICY</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        const isPwd = input.type === 'password';
+        input.type = isPwd ? 'text' : 'password';
+        icon.classList.toggle('fa-eye', !isPwd);
+        icon.classList.toggle('fa-eye-slash', isPwd);
+    }
+</script>
+
+</body>
+</html>
