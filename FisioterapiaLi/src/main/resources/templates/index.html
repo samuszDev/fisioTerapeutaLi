@@ -7,11 +7,12 @@
     <title>Lina Murillo | Fisioterapeuta</title>
     <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
     <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/layoutUser.css}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
 </head>
 
 <body>
-
+<header th:replace="~{layout/layoutUser :: header('inicio')}"></header>
 <img th:src="@{/images/lineas_Azul.png}" alt="Ondas Azules" class="onda-izquierda">
 <img th:src="@{/images/lineas_Dorada.png}" alt="Ondas Doradas" class="onda-izquierda-dorada">
 
@@ -35,7 +36,7 @@
 
         <span class="dot"></span>
         <span class="line"></span>
-        
+
         <p class="description">
             Acompaño a mis pacientes en cada etapa de su recuperación, combinando conocimiento científico, trato humano y técnicas personalizadas para mejorar su calidad de vida.
         </p>
@@ -86,5 +87,6 @@
         <span>Carrera 10 No 26-91</span>
     </div>
 </div>
+<footer th:replace="~{layout/layoutUser :: footer}"></footer>
 </body>
 </html>

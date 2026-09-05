@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(titulo)">
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+  <title th:text="${titulo}">Fisioterapeuta Li</title>
+
+  <link rel="icon"
+        type="image/png"
+        th:href="@{/images/logo.png}">
+
+  <link rel="stylesheet"
+        th:href="@{/css/layout.css}">
+
+</head>
+<header th:fragment="header(activeTab)" class="header">
+  <div class="logo">
+    <img th:src="@{/images/logo.png}" alt="Logo Fisioterapeuta Li">
+  </div>
+
+  <nav>
+    <ul class="menu">
+      <li>
+        <a th:href="@{/}"
+           th:class="${activeTab == 'inicio' ? 'active-link' : ''}">
+          Inicio
+        </a>
+      </li>
+
+      <li>
+        <a th:href="@{/service}"
+           th:class="${activeTab == 'servicios' ? 'active-link' : ''}">
+          Servicios
+        </a>
+      </li>
+
+      <li>
+        <a th:href="@{/sobre-nosotros}"
+           th:class="${activeTab == 'sobre-nosotros' ? 'active-link' : ''}">
+          Sobre nosotros
+        </a>
+      </li>
+
+      <li>
+        <a th:href="@{/contacto}"
+           th:class="${activeTab == 'contacto' ? 'active-link' : ''}">
+          Contactanos
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+
+  <div class="header-botones">
+    <a th:href="@{/reservar}" class="btn-reservar">
+      RESERVAR CITA
+    </a>
+  </div>
+</header>
+
+
+<footer th:fragment="footer" class="site-footer">
+  <svg class="footer-wave" viewBox="0 0 1200 120" preserveAspectRatio="none">
+    <path d="M0,40 C150,110 350,0 500,50 C650,100 800,10 1000,55 C1100,78 1150,60 1200,40 L1200,0 L0,0 Z" fill="#f4f4f4"></path>
+  </svg>
+  <div class="footer-logo">
+    <img th:src="@{/images/logo.png}" alt="Logo FisioTerapeuta Lii">
+  </div>
+
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Navegación</h4>
+      <ul>
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/service}">Servicios</a></li>
+        <li><a th:href="@{/sobre-nosotros}">Sobre nosotros</a></li>
+        <li><a th:href="@{/contacto}">Contáctenos</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Horario de atención</h4>
+      <div class="schedule-block">
+        <p class="sede">Sede Tunja</p>
+        <p class="days">Lunes - Viernes</p>
+        <p class="hours">7 am - 8 pm</p>
+
+        <p class="sede">Sede Turmequé</p>
+        <p class="days">Sábado - Domingo</p>
+        <p class="hours">7 am - 8 pm</p>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Línea de atención</h4>
+      <div class="contact-block">
+        <div class="contact-line">
+          <img th:src="@{/images/telefono.png}" alt="Celular" class="contact-icon">
+          <img th:src="@{/images/whastapp.png}" alt="WhatsApp" class="contact-icon">
+          <p><strong>(+57) 311 398 1422</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-col about-block">
+      <p>Centro especializado en fisioterapia avanzada, rehabilitación integral y medicina regenerativa</p>
+      <p class="brand-name">FISIOTERAPEUTA</p>
+      <p class="signature">Lina Murillo</p>
+    </div>
+  </div>
+</footer>
+</html>
