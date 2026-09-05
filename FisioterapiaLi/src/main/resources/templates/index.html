@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lina Murillo | Fisioterapeuta</title>
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
+</head>
+
+<body>
+
+<img th:src="@{/images/lineas_Azul.png}" alt="Ondas Azules" class="onda-izquierda">
+<img th:src="@{/images/lineas_Dorada.png}" alt="Ondas Doradas" class="onda-izquierda-dorada">
+
+<!-- SECCIÓN PRINCIPAL  -->
+<section class="hero-container">
+    <div class="hero-text">
+        <h1 class="script-title">Lina Murillo</h1>
+        <div class="subtitle-badge">
+            <span class="dot"></span>
+            <span class="line"></span>
+            <p>FISIOTERAPEUTA</p>
+            <span class="line"></span>
+            <span class="dot"></span>
+
+        </div>
+
+        <h2 class="main-heading">
+            Tu bienestar<br>
+            <span>es mi propósito</span>
+        </h2>
+
+        <span class="dot"></span>
+        <span class="line"></span>
+        
+        <p class="description">
+            Acompaño a mis pacientes en cada etapa de su recuperación, combinando conocimiento científico, trato humano y técnicas personalizadas para mejorar su calidad de vida.
+        </p>
+
+        <a href="#" class="btn-agenda">
+            <img th:src="@{/images/calendario.png}" alt="Calendario" class="icon-calendario">
+            AGENDA TU CITA
+        </a>
+    </div>
+
+    <!-- Lado Derecho: Imagen de Perfil y Fondo -->
+    <div class="hero-image-wrapper">
+        <div class="blue-shape"></div>
+        <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo Fisioterapeuta" class="hero-photo">
+    </div>
+</section>
+
+<!-- BARRA INFERIOR DE CONTACTO -->
+<div class="contact-bar">
+    <div class="contact-item">
+        <div class="icon-circle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.27c1.12.44 2.33.68 3.58.68a1 1 0 011 1V20a1 1 0 01-1 1C10.61 21 3 13.39 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.24 2.46.68 3.58a1 1 0 01-.27 1.12l-2.29 2.29z"/>
+            </svg>
+        </div>
+        <span>+57 3113981422</span>
+    </div>
+
+    <div class="contact-divider"></div>
+
+    <div class="contact-item">
+        <div class="icon-circle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+        </div>
+        <span>lifisioterapeuta395@gmail.com</span>
+    </div>
+
+    <div class="contact-divider"></div>
+
+    <div class="contact-item">
+        <div class="icon-circle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+        </div>
+        <span>Carrera 10 No 26-91</span>
+    </div>
+</div>
+</body>
+</html>
