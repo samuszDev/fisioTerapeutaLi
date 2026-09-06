@@ -91,12 +91,7 @@
     </div>
 </div>
 
-<!-- Fondo ambiental desenfocado -->
-<div class="ambient-background">
-    <div class="ambient-bg-image"></div>
-    <div class="ambient-glow-left"></div>
-    <div class="ambient-vignette"></div>
-</div>
+
 
 <!-- Collage  -->
 <main class="collage-stage" id="collageStage">
@@ -220,6 +215,110 @@
         });
     });
 </script>
+
+
+<section class="services-section">
+    <!-- Encabezado -->
+    <header class="services-header">
+        <h1 class="services-title">Servicios y Tarifas</h1>
+        <div class="divider">
+            <span class="doot"></span>
+        </div>
+        <p class="services-subtitle">
+            Atención profesional, humana y especializada para tu bienestar integral
+        </p>
+    </header>
+
+    <!-- Contenedor de Tarjetas -->
+    <div class="cards-container">
+
+        <!-- Card 1 -->
+        <article class="card">
+            <div class="card-image-wrapper">
+                <img th:src="@{/images/img1.jpg}" alt="Rehabilitación" class="Rehabilitación Física">
+                <span class="badge duration">1 HORA</span>
+            </div>
+            <div class="card-body">
+                <span class="category">Rehabilitación</span>
+                <h2 class="card-title">Rehabilitación Física</h2>
+                <p class="description">Tratamiento personalizado para recuperar movilidad, fuerza y funcionalidad.</p>
+                <span class="price-label">Desde</span>
+                <div class="price">$100.000 COP</div>
+                <ul class="features">
+                    <li>Valoración inicial</li>
+                    <li>Terapia física personalizada</li>
+                    <li>Sesión de 60 minutos</li>
+                </ul>
+                <a href="#" class="btn btn-primary">VER MÁS &rarr;</a>
+            </div>
+        </article>
+
+        <!-- Card 2 (Destacada) -->
+        <article class="card">
+            <div class="card-image-wrapper">
+                <img th:src="@{/images/img2.jpg}" alt="Ejercicio" class="Prescripción de Ejercicio">
+                <span class="badge duration green">1 HORA</span>
+                <span class="badge featured">★ MÁS ELEGIDO</span>
+            </div>
+            <div class="card-body">
+                <span class="category green">Ejercicio</span>
+                <h2 class="card-title green">Prescripción de Ejercicio</h2>
+                <p class="description">Planes personalizados según tus objetivos y necesidades.</p>
+                <span class="price-label">Desde</span>
+                <div class="price green">$60.000 COP</div>
+                <ul class="features green">
+                    <li>Plan totalmente personalizado</li>
+                    <li>Seguimiento profesional</li>
+                    <li>Sesiones de 1 hora</li>
+                </ul>
+                <a href="#" class="btn btn-secondary">VER MÁS &rarr;</a>
+            </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="card">
+            <div class="card-image-wrapper">
+                <img th:src="@{/images/img3.jpg}" alt="Muscular" class="Descarga Muscular">
+                <span class="badge duration">1 HORA</span>
+            </div>
+            <div class="card-body">
+                <span class="category">Recuperación</span>
+                <h2 class="card-title">Descarga Muscular</h2>
+                <p class="description">Recuperación muscular profunda con técnicas manuales e instrumentales.</p>
+                <span class="price-label">Desde</span>
+                <div class="price">$70.000 COP</div>
+                <ul class="features">
+                    <li>Terapia manual</li>
+                    <li>Ventosas (cupping)</li>
+                    <li>Pistola percutora</li>
+                </ul>
+                <a href="#" class="btn btn-primary">VER MÁS &rarr;</a>
+            </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="card">
+            <div class="card-image-wrapper">
+                <img th:src="@{/images/img4.jpg}" alt="Especializados" class="Procedimientos Especializados">
+                <span class="badge duration">1 A 2 HORAS</span>
+            </div>
+            <div class="card-body">
+                <span class="category">Procedimientos</span>
+                <h2 class="card-title">Procedimientos Especializados</h2>
+                <p class="description">Técnicas avanzadas para el manejo del dolor y lesiones específicas.</p>
+                <span class="price-label">Desde</span>
+                <div class="price">$120.000 COP</div>
+                <ul class="features">
+                    <li>Punción seca</li>
+                    <li>Terapia neural</li>
+                    <li>Plasma rico en plaquetas</li>
+                </ul>
+                <a href="#" class="btn btn-primary">VER MÁS &rarr;</a>
+            </div>
+        </article>
+
+    </div>
+</section>
 
 <footer th:replace="~{layout/layoutUser :: footer}"></footer>
 </body>

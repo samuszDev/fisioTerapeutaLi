@@ -214,10 +214,6 @@ body {
     background-color: #CBD5E1;
 }
 
-
-
-
-
 /* ==========================================================================
    RESET Y VARIABLES GLOBALES
    ========================================================================== */
@@ -232,39 +228,6 @@ body {
     --transition-smooth: all 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-
-/* ==========================================================================
-   ENCABEZADO
-   ========================================================================== */
-.header-bar {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-.header-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #7dd3fc;
-    backdrop-filter: blur(12px);
-    margin-bottom: 0.5rem;
-}
-.header-title {
-    font-size: clamp(1.4rem, 2.5vw, 2.1rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: #ffffff;
-    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
-}
 /* ==========================================================================
    ESCENARIO DEL COLLAGE (CANVAS PARA 9 FOTOS)
    ========================================================================== */
@@ -275,8 +238,8 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 0; /* La mantiene detrás de las imágenes (que tienen z-index > 0) */
-    pointer-events: none; /* Evita que interfiera con los clics en el collage */
+    z-index: 0;
+    pointer-events: none;
 }
 
 .collage-photo {
@@ -290,10 +253,11 @@ body {
 .collage-stage {
     position: relative;
     z-index: 10;
-    width: 100%;
-    max-width: 1060px;
-    height: 660px;
-    margin: 0 auto;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    margin: 0;
+    overflow: hidden;
 }
 /* ==========================================================================
    TARJETA INDIVIDUAL DE FOTO (SOMBRA 3D)
@@ -567,6 +531,226 @@ body {
 .lightbox-close:hover {
     transform: scale(1.1);
     background: #f1f5f9;
+}
+
+
+
+
+
+/* Section Header */
+.services-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.services-title {
+    color: var(--navy);
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.divider {
+    width: 260px;
+    height: 2px;
+    background-color: var(--navy);
+    margin: 12px auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.divider .dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--navy);
+    border-radius: 50%;
+    position: absolute;
+    top: -3px;
+}
+
+.services-subtitle {
+    color: #111;
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-top: 14px;
+}
+
+/* Grid Layout */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Card Style */
+.card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* Badges sobre la imagen */
+.badge {
+    position: absolute;
+    top: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.badge.duration {
+    left: 10px;
+    background-color: var(--navy);
+}
+
+.badge.duration.green {
+    background-color: var(--teal-brand);
+}
+
+.badge.featured {
+    right: 10px;
+    background-color: var(--teal-brand);
+}
+
+/* Card Body */
+.card-body {
+    padding: 16px 10px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.category {
+    font-size: 0.8rem;
+    color: var(--blue-brand);
+    font-weight: 600;
+}
+
+.category.green {
+    color: var(--teal-brand);
+}
+
+.card-title {
+    color: var(--navy);
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 4px 0 10px;
+    line-height: 1.2;
+}
+
+.card-title.green {
+    color: var(--teal-brand);
+}
+
+.description {
+    font-size: 0.78rem;
+    color: var(--text-gray);
+    margin: 0 0 12px;
+    min-height: 36px;
+    line-height: 1.3;
+}
+
+.price-label {
+    font-size: 0.75rem;
+    color: var(--blue-brand);
+}
+
+.price {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 12px;
+}
+
+.price.green {
+    color: var(--teal-brand);
+}
+
+/* Lista de características con Checkmarks */
+.features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    text-align: left;
+    border-top: 1px solid #e0e6ed;
+    padding-top: 12px;
+    flex-grow: 1;
+}
+
+.features li {
+    font-size: 0.82rem;
+    color: #333;
+    margin-bottom: 6px;
+    position: relative;
+    padding-left: 22px;
+}
+
+.features li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 15px;
+    height: 15px;
+    background-color: var(--navy);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.55rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.features.green li::before {
+    background-color: var(--teal-brand);
+}
+
+/* Botones */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    background-color: var(--navy);
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: var(--teal-brand);
+    color: #fff;
 }
 
 
