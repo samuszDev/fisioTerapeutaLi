@@ -131,7 +131,7 @@ if (typeof registerInternalViews === "function") {
     });
 }
 
-// Carga automática de la lista de pacientes al ingresar a la página
+// Carga automática de la lista filtrada de clientes
 document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.querySelector(".wide-table tbody");
 
@@ -139,11 +139,22 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch("/api/modal/pacientes")
             .then(response => response.json())
             .then(pacientes => {
-                if (!pacientes || pacientes.length === 0) return;
+                if (!pacientes || pacientes.length === 0) {
+                    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No hay clientes registrados.</td></tr>";
+                    return;
+                }
 
-                tableBody.innerHTML = ""; // Eliminar filas vacías iniciales
+                // Filtrar para mostrar únicamente registros con rol CLIENTE
+                const clientesFiltrados = pacientes.filter(p => p.rol === "CLIENTE");
 
-                pacientes.forEach(p => {
+                if (clientesFiltrados.length === 0) {
+                    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No se encontraron clientes registrados.</td></tr>";
+                    return;
+                }
+
+                tableBody.innerHTML = ""; // Limpiar filas estáticas de plantilla
+
+                clientesFiltrados.forEach(p => {
                     tableBody.innerHTML += `
                         <tr>
                             <td>${p.nombre || 'Sin nombre'}</td>
@@ -159,6 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     `;
                 });
             })
-            .catch(error => console.error("Error al obtener la lista de pacientes:", error));
+            .catch(error => console.error("Error al obtener la lista de clientes:", error));
     }
 });

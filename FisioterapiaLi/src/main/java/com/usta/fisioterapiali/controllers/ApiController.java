@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/modal")
@@ -22,43 +23,46 @@ public class ApiController {
     @Autowired
     private ServiceDao serviceDao;
 
-    @GetMapping("/pacientes")
-    public List<UserEntity> obtenerPacientes() {
-        return userDao.findByRol(TipoUsuario.CLIENTE);
-    }
+
 
     @GetMapping("/servicios")
     public List<ServiceEntity> obtenerServicios() {
         return serviceDao.findAll();
     }
+    @GetMapping("/pacientes")
+    public List<UserEntity> obtenerPacientes() {
+        return userDao.findByRol(TipoUsuario.CLIENTE);
+    }
 
-    // MÉTODO PARA CREAR / GUARDAR UN NUEVO PACIENTE EN LA BASE DE DATOS
     @PostMapping("/pacientes")
     public ResponseEntity<?> guardarPaciente(@RequestBody UserEntity cliente) {
         try {
-            // Asignar rol por defecto si viene nulo
-            if (cliente.getRol() == null) {
-                cliente.setRol(TipoUsuario.CLIENTE); // O el enum correspondiente que uses
+            if (cliente.getDocumento() != null && !cliente.getDocumento().isBlank()) {
+                Optional<UserEntity> existePaciente = userDao.findByDocumento(cliente.getDocumento());
+                if (existePaciente.isPresent()) {
+                    return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body("El número de documento ya se encuentra registrado.");
+                }
             }
 
-            // Asignar contraseña temporal por defecto para cumplir con la restricción @NotBlank
+            if (cliente.getRol() == null) {
+                cliente.setRol(TipoUsuario.CLIENTE);
+            }
             if (cliente.getClave() == null || cliente.getClave().isBlank()) {
                 cliente.setClave("123456");
             }
-
-            // Inicializar contador si viene nulo
             if (cliente.getContadorReferidos() == null) {
                 cliente.setContadorReferidos(0);
             }
 
             UserEntity nuevoCliente = userDao.save(cliente);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoCliente);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al guardar el paciente: " + e.getMessage());
+                    .body("Error al procesar la solicitud: " + e.getMessage());
         }
-
-
     }
 }
