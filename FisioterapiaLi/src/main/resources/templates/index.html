@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lina Murillo | Fisioterapeuta</title>
@@ -235,7 +234,7 @@
             </div>
         </article>
 
-        <!-- Card 2 (Destacada) -->
+        <!-- Card 2  -->
         <article class="card">
             <div class="card-image-wrapper">
                 <img th:src="@{/images/img2.jpg}" alt="Ejercicio" class="Prescripción de Ejercicio">
@@ -301,6 +300,30 @@
 
     </div>
 </section>
+
+<div class="banner-container_baner">
+    <div class="banner-side left-side">
+        <div class="content-1">
+            <h2>Valoración<br>gratuita</h2>
+            <p>Incluida al adquirir cualquier paquete de terapias de rehabilitación.</p>
+            <img th:src="@{/images/estrellas.png}" alt="estrellas" class="estrela-img">
+        </div>
+    </div>
+
+    <div class="banner-side right-side">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+
+        <div class="content-2">
+            <h2>Gana 10% de<br>descuento</h2>
+            <p>Por cada 5 pacientes que refieras y asistan a su consulta o terapia, obtienes 10% de descuento en tu próximo servicio.</p>
+        </div>
+    </div>
+    <img th:src="@{/images/Señalando.png}" alt="Modelo Fisioterapeuta" class="person-img">
+    <img th:src="@{/images/Decoracion3.png}" alt="Decoracion3" class="Decoracion3">
+    <img th:src="@{/images/Decoracion3.png}" alt="Decoracion3" class="Decoracion4">
+</div>
 
 <footer th:replace="~{layout/layoutUser :: footer}"></footer>
 </body>
