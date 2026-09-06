@@ -17,11 +17,27 @@
         <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
-            <button class="nav-item" data-page="dashboard" data-href="../dashboard/dashboard.html"><img src="../assets/dashboard.svg" alt="" aria-hidden="true"><span>Dashboard</span></button>
-            <button class="nav-item" data-page="agenda" data-href="../agenda/agenda.html"><img src="../assets/calendar.svg" alt="" aria-hidden="true"><span>Agenda y citas</span></button>
-            <button class="nav-item" data-page="clientes" data-href="../clientes/clientes.html"><img src="../assets/clients.svg" alt="" aria-hidden="true"><span>Clientes</span></button>
-            <button class="nav-item" data-page="servicios" data-href="../servicios/servicios.html"><img src="../assets/services.svg" alt="" aria-hidden="true"><span>Servicios</span></button>
-            <button class="active nav-item" data-page="reportes" data-href="../reportes/reportes.html"><img src="../assets/reports.svg" alt="" aria-hidden="true"><span>Reportes</span></button>
+            <!-- Se reemplazaron los <button> por <a> para enrutamiento nativo con Spring Boot -->
+            <a class="nav-item active" href="dashboard.html" th:href="@{/admin/dashboard}">
+                <img src="../../static/css/assets/dashboard.svg" th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-item" href="agenda_citas.html" th:href="@{/admin/schedule}">
+                <img src="../../static/css/assets/calendar.svg" th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+                <span>Agenda y citas</span>
+            </a>
+            <a class="nav-item" href="clientes.html" th:href="@{/admin/clients}">
+                <img src="../../static/css/assets/clients.svg" th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+                <span>Clientes</span>
+            </a>
+            <a class="nav-item" href="servicios.html" th:href="@{/admin/services}">
+                <img src="../../static/css/assets/services.svg" th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+                <span>Servicios</span>
+            </a>
+            <a class="nav-item" href="reportes.html" th:href="@{/admin/reports}">
+                <img src="../../static/css/assets/reports.svg" th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+                <span>Reportes</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">

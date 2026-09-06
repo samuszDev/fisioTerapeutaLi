@@ -1,33 +1,48 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Fisioterapeuta Li · Servicios</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" th:href="@{/css/Admin.css}">
 </head>
 <body>
 
 <div class="app">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <img src="../assets/logo-li.png" alt="Logo">
+            <img th:src="@{/css/assets/logo-li.png}" alt="Logo">
         </div>
 
         <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
-            <button class="nav-item" data-page="dashboard" data-href="../dashboard/dashboard.html"><img src="../assets/dashboard.svg" alt="" aria-hidden="true"><span>Dashboard</span></button>
-            <button class="nav-item" data-page="agenda" data-href="../agenda/agenda.html"><img src="../assets/calendar.svg" alt="" aria-hidden="true"><span>Agenda y citas</span></button>
-            <button class="nav-item" data-page="clientes" data-href="../clientes/clientes.html"><img src="../assets/clients.svg" alt="" aria-hidden="true"><span>Clientes</span></button>
-            <button class="active nav-item" data-page="servicios" data-href="../servicios/servicios.html"><img src="../assets/services.svg" alt="" aria-hidden="true"><span>Servicios</span></button>
-            <button class="nav-item" data-page="reportes" data-href="../reportes/reportes.html"><img src="../assets/reports.svg" alt="" aria-hidden="true"><span>Reportes</span></button>
+            <a class="nav-item" th:href="@{/admin/dashboard}">
+                <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-item" th:href="@{/admin/agenda}">
+                <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+                <span>Agenda y citas</span>
+            </a>
+            <a class="nav-item" th:href="@{/admin/clientes}">
+                <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+                <span>Clientes</span>
+            </a>
+            <a class="nav-item active" th:href="@{/admin/servicios}">
+                <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+                <span>Servicios</span>
+            </a>
+            <a class="nav-item" th:href="@{/admin/reportes}">
+                <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+                <span>Reportes</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">
-            <span>Fisioterapeuta</span>
-            <span>Ciudad / sede</span>
-            <span>Horario de atención</span>
+            <span>Lina Murillo (Fisioterapeuta)</span>[cite: 1]
+            <span>Sede Tunja (L-V) / Turmequé (S-D)</span>[cite: 1]
+            <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>[cite: 1]
         </div>
     </aside>
     <main class="main-content">
@@ -38,9 +53,9 @@
         <section class="page active" id="servicios">
             <div class="page-header">
                 <div>
-                    <span class="eyebrow">CATÁLOGO DEL CONSULTORIO</span>
+                    <span class="eyebrow">CATÁLOGOS Y TARIFAS OFICIALES</span>
                     <h1>Servicios y tarifas</h1>
-                    <p>Servicios disponibles para el agendamiento.</p>
+                    <p>Servicios disponibles para el agendamiento según portafolio.</p>[cite: 1]
                 </div>
 
                 <button class="btn btn-gold" data-open-view="new-service">+ Nuevo servicio</button>
@@ -49,45 +64,45 @@
             <div class="services-grid">
                 <article class="service-card">
                     <div class="service-icon"></div>
-                    <h3></h3>
-                    <strong></strong>
-                    <p></p>
-                    <small></small>
+                    <h3>Valoración Inicial</h3>
+                    <strong>$100.000</strong>[cite: 1]
+                    <p>Evaluación clínica completa. GRATIS al adquirir un paquete de terapias de rehabilitación.</p>[cite: 1]
+                    <small>Duración: 60 min</small>
                 </article>
                 <article class="service-card">
                     <div class="service-icon"></div>
-                    <h3></h3>
-                    <strong></strong>
-                    <p></p>
-                    <small></small>
+                    <h3>Sesión de Rehabilitación</h3>
+                    <strong>$100.000</strong>[cite: 1]
+                    <p>Sesión individual de terapia física orientada a la recuperación funcional.</p>
+                    <small>Duración: 60 min</small>[cite: 1]
                 </article>
                 <article class="service-card">
                     <div class="service-icon"></div>
-                    <h3></h3>
-                    <strong></strong>
-                    <p></p>
-                    <small></small>
+                    <h3>Prescripción de Ejercicio</h3>
+                    <strong>$60.000</strong>[cite: 1]
+                    <p>Plan personalizado individualizado orientado a objetivos específicos.</p>[cite: 1]
+                    <small>Duración: 60 min</small>[cite: 1]
                 </article>
                 <article class="service-card">
                     <div class="service-icon"></div>
-                    <h3></h3>
-                    <strong></strong>
-                    <p></p>
-                    <small></small>
+                    <h3>Descarga Muscular - Espalda</h3>
+                    <strong>$70.000</strong>[cite: 1]
+                    <p>Modulación postejercicio, espalda alta y baja con terapia manual, ventosas y pistola.</p>[cite: 1]
+                    <small>Duración: 60 min</small>[cite: 1]
                 </article>
                 <article class="service-card">
                     <div class="service-icon"></div>
-                    <h3></h3>
-                    <strong></strong>
-                    <p></p>
-                    <small></small>
+                    <h3>Punción Seca</h3>
+                    <strong>$120.000</strong>[cite: 1]
+                    <p>Procedimiento especializado para el tratamiento de puntos gatillo miofasciales.</p>
+                    <small>Duración: 60 min</small>[cite: 1]
                 </article>
                 <article class="service-card">
                     <div class="service-icon"></div>
-                    <h3></h3>
-                    <strong></strong>
-                    <p></p>
-                    <small></small>
+                    <h3>Sueroterapia</h3>
+                    <strong>$300.000</strong>[cite: 1]
+                    <p>Procedimiento especializado de aplicación intravenosa de nutrientes y recuperadores.</p>
+                    <small>Duración: 90 min</small>[cite: 1]
                 </article>
             </div>
         </section>
@@ -113,6 +128,6 @@
     </div>
 </div>
 
-<script src="../js/app.js"></script>
+<script th:src="@{/js/app.js}"></script>
 </body>
 </html>
