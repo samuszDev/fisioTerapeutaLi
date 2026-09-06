@@ -1,56 +1,62 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Fisioterapeuta Li · Reportes</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <!-- CORRECCIÓN: Ruta de Thymeleaf apuntando a Admin.css -->
+    <link rel="stylesheet" th:href="@{/css/Admin.css}">
 </head>
 <body>
 
 <div class="app">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <img src="../assets/logo-li.png" alt="Logo">
+            <!-- CORRECCIÓN: Ruta de Thymeleaf para el logo -->
+            <img th:src="@{/css/assets/logo-li.png}" alt="Logo">
         </div>
 
         <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
-            <!-- Se reemplazaron los <button> por <a> para enrutamiento nativo con Spring Boot -->
-            <a class="nav-item active" href="dashboard.html" th:href="@{/admin/dashboard}">
-                <img src="../../static/css/assets/dashboard.svg" th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
+            <!-- CORRECCIÓN: Se quitó el 'active' de Dashboard -->
+            <a class="nav-item" th:href="@{/admin/dashboard}">
+                <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
                 <span>Dashboard</span>
             </a>
-            <a class="nav-item" href="agenda_citas.html" th:href="@{/admin/schedule}">
-                <img src="../../static/css/assets/calendar.svg" th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/schedule}">
+                <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                 <span>Agenda y citas</span>
             </a>
-            <a class="nav-item" href="clientes.html" th:href="@{/admin/clients}">
-                <img src="../../static/css/assets/clients.svg" th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/clients}">
+                <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                 <span>Clientes</span>
             </a>
-            <a class="nav-item" href="servicios.html" th:href="@{/admin/services}">
-                <img src="../../static/css/assets/services.svg" th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/services}">
+                <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                 <span>Servicios</span>
             </a>
-            <a class="nav-item" href="reportes.html" th:href="@{/admin/reports}">
-                <img src="../../static/css/assets/reports.svg" th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+            <!-- CORRECCIÓN: Se agregó el 'active' a Reportes -->
+            <a class="nav-item active" th:href="@{/admin/reports}">
+                <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                 <span>Reportes</span>
             </a>
         </nav>
 
         <div class="sidebar-footer">
-            <span>Fisioterapeuta</span>
-            <span>Ciudad / sede</span>
-            <span>Horario de atención</span>
+            <!-- CORRECCIÓN: Datos reales del consultorio -->
+            <span>Lina Murillo (Fisioterapeuta)</span>
+            <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
+            <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
         </div>
     </aside>
+
     <main class="main-content">
         <header class="mobile-header">
             <button id="menuButton" class="menu-button">☰</button>
             <span>La Fisioterapeuta Li</span>
         </header>
+
         <section class="page active" id="reportes">
             <div class="page-header">
                 <div>
@@ -103,6 +109,9 @@
     </div>
 </div>
 
-<script src="../js/app.js"></script>
+<!-- CORRECCIÓN: Rutas de Thymeleaf apuntando a common.js -->
+<script th:src="@{/js/common.js}"></script>
+<!-- Si tienes un archivo específico para reportes, descomenta la siguiente línea -->
+<!-- <script th:src="@{/js/reportes.js}"></script> -->
 </body>
 </html>

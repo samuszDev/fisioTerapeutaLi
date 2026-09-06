@@ -1,4 +1,3 @@
-
 const pages = document.querySelectorAll(".page");
 const navItems = document.querySelectorAll(".nav-item");
 const sidebar = document.getElementById("sidebar");
@@ -49,25 +48,57 @@ navItems.forEach(item => {
 
 function openInternalView(viewName) {
     const view = internalViews[viewName];
-
     if (!view || !modalOverlay) return;
 
     modalEyebrow.textContent = view.eyebrow;
     modalTitle.textContent = view.title;
     modalContent.innerHTML = view.content;
 
-    if (viewName === "new-appointment") {
-        const appointmentDate = document.getElementById("appointmentDate");
+    // Configuración específica si se abre la modal de crear cliente
+    if (viewName === "new-client") {
+        const finishBtn = document.getElementById("modalFinish");
 
-        if (appointmentDate) {
-            const today = new Date();
-            const localDate = [
-                today.getFullYear(),
-                String(today.getMonth() + 1).padStart(2, "0"),
-                String(today.getDate()).padStart(2, "0")
-            ].join("-");
+        if (finishBtn) {
+            
+            const newFinishBtn = finishBtn.cloneNode(true);
+            finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
 
-            appointmentDate.min = localDate;
+            newFinishBtn.addEventListener("click", () => {
+                const form = document.getElementById("newClientForm");
+                if (!form) return;
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                console.log("Enviando datos al servidor:", data);
+
+                fetch("/api/modal/pacientes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => {
+                        console.log("Respuesta del servidor (Status):", response.status);
+                        if (response.ok) {
+                            alert("¡Paciente guardado correctamente!");
+                            closeInternalView();
+                            window.location.reload();
+                        } else {
+                            response.text().then(msg => alert("Error del servidor: " + msg));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error de red/petición:", error);
+                        alert("Error al intentar conectar con el backend.");
+                    });
+            });
         }
     }
 
