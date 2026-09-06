@@ -1,0 +1,13 @@
+package com.usta.fisioterapiali.controllers;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class PaginasController {
+
+    @GetMapping("/service")
+    public String verServicios() {
+        return "service"; // debe coincidir con el nombre del archivo en templates/
+    }
+}

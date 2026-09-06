@@ -31,7 +31,7 @@ public class UserEntity implements Serializable {
 
     @NotBlank
     @Size(max=60)
-    @Column(name="user_telegram", nullable = false, length = 60)
+    @Column(name="user_telegram", nullable = true, length = 60)
     private String telegramUserId;
 
     @Enumerated(EnumType.STRING)
@@ -76,5 +76,6 @@ public class UserEntity implements Serializable {
     public UserEntity(){
 
     }
+
 
 }

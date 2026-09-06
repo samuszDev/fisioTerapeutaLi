@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lina Murillo | Fisioterapeuta</title>
     <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/layoutUser.css}">
     <link rel="stylesheet" th:href="@{/css/service.css}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
 </head>
 
 <body>
+<header th:replace="~{layout/layoutUser :: header('servicios')}"></header>
 
+<video th:src="@{/images/videoServicios.mp4}" autoplay muted loop playsinline class="video-fondo"></video>
 
-<h1>hola mundo</h1>
+<footer th:replace="~{layout/layoutUser :: footer}"></footer>
+</body>
+</html>
 
 
 
