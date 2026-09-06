@@ -6,6 +6,9 @@
     --text-dark: #1F2937;
     --text-gray: #4B5563;
     --bg-gray: #EAEFF5;
+    --blue-left: #1ca3ec;
+    --blue-right: #03306b;
+    --text-white: #ffffff;
 }
 
 * {
@@ -28,9 +31,8 @@ body {
 
 .onda-izquierda {
     position: absolute;
-    top: -110px;
-    left: -299px;
-    width: 550px;
+    top: -450px;
+    left: -550px;
     height: auto;
     pointer-events: none;
     z-index: 0;
@@ -38,15 +40,23 @@ body {
 
 .onda-izquierda-dorada {
     position: absolute;
-    top: 310px;
-    left: -150px;
-    width: 400px;
+    top: -1px;
+    left: -200px;
     height: auto;
     pointer-events: none;
     z-index: 0;
 }
 
-/* HERO SECTION */
+.onda-Derecha {
+    position: absolute;
+    top: -220px;
+    right: -650px;
+    height: auto;
+    pointer-events: none;
+    z-index: 0;
+    transform: rotate(180deg);
+}
+
 .hero-container {
     width: 90%;
     max-width: 1200px;
@@ -67,6 +77,7 @@ body {
     font-size: 6rem;
     color: var(--blue-medium);
     font-weight: 300;
+    margin-top: -150px;
     margin-bottom: -10px;
     margin-left: 40px;
 }
@@ -139,7 +150,6 @@ body {
     object-fit: contain;
 }
 
-/* IMAGEN Y DIAGONAL */
 .hero-image-wrapper {
     flex: 1;
     display: flex;
@@ -163,11 +173,9 @@ body {
     width: 100%;
     border-radius: 20px;
     object-fit: cover;
-    transform: translate(-50px, 20px);
+    transform: translate(-50px, -40px);
 }
 
-
-/* BARRA DE CONTACTO */
 .contact-bar {
     width: 85%;
     max-width: 1100px;
@@ -181,7 +189,7 @@ body {
     margin-bottom: 30px;
     position: relative;
     z-index: 10;
-    margin-top: -20px;
+    margin-top: -145px;
 }
 
 
@@ -202,6 +210,30 @@ body {
     justify-content: center;
 }
 
+.icono-llamar {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icono-ig {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icono-mg {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .contact-item span {
     font-size: 0.85rem;
     font-weight: 600;
@@ -214,9 +246,6 @@ body {
     background-color: #CBD5E1;
 }
 
-/* ==========================================================================
-   RESET Y VARIABLES GLOBALES
-   ========================================================================== */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -227,10 +256,6 @@ body {
     --paper-white: #ffffff;
     --transition-smooth: all 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
-/* ==========================================================================
-   ESCENARIO DEL COLLAGE (CANVAS PARA 9 FOTOS)
-   ========================================================================== */
 
 .collage-bg {
     position: absolute;
@@ -259,9 +284,7 @@ body {
     margin: 0;
     overflow: hidden;
 }
-/* ==========================================================================
-   TARJETA INDIVIDUAL DE FOTO (SOMBRA 3D)
-   ========================================================================== */
+
 .photo-item {
     position: absolute;
     cursor: pointer;
@@ -300,10 +323,7 @@ body {
     display: block;
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-/* ==========================================================================
-   DISTRIBUCIÓN Y BORDES RASGADOS DE LAS 9 FOTOS
-   ========================================================================== */
-/* Foto 1: Superior Izquierda */
+
 .photo-1 {
     left: 15%;
     top: 4%;
@@ -318,7 +338,7 @@ body {
             2% 89%, 0.2% 80%, 2% 71%, 0.5% 61%, 2.2% 51%, 0.5% 42%, 2% 32%, 0.5% 23%, 2.2% 13%
     );
 }
-/* Foto 2: Superior Centro */
+
 .photo-2 {
     left: 38%;
     top: 2%;
@@ -333,7 +353,7 @@ body {
             1.8% 87%, 0.2% 74%, 2% 61%, 0.5% 48%, 1.8% 35%, 0.2% 22%, 1.9% 10%
     );
 }
-/* Foto 9: Superior Derecha (NUEVA) */
+
 .photo-9 {
     left: 60%;
     top: 5%;
@@ -348,7 +368,7 @@ body {
             2% 87%, 0.4% 73%, 2.2% 59%, 0.5% 45%, 2% 31%, 0.5% 17%
     );
 }
-/* Foto 3: Centro Derecha */
+
 .photo-3 {
     left: 49%;
     top: 21%;
@@ -363,7 +383,7 @@ body {
             2% 89%, 0.2% 79%, 2% 68%, 0.5% 57%, 2% 46%, 0.5% 35%, 2% 24%, 0.5% 13%
     );
 }
-/* Foto 4: Centro Izquierda (Toldo) */
+
 .photo-4 {
     left: 9%;
     top: 32%;
@@ -378,7 +398,7 @@ body {
             4% 92%, 0.2% 85%, 4.5% 77%, 0.5% 70%, 4% 62%, 0% 54%, 4.2% 46%, 0.5% 38%, 4.5% 30%, 0.2% 22%, 4% 14%, 0.8% 7%
     );
 }
-/* Foto 5: Inferior Centro-Izquierda */
+
 .photo-5 {
     left: 26%;
     top: 48%;
@@ -393,7 +413,7 @@ body {
             2% 88%, 0.2% 76%, 2.2% 64%, 0.5% 52%, 2% 40%, 0.5% 28%, 2.2% 15%
     );
 }
-/* Foto 6: Inferior Centro */
+
 .photo-6 {
     left: 46%;
     top: 51%;
@@ -408,7 +428,7 @@ body {
             1.9% 86%, 0.2% 72%, 2% 58%, 0.5% 44%, 1.8% 30%, 0.3% 16%
     );
 }
-/* Foto 8: Inferior Izquierda (NUEVA) */
+
 .photo-8 {
     left: 12%;
     top: 61%;
@@ -423,7 +443,7 @@ body {
             2.5% 88%, 0.2% 75%, 2% 62%, 0.5% 49%, 2.5% 36%, 0.5% 23%, 2% 11%
     );
 }
-/* Foto 7: Inferior Derecha */
+
 .photo-7 {
     left: 58%;
     top: 57%;
@@ -438,9 +458,7 @@ body {
             2% 87%, 0.2% 74%, 2% 61%, 0.5% 48%, 2.2% 35%, 0.3% 21%
     );
 }
-/* ==========================================================================
-   INTERACTIVIDAD: HOVER 3D
-   ========================================================================== */
+
 .photo-item:hover {
     transform: scale(1.16) rotate(0deg) translateY(-12px) !important;
     z-index: 100 !important;
@@ -460,9 +478,7 @@ body {
             grayscale(18%);
     transform: scale(0.96) rotate(var(--rot));
 }
-/* ==========================================================================
-   MODAL LIGHTBOX
-   ========================================================================== */
+
 .lightbox-modal {
     position: fixed;
     inset: 0;
@@ -533,21 +549,35 @@ body {
     background: #f1f5f9;
 }
 
-
-
-
-
-/* Section Header */
 .services-header {
     text-align: center;
     margin-bottom: 40px;
+    position: relative;
+}
+
+.decoracion {
+    position: absolute;
+    top: -20px;
+    left: -210px;
+    width: 550px;
+    height: 550px;
+    z-index: 1;
+}
+
+.decoracion1 {
+    position: absolute;
+    top: 20px;
+    right: -50px;
+    width: 100px;
+    height: 130px;
+    z-index: 1;
 }
 
 .services-title {
     color: var(--navy);
     font-size: 3rem;
     font-weight: 800;
-    margin: 0;
+    margin: 20PX;
 }
 
 .divider {
@@ -561,7 +591,7 @@ body {
     align-items: center;
 }
 
-.divider .dot {
+.divider .doot {
     width: 8px;
     height: 8px;
     background-color: var(--navy);
@@ -577,7 +607,6 @@ body {
     margin-top: 14px;
 }
 
-/* Grid Layout */
 .cards-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -586,10 +615,8 @@ body {
     margin: 0 auto;
 }
 
-/* Card Style */
 .card {
-    background-color: var(--bg-card);
-    border-radius: var(--radius);
+
     padding: 12px;
     display: flex;
     flex-direction: column;
@@ -610,8 +637,6 @@ body {
     object-fit: cover;
 }
 
-
-/* Badges sobre la imagen */
 .badge {
     position: absolute;
     top: 10px;
@@ -627,16 +652,11 @@ body {
     background-color: var(--navy);
 }
 
-.badge.duration.green {
-    background-color: var(--teal-brand);
-}
 
 .badge.featured {
     right: 10px;
-    background-color: var(--teal-brand);
 }
 
-/* Card Body */
 .card-body {
     padding: 16px 10px 8px;
     text-align: center;
@@ -647,12 +667,12 @@ body {
 
 .category {
     font-size: 0.8rem;
-    color: var(--blue-brand);
+
     font-weight: 600;
 }
 
 .category.green {
-    color: var(--teal-brand);
+
 }
 
 .card-title {
@@ -663,8 +683,8 @@ body {
     line-height: 1.2;
 }
 
-.card-title.green {
-    color: var(--teal-brand);
+.card-title.teal{
+    color:#4f929b;
 }
 
 .description {
@@ -677,7 +697,6 @@ body {
 
 .price-label {
     font-size: 0.75rem;
-    color: var(--blue-brand);
 }
 
 .price {
@@ -687,11 +706,28 @@ body {
     margin-bottom: 12px;
 }
 
-.price.green {
-    color: var(--teal-brand);
+.price.teal {
+    color: #4f929b;
 }
 
-/* Lista de características con Checkmarks */
+.badge.duration.teal {
+    background-color: #4f929b;
+    color: #ffffff;
+}
+
+.badge.featured{
+    background-color: #4f929b;
+    color: #ffffff;
+}
+
+.features.teal li::before {
+    background-color: #4f929b
+}
+
+.btn.btn-secondary {
+    background-color: #4f929b;
+}
+
 .features {
     list-style: none;
     padding: 0;
@@ -726,11 +762,7 @@ body {
     justify-content: center;
 }
 
-.features.green li::before {
-    background-color: var(--teal-brand);
-}
 
-/* Botones */
 .btn {
     display: block;
     width: 100%;
@@ -749,8 +781,138 @@ body {
 }
 
 .btn-secondary {
-    background-color: var(--teal-brand);
     color: #fff;
+}
+
+
+.banner-container_baner {
+    margin: 90px 0 0 0;
+    display: flex;
+    width: 100vw;
+    max-width: 100%;
+    min-height: 350px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    color: var(--text-white);
+}
+
+
+.banner-side {
+    flex: 0 0 50%;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 3rem 2.5rem;
+}
+
+
+.left-side {
+    background-color: var(--blue-left);
+    justify-content: flex-start;
+}
+
+.content-1 {
+    z-index: 2;
+    max-width: 420px;
+    text-align: left;
+}
+
+.content-1 h2,
+.content-2 h2 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    padding-left: 60px;
+    padding-right: 60px;
+
+}
+
+.content-1 p,
+.content-2 p {
+    font-size: 1.15rem;
+    line-height: 1.35;
+    font-weight: 400;
+    opacity: 0.95;
+    padding-left: 60px;
+    padding-right: 60px;
+}
+
+
+.right-side {
+    background-color: var(--blue-right);
+    justify-content: flex-end;
+}
+
+.content-2 {
+    z-index: 2;
+    max-width: 420px;
+    text-align: right;
+}
+
+
+.circle {
+    position: absolute;
+    border: 8px solid var(--blue-left);
+    border-radius: 50%;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.circle-1 { width: 320px; height: 320px; }
+.circle-2 { width: 440px; height: 440px; }
+
+
+.person-img {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    height: 95%;
+    max-height: 400px;
+    object-fit: contain;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.Decoracion3 {
+    position: absolute;
+    top: 244px;
+    left: 0;
+    width: 190px;
+    height: auto;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.Decoracion4 {
+    position: absolute;
+    top: 0px;
+    bottom: 0;
+    right: 0;
+    width: 190px;
+    height: auto;
+    z-index: 4;
+    pointer-events: none;
+    transform: rotate(180deg);
+}
+
+.estrela-img {
+    position: absolute;
+    top: 50px;
+    right: 110px;
+    width: 200px;
+    height: auto;
+    max-width: 100%;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0.95;
 }
 
 
