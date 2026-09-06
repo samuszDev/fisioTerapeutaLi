@@ -8,6 +8,8 @@ public class PaginasController {
 
     @GetMapping("/service")
     public String verServicios() {
-        return "service"; // debe coincidir con el nombre del archivo en templates/
+        return "service";
     }
+
+
 }
