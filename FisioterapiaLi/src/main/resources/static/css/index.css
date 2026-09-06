@@ -839,6 +839,7 @@ body {
     opacity: 0.95;
     padding-left: 60px;
     padding-right: 60px;
+    color:var(--text-white);
 }
 
 
@@ -914,6 +915,3 @@ body {
     pointer-events: none;
     opacity: 0.95;
 }
-
-
-
