@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDao extends JpaRepository<UserEntity, Long> {
-    Optional<UserEntity> findByEmail(String email);
+    UserEntity findByEmail(String email);
     Optional<UserEntity> findByTelegramUserId(String telegramUserId);
     boolean existsByEmail(String email);
     List<UserEntity> findByRol(TipoUsuario rol);

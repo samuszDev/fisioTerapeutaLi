@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Fisioterapeuta Li · Clientes</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <img src="assets/logo-li.png" alt="Logo">
+        </div>
+
+        <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
+
+        <nav class="sidebar-nav">
+            <a class="nav-item"  href="../dashboard/dashboard.html"><img src="assets/dashboard.svg" alt="" aria-hidden="true"><span>Dashboard</span></a>
+            <a class="nav-item"  href="../agenda/agenda.html"><img src="assets/calendar.svg" alt="" aria-hidden="true"><span>Agenda y citas</span></a>
+            <a class="nav-item"  href="../clientes/clientes.html"><img src="assets/clients.svg" alt="" aria-hidden="true"><span>Clientes</span></a>
+            <a class="nav-item"  href="../servicios/servicios.html"><img src="assets/services.svg" alt="" aria-hidden="true"><span>Servicios</span></a>
+            <a class="nav-item"  href="../reportes/reportes.html"><img src="assets/reports.svg" alt="" aria-hidden="true"><span>Reportes</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span>Fisioterapeuta</span>
+            <span>Ciudad / sede</span>
+            <span>Horario de atención</span>
+        </div>
+    </aside>
+    <main class="main-content">
+        <header class="mobile-header">
+            <button id="menuButton" class="menu-button">☰</button>
+            <span>La Fisioterapeuta Li</span>
+        </header>
+        <section class="page" id="clientes">
+            <div class="page-header">
+                <div>
+                    <span class="eyebrow">GESTIÓN DE PACIENTES</span>
+                    <h1>Clientes</h1>
+                    <p>Consulta información básica y accede a la ficha.</p>
+                </div>
+
+                <button class="btn btn-gold" data-open-view="new-client">+ Crear cliente</button>
+            </div>
+
+            <div class="toolbar">
+                <div class="filter-placeholder"></div>
+                <button class="btn btn-outline">Filtrar</button>
+            </div>
+
+            <div class="panel">
+                <div class="table-container">
+                    <table class="wide-table">
+                        <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Documento</th>
+                            <th>Contacto</th>
+                            <th>EPS</th>
+                            <th>Referidos</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
+                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
+                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
+                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
+                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="../js/app.js"></script>
+</body>
+</html>

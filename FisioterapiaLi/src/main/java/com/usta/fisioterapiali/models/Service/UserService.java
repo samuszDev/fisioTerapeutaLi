@@ -12,7 +12,7 @@ public interface UserService {
     UserEntity save(UserEntity user);
     UserEntity update(UserEntity user);
     void deleteById(Long id);
-    Optional<UserEntity> findByEmail(String email);
+    UserEntity findByEmail(String email);
     List<UserEntity> findByRol(TipoUsuario rol);
     boolean existsByEmail(String email);
     Optional<UserEntity> findByDocumento(String documento);

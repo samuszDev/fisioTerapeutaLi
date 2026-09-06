@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Fisioterapeuta Li · Reportes</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="app">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <img src="../assets/logo-li.png" alt="Logo">
+        </div>
+
+        <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item" data-page="dashboard" data-href="../dashboard/dashboard.html"><img src="../assets/dashboard.svg" alt="" aria-hidden="true"><span>Dashboard</span></button>
+            <button class="nav-item" data-page="agenda" data-href="../agenda/agenda.html"><img src="../assets/calendar.svg" alt="" aria-hidden="true"><span>Agenda y citas</span></button>
+            <button class="nav-item" data-page="clientes" data-href="../clientes/clientes.html"><img src="../assets/clients.svg" alt="" aria-hidden="true"><span>Clientes</span></button>
+            <button class="nav-item" data-page="servicios" data-href="../servicios/servicios.html"><img src="../assets/services.svg" alt="" aria-hidden="true"><span>Servicios</span></button>
+            <button class="active nav-item" data-page="reportes" data-href="../reportes/reportes.html"><img src="../assets/reports.svg" alt="" aria-hidden="true"><span>Reportes</span></button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span>Fisioterapeuta</span>
+            <span>Ciudad / sede</span>
+            <span>Horario de atención</span>
+        </div>
+    </aside>
+    <main class="main-content">
+        <header class="mobile-header">
+            <button id="menuButton" class="menu-button">☰</button>
+            <span>La Fisioterapeuta Li</span>
+        </header>
+        <section class="page active" id="reportes">
+            <div class="page-header">
+                <div>
+                    <span class="eyebrow">VISIÓN ADMINISTRATIVA</span>
+                    <h1>Reportes e indicadores</h1>
+                    <p>Información para apoyar las decisiones.</p>
+                </div>
+
+                <button class="btn btn-gold">⇩ Exportar reporte</button>
+            </div>
+
+            <div class="report-stats">
+                <article class="report-stat"><strong></strong><span>Ingresos</span></article>
+                <article class="report-stat"><strong></strong><span>Citas atendidas</span></article>
+                <article class="report-stat"><strong></strong><span>Cancelaciones</span></article>
+                <article class="report-stat"><strong></strong><span>Pacientes nuevos</span></article>
+            </div>
+
+            <div class="reports-grid">
+                <article class="panel">
+                    <div class="panel-title">Servicios más agendados</div>
+                    <div class="chart-placeholder"></div>
+                </article>
+
+                <article class="panel">
+                    <div class="panel-title">Distribución por sede</div>
+                    <div class="chart-placeholder circular"></div>
+                </article>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-window">
+        <div class="modal-header">
+            <div>
+                <span class="eyebrow" id="modalEyebrow"></span>
+                <h2 id="modalTitle"></h2>
+            </div>
+            <button class="close-modal" id="closeModal" aria-label="Cerrar">×</button>
+        </div>
+
+        <div class="modal-content" id="modalContent"></div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="modalCancel">Cancelar</button>
+            <button class="btn btn-gold" id="modalFinish">Finalizado</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/app.js"></script>
+</body>
+</html>

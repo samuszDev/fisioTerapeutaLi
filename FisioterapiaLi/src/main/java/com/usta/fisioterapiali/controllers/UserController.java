@@ -1,75 +1,63 @@
 package com.usta.fisioterapiali.controllers;
 
 import com.usta.fisioterapiali.entities.UserEntity;
+import com.usta.fisioterapiali.enums.TipoUsuario;
 import com.usta.fisioterapiali.models.Service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import javax.validation.Valid;
 
-@RestController
-@RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "*")
+@Controller
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserService usuarioService;
 
-    @GetMapping
-    public ResponseEntity<List<UserEntity>> getAllUsers() {
-        List<UserEntity> users = userService.findAll();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    @GetMapping(value = "/register")
+    public String crearUsuario(Model model) {
+        model.addAttribute("usuario", new UserEntity());
+        model.addAttribute("title", "Register a new user");
+        return "register";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
-        UserEntity user = userService.findById(id);
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    @PostMapping("/register")
+    public String registro(@ModelAttribute("usuario") @Valid UserEntity usuario,
+                           BindingResult result,
+                           @RequestParam("confirmarClave") String confirmarClave,
+                           Model model, RedirectAttributes redirectAttributes,
+                           SessionStatus status) {
 
-    @PostMapping
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity user) {
-        UserEntity newUser = userService.save(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<UserEntity> updateUser(@PathVariable Long id, @RequestBody UserEntity userDetails) {
-        UserEntity existingUser = userService.findById(id);
-        if (existingUser == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (result.hasErrors()) {
+            model.addAttribute("title", "Register a new user");
+            return "register";
         }
 
-        // Actualización de todos los campos definidos en tu Entity
-        existingUser.setNombre(userDetails.getNombre());
-        existingUser.setClave(userDetails.getClave());
-        existingUser.setTelegramUserId(userDetails.getTelegramUserId());
-        existingUser.setRol(userDetails.getRol());
-        existingUser.setEmail(userDetails.getEmail());
-        existingUser.setDocumento(userDetails.getDocumento());
-        existingUser.setTelefono(userDetails.getTelefono());
-        existingUser.setFechaNacimiento(userDetails.getFechaNacimiento());
-        existingUser.setGenero(userDetails.getGenero());
-        existingUser.setContactoEmergencia(userDetails.getContactoEmergencia());
-        existingUser.setReferidoPor(userDetails.getReferidoPor());
-        existingUser.setContadorReferidos(userDetails.getContadorReferidos());
-
-        UserEntity updatedUser = userService.update(existingUser);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        UserEntity user = userService.findById(id);
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (!usuario.getClave().equals(confirmarClave)) {
+            result.rejectValue("clave", "error.usuario", "The passwords do not match.");
+            model.addAttribute("title", "Register a new User");
+            return "register";
         }
-        userService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        String pass = new BCryptPasswordEncoder().encode(usuario.getClave());
+        usuario.setClave(pass);
+
+        // Asignación correcta del rol usando el Enum TipoUsuario
+        usuario.setRol(TipoUsuario.CLIENTE);
+
+        usuarioService.save(usuario);
+        status.setComplete();
+        redirectAttributes.addFlashAttribute("success", "User registered successfully!");
+        return "redirect:/login";
     }
 }
