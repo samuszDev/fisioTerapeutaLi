@@ -28,9 +28,8 @@ body {
 
 .onda-izquierda {
     position: absolute;
-    top: -110px;
-    left: -299px;
-    width: 550px;
+    top: -450px;
+    left: -550px;
     height: auto;
     pointer-events: none;
     z-index: 0;
@@ -38,13 +37,25 @@ body {
 
 .onda-izquierda-dorada {
     position: absolute;
-    top: 310px;
-    left: -150px;
-    width: 400px;
+    top: -1px;
+    left: -200px;
+    width: px;
     height: auto;
     pointer-events: none;
     z-index: 0;
 }
+
+.onda-Derecha {
+    position: absolute;
+    top: -220px;
+    Right: -650px;
+    height: auto;
+    pointer-events: none;
+    z-index: 0;
+    transform: rotate(180deg);
+}
+
+
 
 /* HERO SECTION */
 .hero-container {
@@ -67,6 +78,7 @@ body {
     font-size: 6rem;
     color: var(--blue-medium);
     font-weight: 300;
+    margin-top: -150px;
     margin-bottom: -10px;
     margin-left: 40px;
 }
@@ -163,7 +175,7 @@ body {
     width: 100%;
     border-radius: 20px;
     object-fit: cover;
-    transform: translate(-50px, 20px);
+    transform: translate(-50px, -40px);
 }
 
 
@@ -181,7 +193,7 @@ body {
     margin-bottom: 30px;
     position: relative;
     z-index: 10;
-    margin-top: -20px;
+    margin-top: -145px;
 }
 
 
@@ -200,6 +212,30 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.icono-llamar {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icono-ig {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icono-mg {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .contact-item span {
@@ -541,13 +577,32 @@ body {
 .services-header {
     text-align: center;
     margin-bottom: 40px;
+    position: relative;
+}
+
+.decoracion {
+    position: absolute;
+    top: -20px;
+    left: -210px;
+    width: 550px;
+    height: 550px;
+    z-index: 1;
+}
+
+.decoracion1 {
+    position: absolute;
+    top: 20px;
+    Right: -50px;
+    width: 100px;
+    height: 130px;
+    z-index: 1;
 }
 
 .services-title {
     color: var(--navy);
     font-size: 3rem;
     font-weight: 800;
-    margin: 0;
+    margin: 20PX;
 }
 
 .divider {
@@ -561,7 +616,7 @@ body {
     align-items: center;
 }
 
-.divider .dot {
+.divider .doot {
     width: 8px;
     height: 8px;
     background-color: var(--navy);
@@ -663,6 +718,10 @@ body {
     line-height: 1.2;
 }
 
+.card-title.teal{
+    color:#4f929b;
+}
+
 .card-title.green {
     color: var(--teal-brand);
 }
@@ -689,6 +748,28 @@ body {
 
 .price.green {
     color: var(--teal-brand);
+}
+
+.price.teal {
+    color: #4f929b;
+}
+
+.badge.duration.teal {
+    background-color: #4f929b;
+    color: #ffffff;
+}
+
+.badge.featured{
+    background-color: #4f929b;
+    color: #ffffff;
+}
+
+.features.teal li::before {
+    background-color: #4f929b
+}
+
+.btn.btn-secondary {
+    background-color: #4f929b;
 }
 
 /* Lista de características con Checkmarks */

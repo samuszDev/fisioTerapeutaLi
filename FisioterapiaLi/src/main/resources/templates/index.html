@@ -18,6 +18,7 @@
 <body>
 <header th:replace="~{layout/layoutUser :: header('inicio')}"></header>
 <img th:src="@{/images/lineas_Azul.png}" alt="Ondas Azules" class="onda-izquierda">
+<img th:src="@{/images/lineas_Azul.png}" alt="Ondas Azules DERECHA" class="onda-Derecha">
 <img th:src="@{/images/lineas_Dorada.png}" alt="Ondas Doradas" class="onda-izquierda-dorada">
 
 <!-- SECCIÓN PRINCIPAL  -->
@@ -62,9 +63,7 @@
 <div class="contact-bar">
     <div class="contact-item">
         <div class="icon-circle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.27c1.12.44 2.33.68 3.58.68a1 1 0 011 1V20a1 1 0 01-1 1C10.61 21 3 13.39 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.24 2.46.68 3.58a1 1 0 01-.27 1.12l-2.29 2.29z"/>
-            </svg>
+            <img th:src="@{/images/llamar.png}" alt="Llamar" class="icono-llamar">
         </div>
         <span>+57 3113981422</span>
     </div>
@@ -73,9 +72,7 @@
 
     <div class="contact-item">
         <div class="icon-circle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-            </svg>
+            <img th:src="@{/images/correo-electronico.png}" alt="mg" class="icono-mg">
         </div>
         <span>lifisioterapeuta395@gmail.com</span>
     </div>
@@ -84,11 +81,9 @@
 
     <div class="contact-item">
         <div class="icon-circle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-            </svg>
+            <img th:src="@{/images/instagram.png}" alt="ig" class="icono-ig">
         </div>
-        <span>Carrera 10 No 26-91</span>
+        <span>@lafisioterapeutali</span>
     </div>
 </div>
 
@@ -205,7 +200,9 @@
 <section class="services-section">
     <!-- Encabezado -->
     <header class="services-header">
-        <h1 class="services-title">Servicios y Tarifas</h1>
+        <img th:src="@{/images/Decoracion.png}" alt="decoracion" class="decoracion">
+        <h1 class="services-title">SERVICIOS Y TARIFAS</h1>
+        <img th:src="@{/images/Decoracion1.png}" alt="decoracion1" class="decoracion1">
         <div class="divider">
             <span class="doot"></span>
         </div>
@@ -242,16 +239,16 @@
         <article class="card">
             <div class="card-image-wrapper">
                 <img th:src="@{/images/img2.jpg}" alt="Ejercicio" class="Prescripción de Ejercicio">
-                <span class="badge duration green">1 HORA</span>
+                <span class="badge duration teal">1 HORA</span>
                 <span class="badge featured">★ MÁS ELEGIDO</span>
             </div>
             <div class="card-body">
-                <span class="category green">Ejercicio</span>
-                <h2 class="card-title green">Prescripción de Ejercicio</h2>
+                <span class="category teal">Ejercicio</span>
+                <h2 class="card-title teal">Prescripción de Ejercicio</h2>
                 <p class="description">Planes personalizados según tus objetivos y necesidades.</p>
                 <span class="price-label">Desde</span>
-                <div class="price green">$60.000 COP</div>
-                <ul class="features green">
+                <div class="price teal">$60.000 COP</div>
+                <ul class="features teal">
                     <li>Plan totalmente personalizado</li>
                     <li>Seguimiento profesional</li>
                     <li>Sesiones de 1 hora</li>
