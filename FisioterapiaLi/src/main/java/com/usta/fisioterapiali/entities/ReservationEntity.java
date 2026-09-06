@@ -34,9 +34,11 @@ public class ReservationEntity implements Serializable {
     @Column(name="fecha_hora_fin", nullable = false)
     private LocalDateTime fechaFin;
 
-    @NotBlank
-    @Size(max = 20)
-    @Column(name="google_calendar_id", nullable = false, length = 20)
+    // El evento de Calendar se crea DESPUES de guardar la reserva,
+    // asi que empieza en null y n8n lo completa con PATCH.
+    // Los IDs de Google superan ampliamente los 20 caracteres.
+    @Size(max = 120)
+    @Column(name="google_calendar_id", nullable = true, length = 120)
     private String googleCalendarId;
 
     @Column(name="estado_reserva", nullable = false)
