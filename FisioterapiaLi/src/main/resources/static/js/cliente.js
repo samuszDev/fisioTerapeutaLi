@@ -55,6 +55,110 @@ if (typeof registerInternalViews === "function") {
                 </form>
             `
         },
-        "clinical-history": { /* se mantiene igual */ }
+
+        "clinical-history": {
+            eyebrow: "PERFIL 360",
+            title: "Historia clínica",
+            content: `
+                <div class="clinical-top">
+                    <div class="info-placeholder">
+                        <div></div>
+                        <span></span>
+                    </div>
+                    <div class="info-placeholder">
+                        <div></div>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="internal-section">
+                    <h3>Datos clínicos</h3>
+                    <div class="placeholder-line"></div>
+                    <div class="placeholder-line short"></div>
+                </div>
+
+                <div class="internal-section">
+                    <h3>Motivo principal</h3>
+                    <div class="placeholder-line"></div>
+                    <div class="placeholder-line short"></div>
+                </div>
+
+                <div class="internal-section">
+                    <h3>Valoración</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Tipo de dolor</label>
+                            <input type="text" name="tipoDolor">
+                        </div>
+                        <div class="form-field">
+                            <label>Tensión arterial</label>
+                            <input type="text" name="tensionArterial">
+                        </div>
+                        <div class="form-field">
+                            <label>Frecuencia cardíaca</label>
+                            <input type="text" name="frecuenciaCardiaca">
+                        </div>
+                        <div class="form-field">
+                            <label>Frecuencia respiratoria</label>
+                            <input type="text" name="frecuenciaRespiratoria">
+                        </div>
+                        <div class="form-field">
+                            <label>IMC</label>
+                            <input type="text" name="imc">
+                        </div>
+                        <div class="form-field">
+                            <label>EVA</label>
+                            <input type="text" name="eva">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="internal-section">
+                    <h3>Objetivo y evolución</h3>
+                    <div class="form-grid">
+                        <div class="form-field full">
+                            <label>Objetivo</label>
+                            <textarea rows="3" name="objetivo"></textarea>
+                        </div>
+                        <div class="form-field full">
+                            <label>Evolución / observaciones</label>
+                            <textarea rows="4" name="evolucion"></textarea>
+                        </div>
+                    </div>
+                </div>
+            `
+        }
     });
 }
+
+// Carga automática de la lista de pacientes al ingresar a la página
+document.addEventListener("DOMContentLoaded", () => {
+    const tableBody = document.querySelector(".wide-table tbody");
+
+    if (tableBody) {
+        fetch("/api/modal/pacientes")
+            .then(response => response.json())
+            .then(pacientes => {
+                if (!pacientes || pacientes.length === 0) return;
+
+                tableBody.innerHTML = ""; // Eliminar filas vacías iniciales
+
+                pacientes.forEach(p => {
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${p.nombre || 'Sin nombre'}</td>
+                            <td>${p.documento || 'N/A'}</td>
+                            <td>${p.telefono || 'N/A'}</td>
+                            <td>-</td>
+                            <td>${p.contadorReferidos !== undefined ? p.contadorReferidos : 0}</td>
+                            <td><span class="status">Activo</span></td>
+                            <td>
+                                <button class="table-action" data-open-view="clinical-history">Ver historial clínico</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error("Error al obtener la lista de pacientes:", error));
+    }
+});

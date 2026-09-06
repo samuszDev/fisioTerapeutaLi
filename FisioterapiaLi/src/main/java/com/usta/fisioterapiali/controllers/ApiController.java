@@ -24,7 +24,7 @@ public class ApiController {
 
     @GetMapping("/pacientes")
     public List<UserEntity> obtenerPacientes() {
-        return userDao.findAll();
+        return userDao.findByRol(TipoUsuario.CLIENTE);
     }
 
     @GetMapping("/servicios")
@@ -58,5 +58,7 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al guardar el paciente: " + e.getMessage());
         }
+
+
     }
 }
