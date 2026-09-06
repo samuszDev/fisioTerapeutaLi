@@ -1,7 +1,501 @@
-.video-fondo{
+.hero-section {
+    position: relative;
+    width: 100%;
+}
+
+.hero-video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+}
+
+.hero-video-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.video-fondo {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    margin-top: -120px;
+    position: relative;
+    z-index: 0;
+}
+
+.hero-content {
+    position: absolute;
+    top: 45%;
+    left: 10%;
+    transform: translateY(-50%);
+    z-index: 2;
+    max-width: 600px;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #0a2c5c;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.texto-blanco {
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: #0a2c5c;
+    margin-bottom: 30px;
+}
+
+.forma1 {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    z-index: 3;
+    width: 200px;
+}
+
+.forma2 {
+    position: absolute;
+    bottom: -1px;
+    right: 0;
+    z-index: 3;
+    width: 200px;
+}
+
+.contenedor {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+.titulo{
+    text-align: center;
+    margin-top: 40px;
+    color: #0a2c5c;
+    font-weight: 800;
+    font-size: 3rem
+}
+
+.subtitulo {
+    font-size: 0.72rem;
+    color: #5d6079;
+}
+.divisor {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    max-width: 700px;
+    margin: 5px auto;
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: #1c2b4a;
+    flex-shrink: 0;
+}
+
+.line {
+    flex: 1;
+    height: 2px;
+    background-color: #1c2b4a;
+}
+
+.loto {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+/* FILA DE DOS TARJETAS  */
+
+.fila-dos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+}
+
+.tarjeta {
+    border-radius: 22px;
+    padding: 28px 30px 32px;
+    position: relative;
+}
+
+.tarjeta-azul {
+    background: linear-gradient(160deg, #eaf2fb 0%, #dce9fa 100%);
+}
+
+.tarjeta-dorada {
+    background: linear-gradient(160deg, #dce9fa 0%, #ffebd6 100%);
+}
+
+.tarjeta-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 6px;
+}
+
+.numero {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2f6fb8;
+    background: #ffffff;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tarjeta-dorada .numero {
+    color: #e7ba45;
+}
+
+.titulo-grupo h2 {
+    font-size: 1.3rem;
+    line-height: 1.25;
+    margin: 4px 0 2px;
+    font-weight: 700;
+}
+
+.duracion {
+    font-size: 0.85rem;
+    color: #5c6a85;
+}
+
+.icono-linea {
+    width: 45px;
+    height: 45px;
+    margin: 4px 0 14px;
+}
+
+.icono-linea img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* precio destacado (tarjeta 1) */
+.destacado-precio {
+    background: rgba(255,255,255,0.6);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+}
+
+.etiqueta {
+    font-size: 0.85rem;
+    color: #4a5a78;
+    width: 100%;
+}
+
+.precio-caja {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.precio-grande {
+    background: #2f6fb8;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 8px 16px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.nota-promo {
+    font-size: 0.82rem;
+    color: #45557a;
+    max-width: 260px;
+}
+
+.subtitulo {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 10px 0 10px;
+}
+
+.subtitulo-nota {
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: #5c6a85;
+}
+
+/* listas de precios */
+.lista-precios {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.lista-precios li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(28,43,74,0.08);
+    font-size: 0.92rem;
+}
+
+.lista-precios li:last-child {
+    border-bottom: none;
+}
+
+.lista-precios strong {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.lista-precios em {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: #6b7690;
+    display: block;
+    text-align: right;
+}
+
+.lista-compacta li {
+    padding: 5px 0;
+    font-size: 0.85rem;
+}
+
+/* dos columnas dentro de la tarjeta morada */
+.dos-columnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    position: relative;
+}
+
+.dos-columnas::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    background: rgba(28,43,74,0.08);
+}
+
+.columna h4 {
+    font-size: 0.95rem;
+    margin: 0 0 10px;
+    font-weight: 700;
+}
+
+.col-nota {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: #5c6a85;
+}
+
+.grupal-item {
+    font-size: 0.88rem;
+    margin: 0 0 10px;
+    line-height: 1.5;
+}
+
+.precio-inline {
+    color: #e7ba45;
+    font-weight: 700;
+}
+
+.grupal-detalle {
+    font-size: 0.78rem;
+    color: #6b7690;
+}
+
+/* BLOQUES GRANDES  */
+
+.bloque {
+    border-radius: 26px;
+    padding: 30px 34px 36px;
+}
+
+.bloque-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.icono-header {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+}
+
+.bloque-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.grid-tres {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.grid-cuatro {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.sub-tarjeta {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.sub-tarjeta h4 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.chip {
+    display: inline-block;
+    background: #2f9e7e;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 5px 14px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.lista-simple {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lista-simple li {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #354260;
+}
+
+.sub-tarjeta-min h4 {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.duracion-mini {
+    display: block;
+    font-size: 0.78rem;
+    color: #6b7690;
+    margin-bottom: 12px;
+}
+
+.imagenFinal {
+    position: relative;
+    width: 100%;
+    margin-top: 10%;
+}
+
+.imagenFinal img {
+    width: 100%;
+    display: block;
+}
+
+.texto-encima {
+    position: absolute;
+    top: 50%;
+    left: 300px;
+    transform: translate(-50%, -50%);
+    text-align: justify;
+    hyphens: auto;
+    color: white;
+    max-width: 500px;
+    z-index: 2;
+}
+h2{
+    margin-bottom: 40px;
+}
+h2 span {
+    color: #02416d;
+    margin-left: 300px;
+}
+
+p {
+    color: black;
+}
+
+.imagenFinal2 {
+    position: absolute;
+    top: -33px;
+    right: 0;
+    height: 100%;
+    max-width: 45%;
+    z-index: 1;
+}
+
+.imgnota {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 900px) {
+    .fila-dos,
+    .grid-tres {
+        grid-template-columns: 1fr;
+    }
+    .grid-cuatro {
+        grid-template-columns: 1fr 1fr;
+    }
+    .dos-columnas {
+        grid-template-columns: 1fr;
+    }
+    .franja-final {
+        flex-direction: column;
+        text-align: center;
+        justify-content: center;
+    }
+    .valores {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 560px) {
+    .grid-cuatro {
+        grid-template-columns: 1fr;
+    }
 }
