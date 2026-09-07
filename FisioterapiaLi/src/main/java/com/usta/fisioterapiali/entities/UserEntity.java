@@ -73,6 +73,11 @@ public class UserEntity implements Serializable {
     @Column(name="contador_referidos", columnDefinition = "integer default 0")
     private Integer contadorReferidos = 0;
 
+    @NotBlank
+    @Size(max=60)
+    @Column(name="eps", nullable = true, length = 60)
+    private String eps;
+
     public UserEntity(){
 
     }

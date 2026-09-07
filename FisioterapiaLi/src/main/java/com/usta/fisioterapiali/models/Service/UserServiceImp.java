@@ -37,7 +37,18 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public UserEntity update(UserEntity user) {
-        return userDao.save(user);
+        UserEntity paciente = userDao.findById(user.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado."));
+
+        paciente.setNombre(user.getNombre());
+        paciente.setDocumento(user.getDocumento());
+        paciente.setTelefono(user.getTelefono());
+        paciente.setEmail(user.getEmail());
+        paciente.setEps(user.getEps());
+        paciente.setGenero(user.getGenero());
+        paciente.setContactoEmergencia(user.getContactoEmergencia());
+
+        return userDao.save(paciente);
     }
 
     @Override
@@ -51,7 +62,6 @@ public class UserServiceImp implements UserService {
     public UserEntity findByEmail(String email) {
         return userDao.findByEmail(email);
     }
-
 
     @Override
     @Transactional(readOnly = true)

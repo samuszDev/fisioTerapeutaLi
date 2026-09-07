@@ -61,9 +61,7 @@ if (typeof registerInternalViews === "function") {
                     </div>
                     <div class="form-field">
                         <label>Servicio</label>
-                        <select name="idServicio" id="editSelectServicio" required>
-                            <option value="">Cargando servicios...</option>
-                        </select>
+                        <input type="text" name="nombreServicio" id="editServicioNombre" readonly>
                     </div>
                     <div class="form-field">
                         <label>Sede</label>
@@ -112,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tableBody) {
         fetch("/api/modal/citas")
             .then(response => {
-                // ESTO ES CLAVE: Si el backend da error (ej. 405 o 500), no intenta leer JSON
                 if (!response.ok) {
                     throw new Error("Error del servidor: " + response.status);
                 }
@@ -127,23 +124,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 tableBody.innerHTML = ""; // Limpiar tabla
 
                 citas.forEach(cita => {
-                    // 1. Formatear la fechaInicio que viene desde Java (Ej: "2026-09-07T14:30:00")
                     let fechaHora = 'Sin definir';
                     if (cita.fechaInicio) {
                         fechaHora = cita.fechaInicio.replace('T', ' ').substring(0, 16);
                     }
 
-                    // 2. Extraer nombre del paciente
                     const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'N/A';
-
-                    // 3. Mapeo seguro del nombre del servicio (por si cambia en Java)
-                    const servicioNombre = cita.servicio ? (cita.servicio.nombre || cita.servicio.nombreService || cita.servicio.nombreServicio) : 'N/A';
-
-                    // 4. Transformar el booleano 'pagoConfirmado' a texto visible
+                    const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre || cita.servicio.nombreService) : 'N/A';
                     const textoPago = cita.pagoConfirmado ? 'Pagado' : 'Pendiente';
-
-                    // 5. Mostrar el estado de la cita
                     const estadoCita = cita.estadoCita || 'Confirmada';
+                    const idCita = cita.idReserva || cita.id;
+                    const fechaYMD = cita.fechaInicio ? cita.fechaInicio.substring(0, 10) : '';
+                    const horaHM = cita.fechaInicio ? cita.fechaInicio.substring(11, 16) : '';
 
                     tableBody.innerHTML += `
                         <tr>
@@ -154,7 +146,16 @@ document.addEventListener("DOMContentLoaded", () => {
                             <td>${textoPago}</td>
                             <td><span class="status">${estadoCita}</span></td>
                             <td>
-                                <button class="table-action" data-open-view="edit-appointment" data-id="${cita.idReserva || cita.id}">Editar</button>
+                                <button class="table-action btn-edit-cita" data-open-view="edit-appointment" 
+                                    data-id="${idCita}"
+                                    data-paciente="${pacienteNombre}"
+                                    data-servicio="${servicioNombre}"
+                                    data-sede="${cita.sede || 'Tunja'}"
+                                    data-fecha="${fechaYMD}"
+                                    data-hora="${horaHM}"
+                                    data-estado="${cita.estadoCita || 'CONFIRMADA'}"
+                                    data-pago="${cita.pagoConfirmado ? 'PAGADO' : 'PENDIENTE'}">Editar</button>
+                                <button class="table-action btn-delete-cita" data-id="${idCita}" style="color: #d9534f; margin-left: 6px;">Eliminar</button>
                             </td>
                         </tr>
                     `;
@@ -164,5 +165,63 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error al obtener la lista de citas:", error);
                 tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>Error al cargar las citas. Verifica que el servidor esté encendido.</td></tr>";
             });
+    }
+});
+
+// Listener global para el botón de editar cita (cargar datos en el formulario)
+document.addEventListener("click", event => {
+    if (event.target.classList.contains("btn-edit-cita")) {
+        const btn = event.target;
+        setTimeout(() => {
+            const idInput = document.getElementById("editIdReserva");
+            if (idInput) idInput.value = btn.dataset.id;
+
+            const pacienteInput = document.getElementById("editPacienteNombre");
+            if (pacienteInput) pacienteInput.value = btn.dataset.paciente;
+
+            const servicioInput = document.getElementById("editServicioNombre");
+            if (servicioInput) servicioInput.value = btn.dataset.servicio;
+
+            const sedeSelect = document.querySelector("#editAppointmentForm [name='sede']");
+            if (sedeSelect) sedeSelect.value = btn.dataset.sede;
+
+            const fechaInput = document.querySelector("#editAppointmentForm [name='fecha']");
+            if (fechaInput) fechaInput.value = btn.dataset.fecha;
+
+            const horaInput = document.querySelector("#editAppointmentForm [name='hora']");
+            if (horaInput) horaInput.value = btn.dataset.hora;
+
+            const estadoSelect = document.querySelector("#editAppointmentForm [name='estado']");
+            if (estadoSelect) estadoSelect.value = btn.dataset.estado;
+
+            const pagoSelect = document.querySelector("#editAppointmentForm [name='estadoPago']");
+            if (pagoSelect) pagoSelect.value = btn.dataset.pago;
+        }, 50);
+    }
+});
+
+// Listener global para eliminar citas desde la tabla
+document.addEventListener("click", event => {
+    if (event.target.classList.contains("btn-delete-cita")) {
+        const idCita = event.target.dataset.id;
+
+        if (confirm("¿Estás seguro de que deseas eliminar esta cita de la agenda?")) {
+            fetch(`/api/modal/citas/${idCita}`, {
+                method: "DELETE"
+            })
+                .then(async response => {
+                    if (response.ok) {
+                        alert("¡Cita eliminada correctamente!");
+                        window.location.reload();
+                    } else {
+                        const errorMsg = await response.text();
+                        alert("Error al eliminar: " + errorMsg);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error de red al eliminar cita:", error);
+                    alert("Error al conectar con el servidor.");
+                });
+        }
     }
 });

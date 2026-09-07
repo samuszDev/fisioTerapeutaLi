@@ -54,7 +54,7 @@ function openInternalView(viewName) {
     modalTitle.textContent = view.title;
     modalContent.innerHTML = view.content;
 
-    // Configuración específica si se abre la modal de CREAR CLIENTE
+    // 1. CREAR CLIENTE
     if (viewName === "new-client") {
         const finishBtn = document.getElementById("modalFinish");
 
@@ -93,10 +93,43 @@ function openInternalView(viewName) {
         }
     }
 
-    // Configuración específica si se abre la modal de NUEVA CITA
-    if (viewName === "new-appointment") {
+    // 2. EDITAR CLIENTE
+    if (viewName === "edit-client") {
+        const finishBtn = document.getElementById("modalFinish");
+        if (finishBtn) {
+            const newFinishBtn = finishBtn.cloneNode(true);
+            finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
 
-        // 1. Cargar Pacientes en el select
+            newFinishBtn.addEventListener("click", () => {
+                const form = document.getElementById("editClientForm");
+                if (!form) return;
+
+                const idUsuario = document.getElementById("editIdUsuario").value;
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                fetch(`/api/modal/pacientes/${idUsuario}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Cliente actualizado correctamente!");
+                            closeInternalView();
+                            window.location.reload();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error: " + errorMsg);
+                        }
+                    })
+                    .catch(err => console.error("Error en petición PUT:", err));
+            });
+        }
+    }
+
+    // 3. NUEVA CITA / RESERVA
+    if (viewName === "new-appointment") {
         fetch("/api/modal/pacientes")
             .then(res => res.json())
             .then(pacientes => {
@@ -110,7 +143,6 @@ function openInternalView(viewName) {
                 });
             }).catch(err => console.error("Error al cargar pacientes", err));
 
-        // 2. Cargar Servicios en el select
         fetch("/api/modal/servicios")
             .then(res => res.json())
             .then(servicios => {
@@ -119,11 +151,12 @@ function openInternalView(viewName) {
 
                 selectS.innerHTML = '<option value="">Seleccionar servicio...</option>';
                 servicios.forEach(s => {
-                    selectS.innerHTML += `<option value="${s.idServicio}">${s.nombreS}</option>`;
+                    const nombreReal = s.nombreS || s.nombre || 'Servicio sin nombre';
+                    const idReal = s.idServicio || s.id || '';
+                    selectS.innerHTML += `<option value="${idReal}">${nombreReal}</option>`;
                 });
             }).catch(err => console.error("Error al cargar servicios", err));
 
-        // 3. Listener para guardar la cita
         const finishBtn = document.getElementById("modalFinish");
         if (finishBtn) {
             const newFinishBtn = finishBtn.cloneNode(true);
@@ -140,8 +173,6 @@ function openInternalView(viewName) {
 
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
-
-                console.log("Enviando cita al servidor:", data);
 
                 fetch("/api/modal/citas", {
                     method: "POST",
@@ -161,6 +192,49 @@ function openInternalView(viewName) {
                     .catch(error => {
                         console.error("Error de red:", error);
                         alert("Error al conectar con el backend.");
+                    });
+            });
+        }
+    }
+
+    // 4. NUEVO SERVICIO
+    if (viewName === "new-service") {
+        const finishBtn = document.getElementById("modalFinish");
+
+        if (finishBtn) {
+            const newFinishBtn = finishBtn.cloneNode(true);
+            finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
+
+            newFinishBtn.addEventListener("click", () => {
+                const form = document.getElementById("newServiceForm");
+                if (!form) return;
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                fetch("/api/modal/servicios", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Servicio creado correctamente!");
+                            closeInternalView();
+                            window.location.reload();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error del servidor: " + errorMsg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error de red:", error);
+                        alert("Error al intentar conectar con el backend.");
                     });
             });
         }
@@ -197,7 +271,6 @@ if (modalCancel) {
     modalCancel.addEventListener("click", closeInternalView);
 }
 
-// Este evento funciona como fallback para botones que no tienen lógica específica (clonada)
 if (modalFinish) {
     modalFinish.addEventListener("click", closeInternalView);
 }

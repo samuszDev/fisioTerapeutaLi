@@ -31,7 +31,6 @@ public class ApiController {
 
     // --- MÉTODOS PARA CITAS / AGENDA ---
 
-    // Este método evita el error 405 de lectura
     @GetMapping("/citas")
     public ResponseEntity<?> obtenerCitas() {
         try {
@@ -43,8 +42,21 @@ public class ApiController {
                     .body("Error al consultar citas: " + e.getMessage());
         }
     }
+    @DeleteMapping("/citas/{id}")
+    public ResponseEntity<?> eliminarCita(@PathVariable Long id) {
+        try {
+            if (!reservationDao.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
+            }
+            reservationDao.deleteById(id);
+            return ResponseEntity.ok("Cita eliminada correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar la cita: " + e.getMessage());
+        }
+    }
 
-    // Este método guarda la cita
     @PostMapping("/citas")
     public ResponseEntity<?> guardarCita(@RequestBody Map<String, String> payload) {
         try {
@@ -62,7 +74,6 @@ public class ApiController {
 
             nuevaCita.setSede(payload.get("sede"));
             nuevaCita.setEstadoCita("CONFIRMADA");
-
             nuevaCita.setGoogleCalendarId("N/A");
 
             String estadoPagoStr = payload.get("estadoPago");
@@ -94,6 +105,38 @@ public class ApiController {
         return serviceDao.findAll();
     }
 
+    @PostMapping("/servicios")
+    public ResponseEntity<?> guardarServicio(@RequestBody Map<String, String> payload) {
+        try {
+            ServiceEntity servicio = new ServiceEntity();
+
+            String nombre = payload.get("nombreService") != null ? payload.get("nombreService") : payload.get("nombreS");
+            servicio.setNombreS(nombre);
+
+            if (payload.get("precio") != null && !payload.get("precio").isEmpty()) {
+                servicio.setPrecioIndividual(Double.parseDouble(payload.get("precio")));
+            }
+
+            String duracionStr = payload.get("duracion");
+            if (duracionStr != null && !duracionStr.isEmpty()) {
+                String soloNumeros = duracionStr.replaceAll("[^0-9]", "");
+                servicio.setDuracionS(soloNumeros.isEmpty() ? 30 : Integer.parseInt(soloNumeros));
+            } else {
+                servicio.setDuracionS(30);
+            }
+
+            String estadoStr = payload.get("estado");
+            servicio.setEstadoS(estadoStr == null || "ACTIVO".equalsIgnoreCase(estadoStr));
+
+            ServiceEntity nuevoServicio = serviceDao.save(servicio);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al guardar el servicio: " + e.getMessage());
+        }
+    }
     // --- MÉTODOS PARA PACIENTES ---
 
     @GetMapping("/pacientes")
@@ -122,6 +165,47 @@ public class ApiController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al procesar la solicitud: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/pacientes/{id}")
+    public ResponseEntity<?> actualizarPaciente(@PathVariable Long id, @RequestBody UserEntity clienteActualizado) {
+        try {
+            Optional<UserEntity> pacienteOpt = userDao.findById(id);
+            if (pacienteOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado.");
+            }
+
+            UserEntity paciente = pacienteOpt.get();
+            paciente.setNombre(clienteActualizado.getNombre());
+            paciente.setDocumento(clienteActualizado.getDocumento());
+            paciente.setTelefono(clienteActualizado.getTelefono());
+            paciente.setEmail(clienteActualizado.getEmail());
+            paciente.setEps(clienteActualizado.getEps());
+            paciente.setGenero(clienteActualizado.getGenero());
+            paciente.setContactoEmergencia(clienteActualizado.getContactoEmergencia());
+
+            userDao.save(paciente);
+            return ResponseEntity.ok("Paciente actualizado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar el paciente: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/pacientes/{id}")
+    public ResponseEntity<?> eliminarPaciente(@PathVariable Long id) {
+        try {
+            if (!userDao.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado.");
+            }
+            userDao.deleteById(id);
+            return ResponseEntity.ok("Paciente eliminado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el paciente: " + e.getMessage());
         }
     }
 }
