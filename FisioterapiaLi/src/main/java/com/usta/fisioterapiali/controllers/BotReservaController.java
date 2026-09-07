@@ -292,9 +292,38 @@ public class BotReservaController {
         nuevo.setTelefono(req.getTelefono());
         nuevo.setDocumento(req.getDocumento());
         nuevo.setRol(TipoUsuario.CLIENTE);
-        nuevo.setTelegramUserId(req.getTelegramUserId());
+        //nuevo.setTelegramUserId(req.getTelegramUserId());
         // Clave aleatoria: el paciente creado desde Telegram no inicia sesión todavía
         nuevo.setClave(passwordEncoder.encode(UUID.randomUUID().toString()));
         return userDao.save(nuevo);
+    }
+
+    /** Identifica al usuario de Telegram y devuelve su rol. */
+    @GetMapping("/usuario/{telegramUserId}")
+    public ResponseEntity<java.util.Map<String, Object>> identificarUsuario(
+            @PathVariable String telegramUserId) {
+
+        java.util.Map<String, Object> r = new java.util.HashMap<>();
+        List<UserEntity> encontrados = userDao.findAllByTelegramUserId(telegramUserId);
+
+        if (encontrados.isEmpty()) {
+            r.put("existe", false);
+            r.put("rol", "CLIENTE");
+            r.put("nombre", null);
+            r.put("idUsuario", null);
+            return ResponseEntity.ok(r);
+        }
+
+        // Si hay varios registros con el mismo Telegram, gana el de mayor privilegio
+        UserEntity u = encontrados.stream()
+                .filter(x -> x.getRol() == TipoUsuario.ADMIN || x.getRol() == TipoUsuario.FISIO)
+                .findFirst()
+                .orElse(encontrados.get(0));
+
+        r.put("existe", true);
+        r.put("rol", u.getRol().name());
+        r.put("nombre", u.getNombre());
+        r.put("idUsuario", u.getIdUsuario());
+        return ResponseEntity.ok(r);
     }
 }
