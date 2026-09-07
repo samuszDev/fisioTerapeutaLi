@@ -5,46 +5,57 @@ if (typeof registerInternalViews === "function") {
             eyebrow: "NUEVA RESERVA",
             title: "Agendar cita",
             content: `
-                <form class="form-grid" id="newAppointmentForm">
-                    <div class="form-field">
-                        <label>Paciente</label>
-                        <select name="idUsuario" id="selectPaciente" required>
-                            <option value="">Cargando pacientes...</option>
-                        </select>
+                <form id="newAppointmentForm">
+                    <div class="internal-section">
+                        <h3>Datos de la cita</h3>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Paciente</label>
+                                <select name="idUsuario" id="selectPaciente" required>
+                                    <option value="">Cargando pacientes...</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label>Servicio</label>
+                                <select name="idServicio" id="selectServicio" required>
+                                    <option value="">Cargando servicios...</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label>Fecha</label>
+                                <input type="date" name="fecha" id="appointmentDate" placeholder="dd/mm/aaaa" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Hora</label>
+                                <input type="time" name="hora" placeholder="hh:mm" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Sede</label>
+                                <select name="sede" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Tunja">Sede Tunja</option>
+                                    <option value="Turmequé">Sede Turmequé</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label>Estado de pago</label>
+                                <select name="estadoPago" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="PENDIENTE">Pendiente</option>
+                                    <option value="PAGADO">Pagado</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-field">
-                        <label>Servicio</label>
-                        <select name="idServicio" id="selectServicio" required>
-                            <option value="">Cargando servicios...</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label>Fecha</label>
-                        <input type="date" name="fecha" id="appointmentDate" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Hora</label>
-                        <input type="time" name="hora" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Sede</label>
-                        <select name="sede" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="Tunja">Sede Tunja</option>
-                            <option value="Turmequé">Sede Turmequé</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label>Estado de pago</label>
-                        <select name="estadoPago" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="PENDIENTE">Pendiente</option>
-                            <option value="PAGADO">Pagado</option>
-                        </select>
-                    </div>
-                    <div class="form-field full">
-                        <label>Observaciones</label>
-                        <textarea name="observaciones" rows="4" placeholder="Detalles adicionales o notas de la cita"></textarea>
+
+                    <div class="internal-section">
+                        <h3>Notas</h3>
+                        <div class="form-grid">
+                            <div class="form-field full">
+                                <label>Observaciones</label>
+                                <textarea name="observaciones" rows="4" placeholder="Detalles adicionales o notas de la cita"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </form>
             `
@@ -54,48 +65,65 @@ if (typeof registerInternalViews === "function") {
             eyebrow: "EDICIÓN DE RESERVA",
             title: "Modificar cita",
             content: `
-                <form class="form-grid" id="editAppointmentForm">
-                    <div class="form-field">
-                        <label>Paciente</label>
-                        <input type="text" name="nombrePaciente" id="editPacienteNombre" readonly>
+                <form id="editAppointmentForm">
+                    <div class="internal-section">
+                        <h3>Cita seleccionada</h3>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Paciente</label>
+                                <input type="text" name="nombrePaciente" id="editPacienteNombre" readonly>
+                            </div>
+                            <div class="form-field">
+                                <label>Servicio</label>
+                                <input type="text" name="nombreServicio" id="editServicioNombre" readonly>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-field">
-                        <label>Servicio</label>
-                        <input type="text" name="nombreServicio" id="editServicioNombre" readonly>
+
+                    <div class="internal-section">
+                        <h3>Actualizar detalles</h3>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Sede</label>
+                                <select name="sede" required>
+                                    <option value="Tunja">Sede Tunja</option>
+                                    <option value="Turmequé">Sede Turmequé</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label>Nueva fecha</label>
+                                <input type="date" name="fecha" placeholder="dd/mm/aaaa" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Nueva hora</label>
+                                <input type="time" name="hora" placeholder="hh:mm" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Estado</label>
+                                <select name="estado" required>
+                                    <option value="PENDIENTE">Pendiente</option>
+                                    <option value="CONFIRMADA">Confirmada</option>
+                                    <option value="CANCELADA">Cancelada</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label>Pago</label>
+                                <select name="estadoPago" required>
+                                    <option value="PENDIENTE">Pendiente</option>
+                                    <option value="PAGADO">Pagado</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-field">
-                        <label>Sede</label>
-                        <select name="sede" required>
-                            <option value="Tunja">Sede Tunja</option>
-                            <option value="Turmequé">Sede Turmequé</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label>Nueva fecha</label>
-                        <input type="date" name="fecha" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Nueva hora</label>
-                        <input type="time" name="hora" required>
-                    </div>
-                    <div class="form-field">
-                        <label>Estado</label>
-                        <select name="estado" required>
-                            <option value="PENDIENTE">Pendiente</option>
-                            <option value="CONFIRMADA">Confirmada</option>
-                            <option value="CANCELADA">Cancelada</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label>Pago</label>
-                        <select name="estadoPago" required>
-                            <option value="PENDIENTE">Pendiente</option>
-                            <option value="PAGADO">Pagado</option>
-                        </select>
-                    </div>
-                    <div class="form-field full">
-                        <label>Motivo del cambio</label>
-                        <textarea name="motivoCambio" rows="3" placeholder="Razón del cambio de horario o estado"></textarea>
+
+                    <div class="internal-section">
+                        <h3>Motivo del cambio</h3>
+                        <div class="form-grid">
+                            <div class="form-field full">
+                                <label>Motivo del cambio</label>
+                                <textarea name="motivoCambio" rows="3" placeholder="Razón del cambio de horario o estado"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </form>
             `

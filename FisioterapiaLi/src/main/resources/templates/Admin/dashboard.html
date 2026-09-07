@@ -4,47 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Fisioterapeuta Li · Dashboard</title>
-    <!-- Se ajustó 'styles.css' a 'Admin.css' según la estructura de tu proyecto -->
-    <link rel="stylesheet" href="../../static/css/Admin.css" th:href="@{/css/Admin.css}">
+    <link rel="stylesheet" th:href="@{/css/Admin.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
 </head>
 <body>
 
 <div class="app">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <img src="../../static/css/assets/logo-li.png" th:src="@{/css/assets/logo-li.png}" alt="Logo">
+            <img th:src="@{/images/Logo.png}" alt="Logo Fisioterapeuta Li">
         </div>
 
         <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
             <!-- Se reemplazaron los <button> por <a> para enrutamiento nativo con Spring Boot -->
-            <a class="nav-item active" href="dashboard.html" th:href="@{/admin/dashboard}">
-                <img src="../../static/css/assets/dashboard.svg" th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
+            <a class="nav-item active" th:href="@{/admin/dashboard}">
+                <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
                 <span>Dashboard</span>
             </a>
-            <a class="nav-item" href="agenda_citas.html" th:href="@{/admin/schedule}">
-                <img src="../../static/css/assets/calendar.svg" th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/schedule}">
+                <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                 <span>Agenda y citas</span>
             </a>
-            <a class="nav-item" href="clientes.html" th:href="@{/admin/clients}">
-                <img src="../../static/css/assets/clients.svg" th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/clients}">
+                <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                 <span>Clientes</span>
             </a>
-            <a class="nav-item" href="servicios.html" th:href="@{/admin/services}">
-                <img src="../../static/css/assets/services.svg" th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/services}">
+                <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                 <span>Servicios</span>
             </a>
-            <a class="nav-item" href="reportes.html" th:href="@{/admin/reports}">
-                <img src="../../static/css/assets/reports.svg" th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/reports}">
+                <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                 <span>Reportes</span>
             </a>
         </nav>
 
         <div class="sidebar-footer">
-            <span>Fisioterapeuta</span>
-            <span>Ciudad / sede</span>
-            <span>Horario de atención</span>
+            <span>Lina Murillo (Fisioterapeuta)</span>
+            <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
+            <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
         </div>
     </aside>
     <main class="main-content">
@@ -69,27 +69,39 @@
 
             <div class="stats-grid">
                 <article class="stat-card">
-                    <div class="stat-value"></div>
+                    <div class="stat-icon navy">
+                        <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+                    </div>
+                    <div class="stat-value">8</div>
                     <div class="stat-label">Citas de hoy</div>
-                    <div class="stat-pill"></div>
+                    <span class="stat-pill">+2 vs. ayer</span>
                 </article>
 
                 <article class="stat-card">
-                    <div class="stat-value"></div>
+                    <div class="stat-icon gold">
+                        <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+                    </div>
+                    <div class="stat-value">132</div>
                     <div class="stat-label">Pacientes activos</div>
-                    <div class="stat-pill"></div>
+                    <span class="stat-pill">+12 este mes</span>
                 </article>
 
                 <article class="stat-card">
-                    <div class="stat-value"></div>
+                    <div class="stat-icon navy">
+                        <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+                    </div>
+                    <div class="stat-value">3</div>
                     <div class="stat-label">Pendientes de pago</div>
-                    <div class="stat-pill"></div>
+                    <span class="stat-pill warning">Requiere seguimiento</span>
                 </article>
 
                 <article class="stat-card">
-                    <div class="stat-value"></div>
+                    <div class="stat-icon gold">
+                        <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+                    </div>
+                    <div class="stat-value">27</div>
                     <div class="stat-label">Referidos completados</div>
-                    <div class="stat-pill"></div>
+                    <span class="stat-pill">Meta mensual: 30</span>
                 </article>
             </div>
 
@@ -109,16 +121,20 @@
                             </thead>
                             <tbody>
                             <tr>
-                                <td></td><td></td><td></td><td><span class="status"></span></td>
+                                <td>8:00 am</td><td>Laura Gómez</td><td>Fisioterapia general</td>
+                                <td><span class="status confirmed">Confirmada</span></td>
                             </tr>
                             <tr>
-                                <td></td><td></td><td></td><td><span class="status"></span></td>
+                                <td>9:30 am</td><td>Andrés Ruiz</td><td>Terapia deportiva</td>
+                                <td><span class="status confirmed">Confirmada</span></td>
                             </tr>
                             <tr>
-                                <td></td><td></td><td></td><td><span class="status"></span></td>
+                                <td>11:00 am</td><td>María Torres</td><td>Rehabilitación postquirúrgica</td>
+                                <td><span class="status pending">Pendiente</span></td>
                             </tr>
                             <tr>
-                                <td></td><td></td><td></td><td><span class="status"></span></td>
+                                <td>2:15 pm</td><td>Carlos Peña</td><td>Masoterapia</td>
+                                <td><span class="status cancelled">Cancelada</span></td>
                             </tr>
                             </tbody>
                         </table>
@@ -129,23 +145,23 @@
                     <div class="panel-title">Actividad rápida</div>
 
                     <div class="progress-item">
-                        <div class="progress-label"><span></span><b></b></div>
-                        <div class="progress-track"><i></i></div>
+                        <div class="progress-label"><span>Fisioterapia general</span><b>72%</b></div>
+                        <div class="progress-track"><i style="width: 72%"></i></div>
                     </div>
 
                     <div class="progress-item">
-                        <div class="progress-label"><span></span><b></b></div>
-                        <div class="progress-track"><i></i></div>
+                        <div class="progress-label"><span>Terapia deportiva</span><b>54%</b></div>
+                        <div class="progress-track"><i style="width: 54%"></i></div>
                     </div>
 
                     <div class="progress-item">
-                        <div class="progress-label"><span></span><b></b></div>
-                        <div class="progress-track"><i></i></div>
+                        <div class="progress-label"><span>Rehabilitación postquirúrgica</span><b>38%</b></div>
+                        <div class="progress-track"><i style="width: 38%"></i></div>
                     </div>
 
                     <div class="reminder-box">
                         <strong>Recordatorio</strong>
-                        <p></p>
+                        <p>Confirmar el pago pendiente de Carlos Peña antes del viernes.</p>
                     </div>
                 </article>
             </div>

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Fisioterapeuta Li · Reportes</title>
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
     <!-- CORRECCIÓN: Ruta de Thymeleaf apuntando a Admin.css -->
     <link rel="stylesheet" th:href="@{/css/Admin.css}">
 </head>
@@ -12,8 +15,7 @@
 <div class="app">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <!-- CORRECCIÓN: Ruta de Thymeleaf para el logo -->
-            <img th:src="@{/css/assets/logo-li.png}" alt="Logo">
+            <img th:src="@{/images/Logo.png}" alt="Logo Fisioterapeuta Li">
         </div>
 
         <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
@@ -62,28 +64,96 @@
                 <div>
                     <span class="eyebrow">VISIÓN ADMINISTRATIVA</span>
                     <h1>Reportes e indicadores</h1>
-                    <p>Información para apoyar las decisiones.</p>
+                    <p>Información para apoyar las decisiones de <span class="cursive-accent">Lina Murillo</span>.</p>
                 </div>
 
                 <button class="btn btn-gold">⇩ Exportar reporte</button>
             </div>
 
             <div class="report-stats">
-                <article class="report-stat"><strong></strong><span>Ingresos</span></article>
-                <article class="report-stat"><strong></strong><span>Citas atendidas</span></article>
-                <article class="report-stat"><strong></strong><span>Cancelaciones</span></article>
-                <article class="report-stat"><strong></strong><span>Pacientes nuevos</span></article>
+                <article class="report-stat">
+                    <div class="stat-icon navy">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 16V9M10 16V5M16 16v-3"/>
+                        </svg>
+                    </div>
+                    <strong>$12.450.000</strong>
+                    <span>Ingresos del mes</span>
+                </article>
+                <article class="report-stat">
+                    <div class="stat-icon gold">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
+                        </svg>
+                    </div>
+                    <strong>184</strong>
+                    <span>Citas atendidas</span>
+                </article>
+                <article class="report-stat">
+                    <div class="stat-icon navy">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
+                        </svg>
+                    </div>
+                    <strong>12</strong>
+                    <span>Cancelaciones</span>
+                </article>
+                <article class="report-stat">
+                    <div class="stat-icon gold">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="10" cy="7" r="3"/><path d="M4 17c.5-3 2.4-4.5 6-4.5s5.5 1.5 6 4.5"/>
+                        </svg>
+                    </div>
+                    <strong>27</strong>
+                    <span>Pacientes nuevos</span>
+                </article>
             </div>
 
             <div class="reports-grid">
                 <article class="panel">
                     <div class="panel-title">Servicios más agendados</div>
-                    <div class="chart-placeholder"></div>
+                    <div class="chart-placeholder">
+                        <div class="bar-chart">
+                            <div class="bar-row">
+                                <div class="bar-label"><span>Sesión de Rehabilitación / Terapia Física</span><b>68%</b></div>
+                                <div class="bar-track"><i style="width: 68%"></i></div>
+                            </div>
+                            <div class="bar-row">
+                                <div class="bar-label"><span>Masoterapia</span><b>52%</b></div>
+                                <div class="bar-track"><i style="width: 52%"></i></div>
+                            </div>
+                            <div class="bar-row">
+                                <div class="bar-label"><span>Terapia deportiva</span><b>41%</b></div>
+                                <div class="bar-track"><i style="width: 41%"></i></div>
+                            </div>
+                            <div class="bar-row">
+                                <div class="bar-label"><span>Rehabilitación postquirúrgica</span><b>33%</b></div>
+                                <div class="bar-track"><i style="width: 33%"></i></div>
+                            </div>
+                            <div class="bar-row">
+                                <div class="bar-label"><span>Fisioterapia general</span><b>26%</b></div>
+                                <div class="bar-track"><i style="width: 26%"></i></div>
+                            </div>
+                        </div>
+                    </div>
                 </article>
 
                 <article class="panel">
                     <div class="panel-title">Distribución por sede</div>
-                    <div class="chart-placeholder circular"></div>
+                    <div class="chart-placeholder circular">
+                        <div class="donut-wrap">
+                            <div class="donut" style="background: conic-gradient(var(--navy) 0% 62%, #f3da90 62% 100%);">
+                                <div class="donut-hole">
+                                    <strong>184</strong>
+                                    <span>citas</span>
+                                </div>
+                            </div>
+                            <div class="donut-legend">
+                                <div class="legend-item"><span class="legend-dot navy"></span>Sede Tunja <b>62%</b></div>
+                                <div class="legend-item"><span class="legend-dot gold"></span>Sede Turmequé <b>38%</b></div>
+                            </div>
+                        </div>
+                    </div>
                 </article>
             </div>
         </section>

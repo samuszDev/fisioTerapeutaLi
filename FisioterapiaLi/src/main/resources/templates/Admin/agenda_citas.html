@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Fisioterapeuta Li · Agenda</title>
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
     <!-- Ruta dinámica de Thymeleaf apuntando a static/css/Admin.css -->
     <link rel="stylesheet" th:href="@{/css/Admin.css}">
 </head>
@@ -12,7 +15,7 @@
 <div class="app">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <img th:src="@{/css/assets/logo-li.png}" alt="Logo">
+            <img th:src="@{/images/Logo.png}" alt="Logo Fisioterapeuta Li">
         </div>
 
         <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
@@ -58,14 +61,79 @@
                 <div>
                     <span class="eyebrow">GESTIÓN DE RESERVAS</span>
                     <h1>Agenda y citas</h1>
-                    <p>Busca, filtra y revisa las reservas.</p>
+                    <p>Busca, filtra y revisa las reservas de <span class="cursive-accent">Lina Murillo</span>.</p>
                 </div>
 
                 <button class="btn btn-gold" data-open-view="new-appointment">+ Nueva Cita</button>
             </div>
 
+            <div class="stats-grid agenda-stats">
+                <article class="stat-card">
+                    <div class="stat-icon navy">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Citas de hoy</div>
+                    <span class="stat-pill">Sede Tunja</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon gold">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 10.5l3.6 3.6L16 5.5"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Confirmadas</div>
+                    <span class="stat-pill">Al día</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon navy">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="10" cy="10.5" r="6.5"/><path d="M10 7v4l3 2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Pendientes</div>
+                    <span class="stat-pill warning">Confirmar pago</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon gold">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Canceladas</div>
+                    <span class="stat-pill">Esta semana</span>
+                </article>
+            </div>
+
             <div class="toolbar">
-                <div class="filter-placeholder"></div>
+                <div class="search-field">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="9" r="6"/><path d="m17 17-3.6-3.6"/>
+                    </svg>
+                    <input type="text" placeholder="Buscar por paciente...">
+                </div>
+
+                <select class="filter-select">
+                    <option value="">Todos los estados</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+
+                <select class="filter-select">
+                    <option value="">Todas las sedes</option>
+                    <option value="tunja">Sede Tunja</option>
+                    <option value="turmeque">Sede Turmequé</option>
+                </select>
+
                 <button class="btn btn-outline">Filtrar</button>
             </div>
 
@@ -93,13 +161,13 @@
             <div class="panel weekly-view">
                 <div class="panel-title">Vista semanal</div>
                 <div class="week-grid">
-                    <div class="day"><strong>Lun</strong><div></div></div>
-                    <div class="day"><strong>Mar</strong><div></div></div>
-                    <div class="day"><strong>Mié</strong><div></div></div>
-                    <div class="day"><strong>Jue</strong><div></div></div>
-                    <div class="day"><strong>Vie</strong><div></div></div>
-                    <div class="day"><strong>Sáb</strong><div></div></div>
-                    <div class="day"><strong>Dom</strong><div></div></div>
+                    <div class="day"><strong>Lun <span class="day-date">1</span></strong><div><span class="day-count">3 citas</span></div></div>
+                    <div class="day"><strong>Mar <span class="day-date">2</span></strong><div><span class="day-count">5 citas</span></div></div>
+                    <div class="day"><strong>Mié <span class="day-date">3</span></strong><div><span class="day-count">2 citas</span></div></div>
+                    <div class="day"><strong>Jue <span class="day-date">4</span></strong><div><span class="day-count">4 citas</span></div></div>
+                    <div class="day"><strong>Vie <span class="day-date">5</span></strong><div><span class="day-count">6 citas</span></div></div>
+                    <div class="day"><strong>Sáb <span class="day-date">6</span></strong><div><span class="day-count">2 citas</span></div></div>
+                    <div class="day"><strong>Dom <span class="day-date">7</span></strong><div><span class="day-count">0 citas</span></div></div>
                 </div>
             </div>
         </section>
