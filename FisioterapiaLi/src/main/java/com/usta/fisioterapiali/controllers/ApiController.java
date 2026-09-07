@@ -5,8 +5,10 @@ import com.usta.fisioterapiali.entities.ServiceEntity;
 import com.usta.fisioterapiali.entities.UserEntity;
 import com.usta.fisioterapiali.enums.TipoUsuario;
 import com.usta.fisioterapiali.models.Daos.ReservationDao;
+import com.usta.fisioterapiali.models.Daos.ScheduleDao;
 import com.usta.fisioterapiali.models.Daos.ServiceDao;
 import com.usta.fisioterapiali.models.Daos.UserDao;
+import com.usta.fisioterapiali.models.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,9 @@ public class ApiController {
 
     @Autowired
     private ReservationDao reservationDao;
+
+    @Autowired
+    private ScheduleDao scheduleDao;
 
     // --- MÉTODOS PARA CITAS / AGENDA ---
 
@@ -60,6 +65,70 @@ public class ApiController {
     @PostMapping("/citas")
     public ResponseEntity<?> guardarCita(@RequestBody Map<String, String> payload) {
         try {
+            String fechaForm = payload.get("fecha");
+            String horaForm = payload.get("hora");
+            String idServicioStr = payload.get("idServicio");
+
+            if (fechaForm == null || fechaForm.isEmpty() || horaForm == null || horaForm.isEmpty() || idServicioStr == null || idServicioStr.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Todos los campos obligatorios (fecha, hora y servicio) son requeridos.");
+            }
+
+            java.time.LocalDate fecha = java.time.LocalDate.parse(fechaForm);
+            java.time.LocalTime horaInicio = java.time.LocalTime.parse(horaForm);
+
+            // 1. OBTENER LA DURACIÓN REAL DEL SERVICIO SELECCIONADO (Por defecto 60 min si no se encuentra)
+            Long idServ = Long.parseLong(idServicioStr);
+            Optional<ServiceEntity> servicioOpt = serviceDao.findById(idServ);
+            if (servicioOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El servicio seleccionado no existe.");
+            }
+            ServiceEntity servicio = servicioOpt.get();
+            int duracionMinutos = servicio.getDuracionS() != null ? servicio.getDuracionS() : 60;
+
+            java.time.LocalDateTime fechaHoraInicio = java.time.LocalDateTime.of(fecha, horaInicio);
+            java.time.LocalDateTime fechaHoraFin = fechaHoraInicio.plusMinutes(duracionMinutos);
+
+            // 2. VERIFICAR HORARIO LABORAL Y DESCANSO USANDO EL ScheduleDao
+            int diaSemana = fecha.getDayOfWeek().getValue(); // 1 = Lunes ... 7 = Domingo
+            Optional<com.usta.fisioterapiali.entities.ScheduleEntity> horarioOpt = scheduleDao.findByDiaSemana(diaSemana);
+
+            if (horarioOpt.isPresent()) {
+                com.usta.fisioterapiali.entities.ScheduleEntity horario = horarioOpt.get();
+
+                // Validar apertura y cierre de la jornada
+                if (horaInicio.isBefore(horario.getHoraApertura()) || fechaHoraFin.toLocalTime().isAfter(horario.getHoraCierre())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("La cita excede el horario de atención permitido (" + horario.getHoraApertura() + " - " + horario.getHoraCierre() + ").");
+                }
+
+                // Validar hora de descanso (almuerzo) si aplica
+                if (horario.getHoraInicioDescanso() != null && horario.getHoraFinDescanso() != null) {
+                    boolean cruzaDescanso = fechaHoraInicio.toLocalTime().isBefore(horario.getHoraFinDescanso()) &&
+                            fechaHoraFin.toLocalTime().isAfter(horario.getHoraInicioDescanso());
+                    if (cruzaDescanso) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("El horario de la cita interfiere con el tiempo de almuerzo/descanso (" + horario.getHoraInicioDescanso() + " - " + horario.getHoraFinDescanso() + ").");
+                    }
+                }
+            }
+
+            // 3. VALIDAR SOLAPAMIENTO DE TIEMPO CON CITAS EXISTENTES (CRUCE DE RANGOS)
+            List<ReservationEntity> citasExistentes = reservationDao.findAll();
+            for (ReservationEntity cita : citasExistentes) {
+                if (cita.getFechaInicio() != null && cita.getFechaFin() != null) {
+                    // Dos rangos de tiempo se cruzan si: (InicioA < FinB) y (FinA > InicioB)
+                    boolean seCruzan = fechaHoraInicio.isBefore(cita.getFechaFin()) && fechaHoraFin.isAfter(cita.getFechaInicio());
+
+                    if (seCruzan) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("Ya existe una cita programada en este intervalo (" +
+                                        cita.getFechaInicio().toLocalTime() + " - " + cita.getFechaFin().toLocalTime() +
+                                        "). Debe esperar a que finalice el servicio actual.");
+                    }
+                }
+            }
+
+            // 4. GUARDAR LA CITA SI EL ESPACIO ESTÁ COMPLETAMENTE LIBRE
             ReservationEntity nuevaCita = new ReservationEntity();
 
             if (payload.get("idUsuario") != null && !payload.get("idUsuario").isEmpty()) {
@@ -67,11 +136,7 @@ public class ApiController {
                 userDao.findById(idUser).ifPresent(nuevaCita::setUsuario);
             }
 
-            if (payload.get("idServicio") != null && !payload.get("idServicio").isEmpty()) {
-                Long idServ = Long.parseLong(payload.get("idServicio"));
-                serviceDao.findById(idServ).ifPresent(nuevaCita::setServicio);
-            }
-
+            nuevaCita.setServicio(servicio);
             nuevaCita.setSede(payload.get("sede"));
             nuevaCita.setEstadoCita("CONFIRMADA");
             nuevaCita.setGoogleCalendarId("N/A");
@@ -79,14 +144,8 @@ public class ApiController {
             String estadoPagoStr = payload.get("estadoPago");
             nuevaCita.setPagoConfirmado("PAGADO".equalsIgnoreCase(estadoPagoStr));
 
-            String fechaForm = payload.get("fecha");
-            String horaForm = payload.get("hora");
-
-            if (fechaForm != null && horaForm != null) {
-                java.time.LocalDateTime fechaHoraInicio = java.time.LocalDateTime.parse(fechaForm + "T" + horaForm);
-                nuevaCita.setFechaInicio(fechaHoraInicio);
-                nuevaCita.setFechaFin(fechaHoraInicio.plusHours(1));
-            }
+            nuevaCita.setFechaInicio(fechaHoraInicio);
+            nuevaCita.setFechaFin(fechaHoraFin);
 
             reservationDao.save(nuevaCita);
             return ResponseEntity.status(HttpStatus.CREATED).body("Cita guardada correctamente");
