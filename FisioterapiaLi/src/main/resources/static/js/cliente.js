@@ -99,10 +99,86 @@ if (typeof registerInternalViews === "function") {
             title: "Historia clínica",
             content: `
                 <div class="internal-section">
+                    <h3>Paciente</h3>
+                    <div class="clinical-top">
+                        <div class="info-placeholder">
+                            <div>Nombre</div>
+                            <span id="historyPacienteNombre">—</span>
+                        </div>
+                        <div class="info-placeholder">
+                            <div>Documento</div>
+                            <span id="historyPacienteDocumento">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="internal-section">
+                    <h3>Motivo de consulta</h3>
+                    <div class="form-grid">
+                        <div class="form-field full">
+                            <label>Motivo principal</label>
+                            <textarea rows="2" name="motivoConsulta" placeholder="Describe el motivo de la consulta..."></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>Antecedente patológico</label>
+                            <input type="text" name="antecedentePatologico" placeholder="Ej: hipertensión, cirugías previas...">
+                        </div>
+                        <div class="form-field">
+                            <label>Ocupación</label>
+                            <input type="text" name="ocupacion" placeholder="Ej: oficinista, deportista...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="internal-section">
                     <h3>Valoración y Evolución</h3>
                     <div class="form-grid">
-                        <div class="form-field"><label>Tipo de dolor</label><input type="text" name="tipoDolor"></div>
-                        <div class="form-field"><label>EVA</label><input type="text" name="eva"></div>
+                        <div class="form-field">
+                            <label>Tipo de dolor</label>
+                            <input type="text" name="tipoDolor">
+                        </div>
+                        <div class="form-field">
+                            <label>EVA</label>
+                            <input type="text" name="eva">
+                        </div>
+                        <div class="form-field">
+                            <label>Comportamiento del dolor</label>
+                            <input type="text" name="comportamientoDolor" placeholder="Ej: constante, intermitente...">
+                        </div>
+                        <div class="form-field">
+                            <label>Tensión arterial</label>
+                            <input type="text" name="tensionArterial" placeholder="Ej: 120/80">
+                        </div>
+                        <div class="form-field">
+                            <label>Frecuencia cardíaca</label>
+                            <input type="text" name="frecuenciaCardiaca" placeholder="lpm">
+                        </div>
+                        <div class="form-field">
+                            <label>Frecuencia respiratoria</label>
+                            <input type="text" name="frecuenciaRespiratoria" placeholder="rpm">
+                        </div>
+                        <div class="form-field">
+                            <label>Saturación de oxígeno</label>
+                            <input type="text" name="saturacionOxigeno" placeholder="%">
+                        </div>
+                        <div class="form-field">
+                            <label>IMC</label>
+                            <input type="text" name="imc">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="internal-section">
+                    <h3>Objetivo y evolución</h3>
+                    <div class="form-grid">
+                        <div class="form-field full">
+                            <label>Objetivo del tratamiento</label>
+                            <textarea rows="3" name="objetivo" placeholder="Ej: reducir dolor, recuperar movilidad..."></textarea>
+                        </div>
+                        <div class="form-field full">
+                            <label>Evolución / observaciones</label>
+                            <textarea rows="3" name="evolucion" placeholder="Notas de seguimiento entre sesiones..."></textarea>
+                        </div>
                     </div>
                 </div>
             `
@@ -142,6 +218,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             <td>${p.contadorReferidos !== undefined ? p.contadorReferidos : 0}</td>
                             <td><span class="status">Activo</span></td>
                             <td>
+                                <button class="table-action" data-open-view="clinical-history" 
+                                    data-id="${p.idUsuario}" 
+                                    data-nombre="${p.nombre || ''}" 
+                                    data-documento="${p.documento || ''}">Historial clínico</button>
                                 <button class="table-action btn-edit" data-open-view="edit-client" 
                                     data-id="${p.idUsuario}" 
                                     data-nombre="${p.nombre || ''}" 
@@ -149,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     data-eps="${p.eps || ''}" 
                                     data-telefono="${p.telefono || ''}" 
                                     data-email="${p.email || ''}" 
-                                    data-contacto="${p.contactoEmergencia || ''}">Editar</button>
+                                    data-contacto="${p.contactoEmergencia || ''}" style="margin-left: 8px;">Editar</button>
                                 <button class="table-action btn-delete" data-id="${p.idUsuario}" style="color: #d9534f; margin-left: 8px;">Eliminar</button>
                             </td>
                         </tr>
@@ -174,11 +254,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("editContactoEmergencia").value = btn.dataset.contacto;
             }, 50);
         }
+        // Lógica de llenado para el modal de historia clínica
+        if (event.target.closest('[data-open-view="clinical-history"]')) {
+            const btn = event.target.closest('[data-open-view="clinical-history"]');
+            setTimeout(() => {
+                const nombreSpan = document.getElementById("historyPacienteNombre");
+                if (nombreSpan) nombreSpan.textContent = btn.dataset.nombre || "—";
 
-        // Lógica de eliminación (Delete)
+                const documentoSpan = document.getElementById("historyPacienteDocumento");
+                if (documentoSpan) documentoSpan.textContent = btn.dataset.documento || "—";
+            }, 50);
+        }
+
+// Lógica de eliminación (Delete)
         if (event.target.classList.contains("btn-delete")) {
             const idPaciente = event.target.dataset.id;
-            if (confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
+            showConfirmDialog("¿Estás seguro de que deseas eliminar este cliente?").then(confirmado => {
+                if (!confirmado) return;
+
                 fetch(`/api/modal/pacientes/${idPaciente}`, {
                     method: "DELETE"
                 })
@@ -191,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     })
                     .catch(err => console.error("Error de red al eliminar:", err));
-            }
+            });
         }
     });
 });

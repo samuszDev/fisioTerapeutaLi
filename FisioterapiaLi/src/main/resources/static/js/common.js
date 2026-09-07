@@ -298,3 +298,41 @@ if (menuButton && sidebar) {
         sidebar.classList.toggle("open");
     });
 }
+
+// Reemplazo del confirm() nativo del navegador por un modal con el estilo de la marca
+function showConfirmDialog(message, acceptLabel = "Sí, eliminar") {
+    return new Promise(resolve => {
+        const overlay = document.createElement("div");
+        overlay.className = "confirm-overlay";
+        overlay.innerHTML = `
+            <div class="confirm-box">
+                <div class="confirm-icon">!</div>
+                <p class="confirm-message">${message}</p>
+                <div class="confirm-actions">
+                    <button class="btn btn-outline confirm-cancel">Cancelar</button>
+                    <button class="btn btn-gold confirm-accept">${acceptLabel}</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = "hidden";
+
+        function onKey(e) {
+            if (e.key === "Escape") close(false);
+        }
+        document.addEventListener("keydown", onKey);
+
+        function close(result) {
+            overlay.remove();
+            document.body.style.overflow = "";
+            document.removeEventListener("keydown", onKey);
+            resolve(result);
+        }
+
+        overlay.querySelector(".confirm-cancel").addEventListener("click", () => close(false));
+        overlay.querySelector(".confirm-accept").addEventListener("click", () => close(true));
+        overlay.addEventListener("click", e => {
+            if (e.target === overlay) close(false);
+        });
+    });
+}
