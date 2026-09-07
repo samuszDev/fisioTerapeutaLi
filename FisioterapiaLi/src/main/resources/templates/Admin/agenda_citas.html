@@ -158,16 +158,37 @@
                 </div>
             </div>
 
-            <div class="panel weekly-view">
-                <div class="panel-title">Vista semanal</div>
-                <div class="week-grid">
-                    <div class="day"><strong>Lun <span class="day-date">1</span></strong><div><span class="day-count">3 citas</span></div></div>
-                    <div class="day"><strong>Mar <span class="day-date">2</span></strong><div><span class="day-count">5 citas</span></div></div>
-                    <div class="day"><strong>Mié <span class="day-date">3</span></strong><div><span class="day-count">2 citas</span></div></div>
-                    <div class="day"><strong>Jue <span class="day-date">4</span></strong><div><span class="day-count">4 citas</span></div></div>
-                    <div class="day"><strong>Vie <span class="day-date">5</span></strong><div><span class="day-count">6 citas</span></div></div>
-                    <div class="day"><strong>Sáb <span class="day-date">6</span></strong><div><span class="day-count">2 citas</span></div></div>
-                    <div class="day"><strong>Dom <span class="day-date">7</span></strong><div><span class="day-count">0 citas</span></div></div>
+            <div class="weekly-view">
+                <h3>Vista semanal</h3>
+                <div class="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px;">
+                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Lun</h4>
+                        <div class="day-content" id="col-lunes"></div>
+                    </div>
+                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Mar</h4>
+                        <div class="day-content" id="col-martes"></div>
+                    </div>
+                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Mié</h4>
+                        <div class="day-content" id="col-miercoles"></div>
+                    </div>
+                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Jue</h4>
+                        <div class="day-content" id="col-jueves"></div>
+                    </div>
+                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Vie</h4>
+                        <div class="day-content" id="col-viernes"></div>
+                    </div>
+                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Sáb</h4>
+                        <div class="day-content" id="col-sabado"></div>
+                    </div>
+                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Dom</h4>
+                        <div class="day-content" id="col-domingo"></div>
+                    </div>
                 </div>
             </div>
         </section>
