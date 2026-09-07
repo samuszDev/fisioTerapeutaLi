@@ -8,7 +8,6 @@ import com.usta.fisioterapiali.models.Daos.ReservationDao;
 import com.usta.fisioterapiali.models.Daos.ScheduleDao;
 import com.usta.fisioterapiali.models.Daos.ServiceDao;
 import com.usta.fisioterapiali.models.Daos.UserDao;
-import com.usta.fisioterapiali.models.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +46,7 @@ public class ApiController {
                     .body("Error al consultar citas: " + e.getMessage());
         }
     }
+
     @DeleteMapping("/citas/{id}")
     public ResponseEntity<?> eliminarCita(@PathVariable Long id) {
         try {
@@ -157,6 +157,84 @@ public class ApiController {
         }
     }
 
+    @PutMapping("/citas/{id}")
+    public ResponseEntity<?> actualizarCita(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        try {
+            Optional<ReservationEntity> citaOpt = reservationDao.findById(id);
+            if (citaOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
+            }
+
+            ReservationEntity citaActual = citaOpt.get();
+
+            // 1. EXTRAER FECHA Y HORA ENVIADAS
+            String fechaForm = payload.get("fecha");
+            String horaForm = payload.get("hora");
+
+            if (fechaForm != null && !fechaForm.isEmpty() && horaForm != null && !horaForm.isEmpty()) {
+                java.time.LocalDate fecha = java.time.LocalDate.parse(fechaForm);
+                java.time.LocalTime horaInicio = java.time.LocalTime.parse(horaForm);
+
+                int duracionMinutos = citaActual.getServicio() != null && citaActual.getServicio().getDuracionS() != null
+                        ? citaActual.getServicio().getDuracionS() : 60;
+
+                java.time.LocalDateTime fechaHoraInicio = java.time.LocalDateTime.of(fecha, horaInicio);
+                java.time.LocalDateTime fechaHoraFin = fechaHoraInicio.plusMinutes(duracionMinutos);
+
+                // 2. VALIDAR DISPONIBILIDAD DE HORARIO LABORAL
+                int diaSemana = fecha.getDayOfWeek().getValue();
+                Optional<com.usta.fisioterapiali.entities.ScheduleEntity> horarioOpt = scheduleDao.findByDiaSemana(diaSemana);
+
+                if (horarioOpt.isPresent()) {
+                    com.usta.fisioterapiali.entities.ScheduleEntity horario = horarioOpt.get();
+
+                    if (horaInicio.isBefore(horario.getHoraApertura()) || fechaHoraFin.toLocalTime().isAfter(horario.getHoraCierre())) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("La nueva hora excede el horario de atención permitido.");
+                    }
+
+                    if (horario.getHoraInicioDescanso() != null && horario.getHoraFinDescanso() != null) {
+                        boolean cruzaDescanso = fechaHoraInicio.toLocalTime().isBefore(horario.getHoraFinDescanso()) &&
+                                fechaHoraFin.toLocalTime().isAfter(horario.getHoraInicioDescanso());
+                        if (cruzaDescanso) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body("El nuevo horario interfiere con el tiempo de descanso.");
+                        }
+                    }
+                }
+
+                // 3. VALIDAR CRUCES (Excluyendo la cita actual que estamos editando)
+                List<ReservationEntity> citasExistentes = reservationDao.findAll();
+                for (ReservationEntity c : citasExistentes) {
+                    if (!c.getIdReserva().equals(id) && c.getFechaInicio() != null && c.getFechaFin() != null) {
+                        boolean seCruzan = fechaHoraInicio.isBefore(c.getFechaFin()) && fechaHoraFin.isAfter(c.getFechaInicio());
+                        if (seCruzan) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body("Ya existe otra cita programada en este intervalo de tiempo.");
+                        }
+                    }
+                }
+
+                // Actualizamos las fechas si pasaron las validaciones
+                citaActual.setFechaInicio(fechaHoraInicio);
+                citaActual.setFechaFin(fechaHoraFin);
+            }
+
+            // 4. ACTUALIZAR LOS DEMÁS CAMPOS
+            if (payload.get("sede") != null) citaActual.setSede(payload.get("sede"));
+            if (payload.get("estado") != null) citaActual.setEstadoCita(payload.get("estado"));
+            if (payload.get("estadoPago") != null) citaActual.setPagoConfirmado("PAGADO".equalsIgnoreCase(payload.get("estadoPago")));
+
+            reservationDao.save(citaActual);
+            return ResponseEntity.ok("Cita actualizada correctamente");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar la cita: " + e.getMessage());
+        }
+    }
+
     // --- MÉTODOS PARA SERVICIOS ---
 
     @GetMapping("/servicios")
@@ -196,6 +274,7 @@ public class ApiController {
                     .body("Error al guardar el servicio: " + e.getMessage());
         }
     }
+
     // --- MÉTODOS PARA PACIENTES ---
 
     @GetMapping("/pacientes")

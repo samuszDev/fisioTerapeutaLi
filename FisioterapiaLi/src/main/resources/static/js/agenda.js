@@ -144,6 +144,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 return response.json();
             })
             .then(citas => {
+                // 👉 Renderizar siempre la vista semanal aunque la tabla esté vacía
+                cargarVistaSemanal(citas);
+
                 if (!Array.isArray(citas) || citas.length === 0) {
                     tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No hay citas agendadas.</td></tr>";
                     return;
@@ -195,6 +198,71 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 });
+
+// FUNCIÓN PARA RENDERIZAR LAS CITAS EN LA VISTA SEMANAL
+function cargarVistaSemanal(citas) {
+    const contenedoresDias = {
+        1: document.getElementById('col-lunes'),
+        2: document.getElementById('col-martes'),
+        3: document.getElementById('col-miercoles'),
+        4: document.getElementById('col-jueves'),
+        5: document.getElementById('col-viernes'),
+        6: document.getElementById('col-sabado'),
+        0: document.getElementById('col-domingo')
+    };
+
+    // Limpiar tarjetas anteriores de los contenedores
+    Object.values(contenedoresDias).forEach(contenedor => {
+        if (contenedor) contenedor.innerHTML = '';
+    });
+
+    if (!Array.isArray(citas) || citas.length === 0) return;
+
+    // Calcular el rango de la semana actual (Lunes a Domingo)
+    const hoy = new Date();
+    const diaSemanaIndex = hoy.getDay() === 0 ? 7 : hoy.getDay();
+
+    const inicioSemana = new Date(hoy);
+    inicioSemana.setDate(hoy.getDate() - diaSemanaIndex + 1);
+    inicioSemana.setHours(0, 0, 0, 0);
+
+    const finSemana = new Date(inicioSemana);
+    finSemana.setDate(inicioSemana.getDate() + 6);
+    finSemana.setHours(23, 59, 59, 999);
+
+    citas.forEach(cita => {
+        if (!cita.fechaInicio) return;
+
+        // Parsear fecha ISO "YYYY-MM-DDTHH:mm:ss"
+        const partes = cita.fechaInicio.split("T");
+        if (partes.length < 2) return;
+
+        const [anio, mes, dia] = partes[0].split("-").map(Number);
+        const [hora, min] = partes[1].split(":").map(Number);
+
+        const fechaCita = new Date(anio, mes - 1, dia, hora, min);
+
+        // Verificar si la cita pertenece a la semana actual
+        if (fechaCita >= inicioSemana && fechaCita <= finSemana) {
+            const numeroDia = fechaCita.getDay(); // 0 = Domingo, 1 = Lunes...
+            const contenedor = contenedoresDias[numeroDia];
+
+            if (contenedor) {
+                const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'Paciente';
+                const horaFormateada = `${hora.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre || 'Servicio') : '';
+
+                contenedor.innerHTML += `
+                    <div style="background-color: #ffffff; border-left: 4px solid #d4af37; padding: 6px 8px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 0.75rem;">
+                        <strong style="color: #0b2239; display: block; font-size: 0.8rem;">${horaFormateada}</strong>
+                        <div style="color: #212529; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${pacienteNombre}</div>
+                        <div style="color: #6c757d; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${servicioNombre}</div>
+                    </div>
+                `;
+            }
+        }
+    });
+}
 
 // Listener global para el botón de editar cita (cargar datos en el formulario)
 document.addEventListener("click", event => {
