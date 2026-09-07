@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lina Murillo | Fisioterapeuta</title>
+  <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+  <link rel="stylesheet" th:href="@{/css/layoutUser.css}">
+  <link rel="stylesheet" th:href="@{/css/service.css}">
+  <link rel="stylesheet" th:href="@{/css/sobreNosotros.css}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
+</head>
+
+<body>
+<header th:replace="~{layout/layoutUser :: header('sobre-nosotros')}"></header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-card">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">¿Quién es</div>
+          <h1 class="script hero-title">La Fisioterapeuta Li?</h1>
+          <p><strong>Soy Lina Murillo</strong>, fisioterapeuta comprometida con el bienestar y la calidad de vida de mis pacientes. Creo en el poder del movimiento como herramienta para transformar vidas. Mi enfoque combina la ciencia, la empatía y la personalización de cada tratamiento, para brindarte una atención integral y cercana.</p>
+          <p class="signoff script">¡Estoy aquí para acompañarte! ♡</p>
+        </div>
+
+        <div class="portrait-wrap">
+          <div class="portrait-halo"></div>
+          <div class="portrait-frame">
+            <img th:src="@{/images/LiMuFi.png}" alt="Lina Murillo, fisioterapeuta">
+          </div>
+        </div>
+
+        <div class="mv-card">
+          <h3>
+            <span class="icon-circle"><img th:src="@{/images/mision.png}" alt="Misión" class="icon"></span>
+            <span class="script">Misión</span>
+          </h3>
+          <p>Brindar servicios de fisioterapia y bienestar integral personalizados, orientados a mejorar la movilidad, recuperar la funcionalidad y acompañar a cada persona en su proceso de recuperación, mediante atención profesional, tratamientos especializados y un enfoque humano.</p>
+        </div>
+
+        <div class="mv-card">
+          <h3>
+            <span class="icon-circle"><img th:src="@{/images/vision.png}" alt="Visión" class="icon"></span>
+            <span class="script">Visión</span>
+          </h3>
+          <p>Ser un referente en fisioterapia y bienestar integral, reconocidos por la calidad de nuestros servicios, la atención personalizada y el compromiso con la recuperación y calidad de vida de nuestros pacientes, incorporando estrategias y tecnologías que contribuyan a una atención cada vez más efectiva.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMACIÓN ACADÉMICA -->
+<section class="formacion">
+  <div class="wrap">
+    <div class="formacion-card">
+      <div class="section-title">
+        <span class="icon-circle icon-circle--lg">
+          <img th:src="@{/images/formacion.png}" alt="Formación académica" class="icon">
+        </span>
+        <div>
+          <span class="label">Mi Formación</span>
+          <h2 class="script">Académica</h2>
+        </div>
+      </div>
+
+      <div class="formacion-grid">
+        <div class="formacion-col">
+          <ul>
+            <li><strong>Fisioterapeuta</strong>Universidad de Boyacá.</li>
+            <li><strong>Especialización y Maestría en Neurorehabilitación</strong>(en formación). Universidad Autónoma de Manizales.</li>
+          </ul>
+        </div>
+
+        <div class="formacion-col">
+          <h4>
+            <img th:src="@{/images/calidad.png}" alt="Diplomados y certificaciones" class="icon icon--sm">
+            Diplomados y Certificaciones
+          </h4>
+          <ul>
+            <li>Diplomado en Terapias Alternativas Fisioterapia en Movimiento.</li>
+            <li>Certificación en ATM (Articulación Temporomandibular) y Bruxismo CAAFYR.</li>
+            <li>Diplomado Internacional en Rehabilitación Deportiva CRAPTICA.</li>
+          </ul>
+        </div>
+
+        <div class="formacion-media-row">
+          <div class="formacion-media">
+            <img th:src="@{/images/sala.jpeg}" alt="Sala de fisioterapia">
+          </div>
+          <div class="focus-box">
+            <h4>
+              <img th:src="@{/images/enfoque.png}" alt="Áreas de enfoque principal" class="icon icon--sm">
+              Áreas de Enfoque Principal
+            </h4>
+            <ul>
+              <li>Neurorehabilitación.</li>
+              <li>Rehabilitación Deportiva.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALORES -->
+<section class="valores">
+  <div class="wrap">
+    <div class="valores-row">
+      <div class="valores-intro">
+        <span class="label">Nuestros</span>
+        <h2 class="script">Valores</h2>
+        <p>Guían cada decisión, cada tratamiento y cada paso que damos. Son la base de la confianza que construimos con cada paciente.</p>
+      </div>
+
+      <div class="valores-grid">
+        <div class="valor-card">
+          <span class="icon-circle"><img th:src="@{/images/etica.png}" alt="Ética" class="icon"></span>
+          <h4>Ética</h4>
+          <p>Actuamos con responsabilidad y honestidad.</p>
+        </div>
+        <div class="valor-card">
+          <span class="icon-circle"><img th:src="@{/images/empatia.png}" alt="Empatía" class="icon"></span>
+          <h4>Empatía</h4>
+          <p>Escuchamos, comprendemos y acompañamos.</p>
+        </div>
+        <div class="valor-card">
+          <span class="icon-circle"><img th:src="@{/images/compromiso.png}" alt="Compromiso" class="icon"></span>
+          <h4>Compromiso</h4>
+          <p>Nos dedicamos a tu bienestar en cada sesión.</p>
+        </div>
+        <div class="valor-card">
+          <span class="icon-circle"><img th:src="@{/images/calid.png}" alt="Calidad" class="icon"></span>
+          <h4>Calidad</h4>
+          <p>Buscamos siempre lo mejor para ti.</p>
+        </div>
+        <div class="valor-card">
+          <span class="icon-circle"><img th:src="@{/images/humanidad.png}" alt="Humanidad" class="icon"></span>
+          <h4>Humanidad</h4>
+          <p>Porque detrás de cada paciente hay una historia.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUESTRO ENFOQUE -->
+<section class="section--flush">
+  <div class="wrap">
+    <div class="enfoque">
+      <div class="enfoque-text">
+        <h2 class="script">Nuestro Enfoque</h2>
+        <p>Cada persona es única, por eso creo en un enfoque integral y personalizado. Combinamos técnicas manuales, ejercicio terapéutico y tecnología para lograr mejores resultados y una recuperación efectiva, segura y duradera.</p>
+        <button class="btn-outline">
+          AGENDA TU CITA
+          <img th:src="@{/images/calendario.png}" alt="" class="icon icon--sm">
+        </button>
+      </div>
+      <div class="enfoque-media">
+        <div class="enfoque-img">
+          <img th:src="@{/images/eje1.jpeg}" alt="Sesión de fisioterapia en rodilla">
+        </div>
+        <div class="enfoque-tags">
+          <div class="enfoque-tag">
+            <img th:src="@{/images/tecnicas.png}" alt="" class="icon icon--sm">
+            Técnicas manuales
+          </div>
+          <div class="enfoque-tag">
+            <img th:src="@{/images/florl.png}" alt="" class="icon icon--sm">
+            Ejercicio terapéutico
+          </div>
+          <div class="enfoque-tag">
+            <img th:src="@{/images/tecnologia.png}" alt="" class="icon icon--sm">
+            Tecnología avanzada
+          </div>
+          <div class="enfoque-tag">
+            <img th:src="@{/images/salud.png}" alt="" class="icon icon--sm">
+            Educación en salud
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{layout/layoutUser :: footer}"></footer>
+</body>
+</html>

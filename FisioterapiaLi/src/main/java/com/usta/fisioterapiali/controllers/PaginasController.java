@@ -11,5 +11,9 @@ public class PaginasController {
         return "service";
     }
 
+    @GetMapping("/sobre-nosotros")
+    public String verSobreNosotros() {
+        return "sobre-nosotros";
+    }
 
 }

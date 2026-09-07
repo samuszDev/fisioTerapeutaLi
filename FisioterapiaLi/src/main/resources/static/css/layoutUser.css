@@ -267,12 +267,16 @@ nav {
     font-weight: 700;
     font-size: 1.3rem;
     margin: 10px 0 0 0;
+    color: var(--text-light);
 }
 
 .about-block p{
     margin: 50px 0 20px 0;
     line-height: 1.6;
     font-size: 1rem;
+    color: var(--text-light);
+}
+.days{
     color: var(--text-light);
 }
 
