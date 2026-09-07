@@ -1,56 +1,58 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Fisioterapeuta Li · Agenda</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <!-- Ruta dinámica de Thymeleaf apuntando a static/css/Admin.css -->
+    <link rel="stylesheet" th:href="@{/css/Admin.css}">
 </head>
 <body>
 
 <div class="app">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <img src="../assets/logo-li.png" alt="Logo">
+            <img th:src="@{/css/assets/logo-li.png}" alt="Logo">
         </div>
 
         <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
-            <!-- Se reemplazaron los <button> por <a> para enrutamiento nativo con Spring Boot -->
-            <a class="nav-item active" href="dashboard.html" th:href="@{/admin/dashboard}">
-                <img src="../../static/css/assets/dashboard.svg" th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/dashboard}">
+                <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
                 <span>Dashboard</span>
             </a>
-            <a class="nav-item" href="agenda_citas.html" th:href="@{/admin/schedule}">
-                <img src="../../static/css/assets/calendar.svg" th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+            <a class="nav-item active" th:href="@{/admin/agenda}">
+                <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                 <span>Agenda y citas</span>
             </a>
-            <a class="nav-item" href="clientes.html" th:href="@{/admin/clients}">
-                <img src="../../static/css/assets/clients.svg" th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/clientes}">
+                <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                 <span>Clientes</span>
             </a>
-            <a class="nav-item" href="servicios.html" th:href="@{/admin/services}">
-                <img src="../../static/css/assets/services.svg" th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/servicios}">
+                <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                 <span>Servicios</span>
             </a>
-            <a class="nav-item" href="reportes.html" th:href="@{/admin/reports}">
-                <img src="../../static/css/assets/reports.svg" th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+            <a class="nav-item" th:href="@{/admin/reportes}">
+                <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                 <span>Reportes</span>
             </a>
         </nav>
 
         <div class="sidebar-footer">
-            <span>Fisioterapeuta</span>
-            <span>Ciudad / sede</span>
-            <span>Horario de atención</span>
+            <span>Lina Murillo (Fisioterapeuta)</span>
+            <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
+            <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
         </div>
     </aside>
+
     <main class="main-content">
         <header class="mobile-header">
             <button id="menuButton" class="menu-button">☰</button>
             <span>La Fisioterapeuta Li</span>
         </header>
+
         <section class="page active" id="agenda">
             <div class="page-header">
                 <div>
@@ -82,22 +84,7 @@
                         </tr>
                         </thead>
                         <tbody id="agendaRows">
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="edit-appointment">Editar</button></td>
-                        </tr>
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="edit-appointment">Editar</button></td>
-                        </tr>
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="edit-appointment">Editar</button></td>
-                        </tr>
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="edit-appointment">Editar</button></td>
-                        </tr>
+                        <!-- Las filas se cargarán dinámicamente mediante agenda.js -->
                         </tbody>
                     </table>
                 </div>
@@ -119,6 +106,7 @@
     </main>
 </div>
 
+<!-- ESTRUCTURA BASE DEL MODAL -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-window">
         <div class="modal-header">
@@ -138,6 +126,7 @@
     </div>
 </div>
 
-<script src="../js/app.js"></script>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/agenda.js}"></script>
 </body>
 </html>

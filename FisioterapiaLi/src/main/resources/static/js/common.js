@@ -54,12 +54,11 @@ function openInternalView(viewName) {
     modalTitle.textContent = view.title;
     modalContent.innerHTML = view.content;
 
-    // Configuración específica si se abre la modal de crear cliente
+    // Configuración específica si se abre la modal de CREAR CLIENTE
     if (viewName === "new-client") {
         const finishBtn = document.getElementById("modalFinish");
 
         if (finishBtn) {
-            
             const newFinishBtn = finishBtn.cloneNode(true);
             finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
 
@@ -75,17 +74,12 @@ function openInternalView(viewName) {
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
 
-                console.log("Enviando datos al servidor:", data);
-
                 fetch("/api/modal/pacientes", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 })
                     .then(response => {
-                        console.log("Respuesta del servidor (Status):", response.status);
                         if (response.ok) {
                             alert("¡Paciente guardado correctamente!");
                             closeInternalView();
@@ -94,9 +88,79 @@ function openInternalView(viewName) {
                             response.text().then(msg => alert("Error del servidor: " + msg));
                         }
                     })
+                    .catch(error => alert("Error al intentar conectar con el backend."));
+            });
+        }
+    }
+
+    // Configuración específica si se abre la modal de NUEVA CITA
+    if (viewName === "new-appointment") {
+
+        // 1. Cargar Pacientes en el select
+        fetch("/api/modal/pacientes")
+            .then(res => res.json())
+            .then(pacientes => {
+                const selectP = document.getElementById("selectPaciente");
+                if (!selectP) return;
+
+                const clientes = pacientes.filter(p => p.rol === "CLIENTE");
+                selectP.innerHTML = '<option value="">Seleccionar paciente...</option>';
+                clientes.forEach(p => {
+                    selectP.innerHTML += `<option value="${p.idUsuario}">${p.nombre} (${p.documento || 'S/D'})</option>`;
+                });
+            }).catch(err => console.error("Error al cargar pacientes", err));
+
+        // 2. Cargar Servicios en el select
+        fetch("/api/modal/servicios")
+            .then(res => res.json())
+            .then(servicios => {
+                const selectS = document.getElementById("selectServicio");
+                if (!selectS) return;
+
+                selectS.innerHTML = '<option value="">Seleccionar servicio...</option>';
+                servicios.forEach(s => {
+                    selectS.innerHTML += `<option value="${s.idServicio}">${s.nombreS}</option>`;
+                });
+            }).catch(err => console.error("Error al cargar servicios", err));
+
+        // 3. Listener para guardar la cita
+        const finishBtn = document.getElementById("modalFinish");
+        if (finishBtn) {
+            const newFinishBtn = finishBtn.cloneNode(true);
+            finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
+
+            newFinishBtn.addEventListener("click", () => {
+                const form = document.getElementById("newAppointmentForm");
+                if (!form) return;
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                console.log("Enviando cita al servidor:", data);
+
+                fetch("/api/modal/citas", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Cita agendada correctamente!");
+                            closeInternalView();
+                            window.location.reload();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error del servidor: " + errorMsg);
+                        }
+                    })
                     .catch(error => {
-                        console.error("Error de red/petición:", error);
-                        alert("Error al intentar conectar con el backend.");
+                        console.error("Error de red:", error);
+                        alert("Error al conectar con el backend.");
                     });
             });
         }
@@ -133,6 +197,7 @@ if (modalCancel) {
     modalCancel.addEventListener("click", closeInternalView);
 }
 
+// Este evento funciona como fallback para botones que no tienen lógica específica (clonada)
 if (modalFinish) {
     modalFinish.addEventListener("click", closeInternalView);
 }
