@@ -3,12 +3,15 @@ package com.usta.fisioterapiali.controllers;
 import com.usta.fisioterapiali.dto.PreReservaRequest;
 import com.usta.fisioterapiali.dto.PreReservaResponse;
 import com.usta.fisioterapiali.entities.ReservationEntity;
+import com.usta.fisioterapiali.entities.ScheduleEntity;
 import com.usta.fisioterapiali.entities.ServiceEntity;
 import com.usta.fisioterapiali.entities.UserEntity;
 import com.usta.fisioterapiali.enums.TipoUsuario;
 import com.usta.fisioterapiali.models.Daos.ReservationDao;
 import com.usta.fisioterapiali.models.Daos.ServiceDao;
 import com.usta.fisioterapiali.models.Daos.UserDao;
+import com.usta.fisioterapiali.models.Service.ReservationService;
+import com.usta.fisioterapiali.models.Service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Punto de entrada del bot de Telegram y del formulario web.
@@ -51,6 +52,8 @@ public class BotReservaController {
     @Autowired private ServiceDao serviceDao;
     @Autowired private UserDao userDao;
     @Autowired private BCryptPasswordEncoder passwordEncoder;
+    @Autowired private ScheduleService scheduleService;
+    @Autowired private ReservationService reservationService;
 
     @PostMapping("/pre-reserva")
     @Transactional
@@ -325,5 +328,104 @@ public class BotReservaController {
         r.put("nombre", u.getNombre());
         r.put("idUsuario", u.getIdUsuario());
         return ResponseEntity.ok(r);
+    }
+    // =========================================================
+    // 1. CONSULTA PARA CLIENTES (Solo horas libres, sin datos ajenos)
+    // =========================================================
+    @GetMapping("/disponibilidad")
+    public ResponseEntity<Map<String, Object>> consultarDisponibilidadCliente(@RequestParam("fecha") String fechaStr) {
+        Map<String, Object> respuesta = new HashMap<>();
+        LocalDate fecha = LocalDate.parse(fechaStr);
+        int diaSemana = fecha.getDayOfWeek().getValue(); // 1 = Lunes ... 7 = Domingo
+
+        Optional<ScheduleEntity> horarioOpt = scheduleService.findByDiaSemana(diaSemana);
+        if (horarioOpt.isEmpty()) {
+            respuesta.put("fecha", fechaStr);
+            respuesta.put("disponibles", new ArrayList<>());
+            respuesta.put("mensaje", "No hay atención en este día de la semana.");
+            return ResponseEntity.ok(respuesta);
+        }
+
+        ScheduleEntity horario = horarioOpt.get();
+        LocalTime apertura = horario.getHoraApertura();
+        LocalTime cierre = horario.getHoraCierre();
+        LocalTime inicioDescanso = horario.getHoraInicioDescanso();
+        LocalTime finDescanso = horario.getHoraFinDescanso();
+
+        List<String> todosLosHorarios = new ArrayList<>();
+        LocalTime cursor = apertura;
+        DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
+
+        while (cursor.isBefore(cierre)) {
+            boolean enDescanso = false;
+            if (inicioDescanso != null && finDescanso != null) {
+                if (!cursor.isBefore(inicioDescanso) && cursor.isBefore(finDescanso)) {
+                    enDescanso = true;
+                }
+            }
+            if (!enDescanso) {
+                todosLosHorarios.add(cursor.format(formatoHora));
+            }
+            cursor = cursor.plusHours(1);
+        }
+
+        LocalDateTime inicioDia = fecha.atStartOfDay();
+        LocalDateTime finDia = fecha.atTime(LocalTime.MAX);
+        List<ReservationEntity> reservasDelDia = reservationService.findByFechaInicioBetween(inicioDia, finDia);
+
+        List<String> horasOcupadas = new ArrayList<>();
+        for (ReservationEntity r : reservasDelDia) {
+            if (r.getFechaInicio() != null) {
+                horasOcupadas.add(r.getFechaInicio().toLocalTime().format(formatoHora));
+            }
+        }
+
+        List<String> disponibles = new ArrayList<>();
+        for (String h : todosLosHorarios) {
+            if (!horasOcupadas.contains(h)) {
+                disponibles.add(h);
+            }
+        }
+
+        respuesta.put("fecha", fechaStr);
+        respuesta.put("disponibles", disponibles);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    // =========================================================
+    // 2. CONSULTA PARA ADMINISTRADOR (Toda la agenda con pacientes)
+    // =========================================================
+    @GetMapping("/agenda-admin")
+    public ResponseEntity<List<Map<String, Object>>> consultarAgendaAdmin(@RequestParam("fecha") String fechaStr) {
+        LocalDate fecha = LocalDate.parse(fechaStr);
+        LocalDateTime inicioDia = fecha.atStartOfDay();
+        LocalDateTime finDia = fecha.atTime(LocalTime.MAX);
+
+        List<ReservationEntity> reservas = reservationService.findByFechaInicioBetween(inicioDia, finDia);
+        List<Map<String, Object>> agenda = new ArrayList<>();
+        DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
+
+        for (ReservationEntity r : reservas) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("hora", r.getFechaInicio() != null ? r.getFechaInicio().toLocalTime().format(formatoHora) : "");
+
+            String nombrePaciente = "Sin asignar";
+            if (r.getUsuario() != null) {
+                nombrePaciente = r.getUsuario().getNombre() != null ? r.getUsuario().getNombre() : "Usuario #" + r.getUsuario().getIdUsuario();
+            }
+            item.put("paciente", nombrePaciente);
+
+            String nombreServicio = "General";
+            if (r.getServicio() != null && r.getServicio().getNombreS() != null) {
+                nombreServicio = r.getServicio().getNombreS();
+            }
+            item.put("servicio", nombreServicio);
+
+            item.put("estado", r.getEstadoCita() != null ? r.getEstadoCita() : "PENDIENTE");
+
+            agenda.add(item);
+        }
+
+        return ResponseEntity.ok(agenda);
     }
 }
