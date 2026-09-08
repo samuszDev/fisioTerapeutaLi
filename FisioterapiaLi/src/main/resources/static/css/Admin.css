@@ -56,18 +56,6 @@ button {
     flex-direction: column;
 }
 
-.brand {
-    height: 75px;
-    display: flex;
-    align-items: center;
-    padding-left: 8px;
-}
-
-.brand img {
-    width: 52px;
-    height: 52px;
-}
-
 .sidebar-title {
     color: #d0d7e7;
     font-size: 10px;
@@ -102,16 +90,6 @@ button {
 .nav-item:hover,
 .nav-item.active {
     background: var(--navy-light);
-}
-
-.sidebar-footer {
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    color: #dce3f0;
-    font-size: 9px;
-    padding: 0 8px;
 }
 
 .main-content {
@@ -338,9 +316,7 @@ td {
 
 .progress-track i {
     display: block;
-    width: 55%;
     height: 100%;
-    background: linear-gradient(90deg, var(--navy), var(--teal));
     border-radius: inherit;
 }
 
@@ -927,11 +903,6 @@ td {
     letter-spacing: .4px;
 }
 
-.status.confirmed {
-    background: rgba(95, 214, 214, .18);
-    color: #12294a;
-}
-
 .status.pending {
     background: rgba(182, 147, 52, .16);
     color: #8a6b1f;
@@ -1066,15 +1037,6 @@ td {
     font-size: 9px;
     font-weight: 700;
 }
-.brand img {
-    width: 52px;
-    height: 52px;
-    object-fit: contain;
-    background: #fff;
-    border-radius: 12px;
-    padding: 5px;
-}
-
 /* ===== LOGO REAL DE LA MARCA EN EL SIDEBAR ===== */
 
 .brand img {
@@ -1220,8 +1182,14 @@ tbody tr:hover {
 /* ===== MEJORAS REPORTES: tarjetas e indicadores con contenido real ===== */
 
 .report-stat {
+    position: relative;
     display: flex;
     flex-direction: column;
+}
+
+.report-stat.alt {
+    background: var(--gold-light);
+    border-color: rgba(211, 168, 107, .35);
 }
 
 .report-stat strong {
@@ -1527,4 +1495,234 @@ tbody tr:hover {
 
 .confirm-actions .btn {
     flex: 1;
+}
+
+/* ===== REDISEÑO DASHBOARD: sidebar integrado, tarjetas alternadas, panel oscuro ===== */
+
+.brand {
+    height: auto;
+    padding: 4px 8px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+
+.brand-text strong {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.brand-text span {
+    color: #9fb0c9;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+}
+
+.nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .35);
+    flex-shrink: 0;
+}
+
+.nav-item.active .nav-dot {
+    background: var(--teal);
+}
+
+/* --- Sidebar footer como tarjeta crema (aplica en todas las páginas) --- */
+
+.sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    background: rgba(211, 168, 107, .16);
+    border: 1px solid rgba(211, 168, 107, .3);
+    border-radius: 14px;
+    padding: 14px 14px;
+    gap: 5px;
+    color: #f3e6cf;
+    font-size: 9px;
+}
+
+.sidebar-footer span:first-child {
+    color: #fff;
+    font-weight: 800;
+    font-size: 10.5px;
+}
+
+/* --- Fondo del dashboard: gris azulado, sin el degradé decorativo de esquina --- */
+/* Escopado solo a la página del dashboard para no afectar Agenda/Clientes/Servicios/Reportes */
+
+.main-content:has(#dashboard),
+.main-content:has(#agenda),
+.main-content:has(#clientes),
+.main-content:has(#servicios),
+.main-content:has(#reportes) {
+    background: #eef1f6;
+}
+
+#dashboard,
+#agenda,
+#clientes,
+#servicios,
+#reportes {
+    background: none;
+}
+
+/* --- Tarjetas de estadísticas: alternadas blanco / crema, con punto de color --- */
+
+.stat-card {
+    position: relative;
+    border-radius: 20px;
+}
+
+.stat-card.alt {
+    background: var(--gold-light);
+    border-color: rgba(211, 168, 107, .35);
+}
+
+.card-dot {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.card-dot.teal {
+    background: var(--teal);
+}
+
+.card-dot.gold {
+    background: var(--gold-dark);
+}
+
+/* Nuevo estilo de pill "plano" (solo texto, sin chip) para el Dashboard */
+.stat-pill {
+    background: none;
+    padding: 0;
+    color: #1f8f7a;
+}
+
+.stat-pill.warning {
+    background: none;
+    color: #8a6b1f;
+}
+
+.stat-card.alt .stat-pill {
+    color: #6b7280;
+}
+
+/* --- Panel con más aire --- */
+
+.panel {
+    border-radius: 20px;
+}
+
+/* --- Estado "Confirmada": verde menta --- */
+
+.status.confirmed {
+    background: #d9f5e6;
+    color: #1f7a4c;
+}
+
+/* --- Panel "Actividad rápida" en navy oscuro --- */
+
+.panel-dark {
+    background: linear-gradient(160deg, var(--navy), var(--navy-dark));
+    border: none;
+}
+
+.panel-dark .panel-title {
+    color: #fff;
+}
+
+.panel-dark .progress-label span {
+    color: #dbe4f0;
+}
+
+.panel-dark .progress-label b {
+    color: #fff;
+}
+
+.panel-dark .progress-track {
+    background: rgba(255, 255, 255, .16);
+}
+
+.progress-track i.gold {
+    background: linear-gradient(90deg, #f3da90, #b69334);
+}
+
+.progress-track i.teal {
+    background: var(--teal);
+}
+
+.panel-dark .reminder-box {
+    background: rgba(243, 218, 144, .16);
+    border: 1px solid rgba(243, 218, 144, .3);
+}
+
+.panel-dark .reminder-box strong {
+    color: #f3da90;
+}
+
+.panel-dark .reminder-box p {
+    color: #eef3f8;
+}
+
+/* ===== VISTA SEMANAL DE AGENDA: reemplaza los estilos en línea ===== */
+
+.weekly-view.panel {
+    margin-top: 14px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.calendar-day {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    min-height: 120px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.calendar-day h4 {
+    margin: 0 0 10px;
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.day-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.day-content > * {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
 }

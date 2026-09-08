@@ -13,29 +13,36 @@
     <aside class="sidebar" id="sidebar">
         <div class="brand">
             <img th:src="@{/images/Logo.png}" alt="Logo Fisioterapeuta Li">
+            <div class="brand-text">
+                <strong>La Fisioterapeuta Li</strong>
+                <span>PANEL ADMINISTRATIVO</span>
+            </div>
         </div>
-
-        <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
             <!-- Se reemplazaron los <button> por <a> para enrutamiento nativo con Spring Boot -->
             <a class="nav-item active" th:href="@{/admin/dashboard}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
                 <span>Dashboard</span>
             </a>
             <a class="nav-item" th:href="@{/admin/schedule}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                 <span>Agenda y citas</span>
             </a>
             <a class="nav-item" th:href="@{/admin/clients}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                 <span>Clientes</span>
             </a>
             <a class="nav-item" th:href="@{/admin/services}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                 <span>Servicios</span>
             </a>
             <a class="nav-item" th:href="@{/admin/reports}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                 <span>Reportes</span>
             </a>
@@ -62,13 +69,14 @@
 
                 <div class="header-actions">
                     <!-- Estos botones mantienen data-open-view si abren modales mediante JS -->
-                    <button class="btn btn-gold" data-open-view="reports">Ver reportes</button>
+                    <button class="btn btn-outline" data-open-view="reports">Ver reportes</button>
                     <button class="btn btn-gold" data-open-view="new-appointment">+ Agendar cita</button>
                 </div>
             </div>
 
             <div class="stats-grid">
                 <article class="stat-card">
+                    <span class="card-dot teal"></span>
                     <div class="stat-icon navy">
                         <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                     </div>
@@ -77,7 +85,8 @@
                     <span class="stat-pill">+2 vs. ayer</span>
                 </article>
 
-                <article class="stat-card">
+                <article class="stat-card alt">
+                    <span class="card-dot gold"></span>
                     <div class="stat-icon gold">
                         <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                     </div>
@@ -87,6 +96,7 @@
                 </article>
 
                 <article class="stat-card">
+                    <span class="card-dot teal"></span>
                     <div class="stat-icon navy">
                         <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                     </div>
@@ -95,7 +105,8 @@
                     <span class="stat-pill warning">Requiere seguimiento</span>
                 </article>
 
-                <article class="stat-card">
+                <article class="stat-card alt">
+                    <span class="card-dot gold"></span>
                     <div class="stat-icon gold">
                         <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                     </div>
@@ -141,22 +152,22 @@
                     </div>
                 </article>
 
-                <article class="panel">
+                <article class="panel panel-dark">
                     <div class="panel-title">Actividad rápida</div>
 
                     <div class="progress-item">
                         <div class="progress-label"><span>Fisioterapia general</span><b>72%</b></div>
-                        <div class="progress-track"><i style="width: 72%"></i></div>
+                        <div class="progress-track"><i class="gold" style="width: 72%"></i></div>
                     </div>
 
                     <div class="progress-item">
                         <div class="progress-label"><span>Terapia deportiva</span><b>54%</b></div>
-                        <div class="progress-track"><i style="width: 54%"></i></div>
+                        <div class="progress-track"><i class="teal" style="width: 54%"></i></div>
                     </div>
 
                     <div class="progress-item">
                         <div class="progress-label"><span>Rehabilitación postquirúrgica</span><b>38%</b></div>
-                        <div class="progress-track"><i style="width: 38%"></i></div>
+                        <div class="progress-track"><i class="gold" style="width: 38%"></i></div>
                     </div>
 
                     <div class="reminder-box">

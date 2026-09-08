@@ -13,28 +13,35 @@
     <aside class="sidebar" id="sidebar">
         <div class="brand">
             <img th:src="@{/images/Logo.png}" alt="Logo Fisioterapeuta Li">
+            <div class="brand-text">
+                <strong>La Fisioterapeuta Li</strong>
+                <span>PANEL ADMINISTRATIVO</span>
+            </div>
         </div>
-
-        <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
             <a class="nav-item" th:href="@{/admin/dashboard}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
                 <span>Dashboard</span>
             </a>
             <a class="nav-item" th:href="@{/admin/agenda}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                 <span>Agenda y citas</span>
             </a>
             <a class="nav-item" th:href="@{/admin/clientes}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                 <span>Clientes</span>
             </a>
             <a class="nav-item active" th:href="@{/admin/servicios}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                 <span>Servicios</span>
             </a>
             <a class="nav-item" th:href="@{/admin/reportes}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                 <span>Reportes</span>
             </a>

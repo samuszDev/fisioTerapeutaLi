@@ -16,30 +16,37 @@
     <aside class="sidebar" id="sidebar">
         <div class="brand">
             <img th:src="@{/images/Logo.png}" alt="Logo Fisioterapeuta Li">
+            <div class="brand-text">
+                <strong>La Fisioterapeuta Li</strong>
+                <span>PANEL ADMINISTRATIVO</span>
+            </div>
         </div>
-
-        <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
             <!-- CORRECCIÓN: Se quitó el 'active' de Dashboard -->
             <a class="nav-item" th:href="@{/admin/dashboard}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
                 <span>Dashboard</span>
             </a>
             <a class="nav-item" th:href="@{/admin/schedule}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                 <span>Agenda y citas</span>
             </a>
             <a class="nav-item" th:href="@{/admin/clients}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                 <span>Clientes</span>
             </a>
             <a class="nav-item" th:href="@{/admin/services}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                 <span>Servicios</span>
             </a>
             <!-- CORRECCIÓN: Se agregó el 'active' a Reportes -->
             <a class="nav-item active" th:href="@{/admin/reports}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                 <span>Reportes</span>
             </a>
@@ -72,6 +79,7 @@
 
             <div class="report-stats">
                 <article class="report-stat">
+                    <span class="card-dot teal"></span>
                     <div class="stat-icon navy">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M4 16V9M10 16V5M16 16v-3"/>
@@ -80,7 +88,8 @@
                     <strong>$12.450.000</strong>
                     <span>Ingresos del mes</span>
                 </article>
-                <article class="report-stat">
+                <article class="report-stat alt">
+                    <span class="card-dot gold"></span>
                     <div class="stat-icon gold">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
@@ -90,6 +99,7 @@
                     <span>Citas atendidas</span>
                 </article>
                 <article class="report-stat">
+                    <span class="card-dot teal"></span>
                     <div class="stat-icon navy">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
@@ -98,7 +108,8 @@
                     <strong>12</strong>
                     <span>Cancelaciones</span>
                 </article>
-                <article class="report-stat">
+                <article class="report-stat alt">
+                    <span class="card-dot gold"></span>
                     <div class="stat-icon gold">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="10" cy="7" r="3"/><path d="M4 17c.5-3 2.4-4.5 6-4.5s5.5 1.5 6 4.5"/>

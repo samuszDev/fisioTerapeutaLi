@@ -16,28 +16,35 @@
     <aside class="sidebar" id="sidebar">
         <div class="brand">
             <img th:src="@{/images/Logo.png}" alt="Logo Fisioterapeuta Li">
+            <div class="brand-text">
+                <strong>La Fisioterapeuta Li</strong>
+                <span>PANEL ADMINISTRATIVO</span>
+            </div>
         </div>
-
-        <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
 
         <nav class="sidebar-nav">
             <a class="nav-item" th:href="@{/admin/dashboard}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
                 <span>Dashboard</span>
             </a>
             <a class="nav-item active" th:href="@{/admin/agenda}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                 <span>Agenda y citas</span>
             </a>
             <a class="nav-item" th:href="@{/admin/clientes}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                 <span>Clientes</span>
             </a>
             <a class="nav-item" th:href="@{/admin/servicios}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                 <span>Servicios</span>
             </a>
             <a class="nav-item" th:href="@{/admin/reportes}">
+                <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                 <span>Reportes</span>
             </a>
@@ -69,6 +76,7 @@
 
             <div class="stats-grid agenda-stats">
                 <article class="stat-card">
+                    <span class="card-dot teal"></span>
                     <div class="stat-icon navy">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
@@ -79,7 +87,8 @@
                     <span class="stat-pill">Sede Tunja</span>
                 </article>
 
-                <article class="stat-card">
+                <article class="stat-card alt">
+                    <span class="card-dot gold"></span>
                     <div class="stat-icon gold">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M4 10.5l3.6 3.6L16 5.5"/>
@@ -91,6 +100,7 @@
                 </article>
 
                 <article class="stat-card">
+                    <span class="card-dot teal"></span>
                     <div class="stat-icon navy">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="10" cy="10.5" r="6.5"/><path d="M10 7v4l3 2"/>
@@ -101,7 +111,8 @@
                     <span class="stat-pill warning">Confirmar pago</span>
                 </article>
 
-                <article class="stat-card">
+                <article class="stat-card alt">
+                    <span class="card-dot gold"></span>
                     <div class="stat-icon gold">
                         <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
@@ -158,35 +169,35 @@
                 </div>
             </div>
 
-            <div class="weekly-view">
-                <h3>Vista semanal</h3>
-                <div class="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px;">
-                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
-                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Lun</h4>
+            <div class="weekly-view panel">
+                <h3 class="panel-title">Vista semanal</h3>
+                <div class="calendar-grid">
+                    <div class="calendar-day">
+                        <h4>Lun</h4>
                         <div class="day-content" id="col-lunes"></div>
                     </div>
-                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
-                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Mar</h4>
+                    <div class="calendar-day">
+                        <h4>Mar</h4>
                         <div class="day-content" id="col-martes"></div>
                     </div>
-                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
-                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Mié</h4>
+                    <div class="calendar-day">
+                        <h4>Mié</h4>
                         <div class="day-content" id="col-miercoles"></div>
                     </div>
-                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
-                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Jue</h4>
+                    <div class="calendar-day">
+                        <h4>Jue</h4>
                         <div class="day-content" id="col-jueves"></div>
                     </div>
-                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
-                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Vie</h4>
+                    <div class="calendar-day">
+                        <h4>Vie</h4>
                         <div class="day-content" id="col-viernes"></div>
                     </div>
-                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
-                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Sáb</h4>
+                    <div class="calendar-day">
+                        <h4>Sáb</h4>
                         <div class="day-content" id="col-sabado"></div>
                     </div>
-                    <div class="calendar-day" style="background: #f8f9fa; border-radius: 8px; padding: 10px; min-height: 120px;">
-                        <h4 style="margin: 0 0 10px 0; color: #0b2239; font-size: 0.9rem;">Dom</h4>
+                    <div class="calendar-day">
+                        <h4>Dom</h4>
                         <div class="day-content" id="col-domingo"></div>
                     </div>
                 </div>
