@@ -226,10 +226,18 @@ public class BotReservaController {
             return "Atendemos desde las 7:00 a.m.";
         if (fin.toLocalTime().isAfter(CIERRE))
             return "Atendemos hasta las 8:00 p.m. y la cita no alcanzaría a terminar.";
+
         boolean chocaAlmuerzo = inicio.toLocalTime().isBefore(ALMUERZO_FIN)
                 && fin.toLocalTime().isAfter(ALMUERZO_INICIO);
-        if (chocaAlmuerzo)
+        if (chocaAlmuerzo) {
+            long minutos = java.time.Duration.between(inicio, fin).toMinutes();
+            if (inicio.toLocalTime().isBefore(ALMUERZO_INICIO)) {
+                return "Ese servicio dura " + minutos + " minutos, así que empezando a las "
+                        + inicio.format(HUMANO) + " terminaría a las " + fin.format(HUMANO)
+                        + ", dentro de la franja de almuerzo (12:00 p.m. a 2:00 p.m.).";
+            }
             return "Entre 12:00 p.m. y 2:00 p.m. no se agendan citas.";
+        }
         return null;
     }
 
@@ -380,15 +388,27 @@ public class BotReservaController {
             }
         }
 
+        LocalDateTime ahora = LocalDateTime.now();
+
         List<String> disponibles = new ArrayList<>();
         for (String h : todosLosHorarios) {
-            if (!horasOcupadas.contains(h)) {
-                disponibles.add(h);
-            }
+            if (horasOcupadas.contains(h)) continue;
+
+            LocalDateTime inicioSlot = fecha.atTime(LocalTime.parse(h));
+            if (!inicioSlot.isAfter(ahora)) continue;   // esa hora ya pasó
+
+            disponibles.add(h);
         }
 
         respuesta.put("fecha", fechaStr);
         respuesta.put("disponibles", disponibles);
+
+        if (disponibles.isEmpty()) {
+            respuesta.put("mensaje", fecha.equals(LocalDate.now())
+                    ? "Ya no quedan horarios libres para hoy. Dime otra fecha y te digo qué hay disponible."
+                    : "No quedan horarios libres el " + fechaStr + ". Dime otra fecha.");
+        }
+
         return ResponseEntity.ok(respuesta);
     }
 
