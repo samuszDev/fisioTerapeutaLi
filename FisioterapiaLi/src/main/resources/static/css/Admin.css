@@ -2501,3 +2501,114 @@ tbody tr:hover {
     height: 3px;
     background: linear-gradient(90deg, var(--gold), var(--teal));
 }
+
+/* ===================================================================
+   AJUSTES FINALES DE USABILIDAD (tarjetas, fotos, botones, selector)
+   =================================================================== */
+
+/* --- Tarjetas de stat-card / report-stat: ícono junto al número,
+   texto descriptivo debajo de ambos, y letra más grande --- */
+
+.stat-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.stat-top .stat-icon {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.stat-value {
+    font-size: 30px;
+    margin-bottom: 0;
+}
+
+.stat-label {
+    font-size: 12.5px;
+}
+
+.stat-pill {
+    font-size: 11.5px;
+}
+
+.report-stat strong {
+    font-size: 27px;
+    margin-bottom: 0;
+}
+
+.report-stat span {
+    font-size: 12.5px;
+}
+
+/* --- Botones de acción de tabla (Historial clínico / Editar / Eliminar): más grandes --- */
+
+.table-action {
+    font-size: 13px;
+    padding: 4px 2px;
+}
+
+/* --- Ícono de reemplazo para la foto repetida (sidebar y recordatorios) --- */
+
+.footer-icon,
+.reminder-icon {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.footer-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--navy-light);
+    border: 2px solid rgba(255, 255, 255, .35);
+}
+
+.footer-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.reminder-icon {
+    width: 34px;
+    height: 34px;
+    background: var(--gold-dark);
+}
+
+.reminder-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* --- Selector Vista lista / Vista semanal (Agenda) --- */
+
+.view-toggle {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    background: #eef1f6;
+    border-radius: 30px;
+    margin-bottom: 14px;
+}
+
+.view-toggle-btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 26px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.view-toggle-btn.active {
+    background: var(--navy);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(18, 41, 74, .2);
+}

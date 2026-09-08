@@ -7,11 +7,11 @@ if (typeof registerInternalViews === "function") {
                 <form class="form-grid" id="newClientForm">
                     <div class="form-field">
                         <label>Nombre completo</label>
-                        <input type="text" name="nombre" required>
+                        <input type="text" name="nombre" placeholder="Ingresa el nombre completo del paciente" required>
                     </div>
                     <div class="form-field">
                         <label>N° de documento</label>
-                        <input type="text" name="documento" required>
+                        <input type="text" name="documento" placeholder="Número de cédula o documento de identificación" required>
                     </div>
                     <div class="form-field">
                         <label>Tipo de documento</label>
@@ -25,7 +25,7 @@ if (typeof registerInternalViews === "function") {
                     </div>
                     <div class="form-field">
                         <label>Fecha de nacimiento</label>
-                        <input type="date" name="fechaNacimiento">
+                        <input type="date" name="fechaNacimiento" placeholder="dd/mm/aaaa">
                     </div>
                     <div class="form-field">
                         <label>Género</label>
@@ -38,19 +38,19 @@ if (typeof registerInternalViews === "function") {
                     </div>
                     <div class="form-field">
                         <label>EPS / Aseguradora</label>
-                        <input type="text" name="eps">
+                        <input type="text" name="eps" placeholder="Ej: Sura, Nueva EPS, Sanitas...">
                     </div>
                     <div class="form-field">
                         <label>Teléfono / WhatsApp</label>
-                        <input type="tel" name="telefono" required>
+                        <input type="tel" name="telefono" placeholder="Ej: 300 123 4567" required>
                     </div>
                     <div class="form-field">
                         <label>Correo</label>
-                        <input type="email" name="email" required>
+                        <input type="email" name="email" placeholder="ejemplo@correo.com" required>
                     </div>
                     <div class="form-field">
                         <label>Contacto de emergencia</label>
-                        <input type="text" name="contactoEmergencia">
+                        <input type="text" name="contactoEmergencia" placeholder="Nombre y teléfono de un contacto de emergencia">
                     </div>
                     <div class="form-field">
                         <label>Documento de quien lo refirió</label>
@@ -68,27 +68,27 @@ if (typeof registerInternalViews === "function") {
                     <input type="hidden" name="idUsuario" id="editIdUsuario">
                     <div class="form-field">
                         <label>Nombre completo</label>
-                        <input type="text" name="nombre" id="editNombre" required>
+                        <input type="text" name="nombre" id="editNombre" placeholder="Ingresa el nombre completo del paciente" required>
                     </div>
                     <div class="form-field">
                         <label>N° de documento</label>
-                        <input type="text" name="documento" id="editDocumento" required>
+                        <input type="text" name="documento" id="editDocumento" placeholder="Número de cédula o documento de identificación" required>
                     </div>
                     <div class="form-field">
                         <label>EPS / Aseguradora</label>
-                        <input type="text" name="eps" id="editEps">
+                        <input type="text" name="eps" id="editEps" placeholder="Ej: Sura, Nueva EPS, Sanitas...">
                     </div>
                     <div class="form-field">
                         <label>Teléfono / WhatsApp</label>
-                        <input type="tel" name="telefono" id="editTelefono" required>
+                        <input type="tel" name="telefono" id="editTelefono" placeholder="Ej: 300 123 4567" required>
                     </div>
                     <div class="form-field">
                         <label>Correo</label>
-                        <input type="email" name="email" id="editEmail" required>
+                        <input type="email" name="email" id="editEmail" placeholder="ejemplo@correo.com" required>
                     </div>
                     <div class="form-field">
                         <label>Contacto de emergencia</label>
-                        <input type="text" name="contactoEmergencia" id="editContactoEmergencia">
+                        <input type="text" name="contactoEmergencia" id="editContactoEmergencia" placeholder="Nombre y teléfono de un contacto de emergencia">
                     </div>
                 </form>
             `
@@ -135,11 +135,11 @@ if (typeof registerInternalViews === "function") {
                     <div class="form-grid">
                         <div class="form-field">
                             <label>Tipo de dolor</label>
-                            <input type="text" name="tipoDolor">
+                            <input type="text" name="tipoDolor" placeholder="Ej: punzante, muscular, articular...">
                         </div>
                         <div class="form-field">
                             <label>EVA</label>
-                            <input type="text" name="eva">
+                            <input type="text" name="eva" placeholder="Escala de 0 a 10">
                         </div>
                         <div class="form-field">
                             <label>Comportamiento del dolor</label>
@@ -163,7 +163,7 @@ if (typeof registerInternalViews === "function") {
                         </div>
                         <div class="form-field">
                             <label>IMC</label>
-                            <input type="text" name="imc">
+                            <input type="text" name="imc" placeholder="Ej: 24.5">
                         </div>
                     </div>
                 </div>
