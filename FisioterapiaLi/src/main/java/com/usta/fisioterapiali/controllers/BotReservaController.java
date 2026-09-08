@@ -129,8 +129,11 @@ public class BotReservaController {
         reserva.setSede(sede);
         reserva.setUsuario(paciente);
         reserva.setServicio(servicio);
-        reserva.setEstadoCita("PRE_RESERVA");
-        reserva.setPagoConfirmado(false);
+        // Si agenda la administradora, el pago ya se recibió (efectivo o Nequi presencial)
+        boolean laAgendaAdmin = esAdministrador(req.getTelegramUserId());
+
+        reserva.setEstadoCita(laAgendaAdmin ? "CONFIRMADA" : "PRE_RESERVA");
+        reserva.setPagoConfirmado(laAgendaAdmin);
         reserva.setEstadoR(true);
         reserva.setGoogleCalendarId(null); // n8n lo envía después con PATCH
 
@@ -140,7 +143,7 @@ public class BotReservaController {
         PreReservaResponse r = new PreReservaResponse();
         r.setDisponible(true);
         r.setReservaId(guardada.getIdReserva());
-        r.setEstado("PRE_RESERVA");
+        r.setEstado(laAgendaAdmin ? "CONFIRMADA" : "PRE_RESERVA");
         r.setNombrePaciente(paciente.getNombre());
         r.setServicio(servicio.getNombreS());
         r.setSede(sede);
@@ -148,11 +151,15 @@ public class BotReservaController {
         r.setFechaInicio(inicio.format(ISO));
         r.setFechaFin(fin.format(ISO));
         r.setDuracionMinutos(duracion);
-        r.setMensaje("Espacio apartado para " + paciente.getNombre() + " el "
+        String base = (laAgendaAdmin ? "Cita CONFIRMADA para " : "Espacio apartado para ")
+                + paciente.getNombre() + " el "
                 + inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " a las "
                 + inicio.format(HUMANO) + " en " + sede + ". Valor: $"
-                + String.format("%,.0f", servicio.getPrecioIndividual())
-                + ". Queda confirmado al recibir el pago.");
+                + String.format("%,.0f", servicio.getPrecioIndividual()) + ".";
+
+        r.setMensaje(laAgendaAdmin
+                ? base + " Pago recibido."
+                : base + " Queda confirmado al recibir el pago.");
 
         return new ResponseEntity<>(r, HttpStatus.CREATED);
     }
@@ -220,6 +227,146 @@ public class BotReservaController {
                 + reserva.getFechaInicio().format(
                 DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " a las "
                 + reserva.getFechaInicio().format(HUMANO) + " en " + reserva.getSede() + ".");
+
+        return ResponseEntity.ok(r);
+    }
+
+    /** Lina cancela una cita. La reserva queda inactiva y el horario se libera. */
+    @PatchMapping("/reserva/{id}/cancelar")
+    @Transactional
+    public ResponseEntity<PreReservaResponse> cancelarReserva(@PathVariable Long id) {
+        Optional<ReservationEntity> opt = reservationDao.findById(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(PreReservaResponse.error("No existe la reserva " + id + "."));
+        }
+
+        ReservationEntity reserva = opt.get();
+
+        // Idempotente: cancelar dos veces no falla.
+        boolean yaEstaba = !reserva.isEstadoR();
+        if (!yaEstaba) {
+            reserva.setEstadoR(false);
+            reserva.setEstadoCita("CANCELADA");
+            reservationDao.save(reserva);
+        }
+
+        UserEntity p = reserva.getUsuario();
+        ServiceEntity s = reserva.getServicio();
+
+        PreReservaResponse r = new PreReservaResponse();
+        r.setDisponible(false);
+        r.setReservaId(reserva.getIdReserva());
+        r.setEstado("CANCELADA");
+        r.setNombrePaciente(p != null ? p.getNombre() : "");
+        r.setCorreo(p != null ? p.getEmail() : null);
+        r.setTelefono(p != null ? p.getTelefono() : null);
+        r.setTelegramUserId(p != null ? p.getTelegramUserId() : null);
+        r.setServicio(s != null ? s.getNombreS() : "");
+        r.setValor(s != null ? s.getPrecioIndividual() : null);
+        r.setSede(reserva.getSede());
+        r.setGoogleCalendarId(reserva.getGoogleCalendarId());
+        r.setFechaInicio(reserva.getFechaInicio().format(ISO));
+        r.setFechaFin(reserva.getFechaFin().format(ISO));
+        r.setDuracionMinutos(s != null ? s.getDuracionS() : null);
+        r.setMensaje(yaEstaba
+                ? "La reserva " + id + " ya estaba cancelada."
+                : "Cita #" + id + " de " + r.getNombrePaciente() + " el "
+                + reserva.getFechaInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                + " a las " + reserva.getFechaInicio().format(HUMANO)
+                + " cancelada. El horario quedó libre.");
+
+        return ResponseEntity.ok(r);
+    }
+
+    /** Lina mueve una cita a otra fecha y hora. */
+    @PatchMapping("/reserva/{id}/reprogramar")
+    @Transactional
+    public ResponseEntity<PreReservaResponse> reprogramarReserva(
+            @PathVariable Long id,
+            @RequestParam("fechaInicio") String fechaInicioStr) {
+
+        Optional<ReservationEntity> opt = reservationDao.findById(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(PreReservaResponse.error("No existe la reserva " + id + "."));
+        }
+
+        ReservationEntity reserva = opt.get();
+        if (!reserva.isEstadoR()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(PreReservaResponse.error("Esa reserva está cancelada. No se puede reprogramar."));
+        }
+
+        LocalDateTime inicio;
+        try {
+            String limpia = fechaInicioStr.trim();
+            if (limpia.length() > 19) limpia = limpia.substring(0, 19);
+            if (limpia.length() == 16) limpia = limpia + ":00";
+            inicio = LocalDateTime.parse(limpia, ISO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    PreReservaResponse.error("Fecha inválida. Usa el formato 2026-09-11T16:00:00."));
+        }
+
+        if (inicio.isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body(
+                    PreReservaResponse.error("Esa fecha ya pasó. Dame una fecha futura."));
+        }
+
+        ServiceEntity s = reserva.getServicio();
+        int duracion = (s != null && s.getDuracionS() != null) ? s.getDuracionS() : 60;
+        LocalDateTime fin = inicio.plusMinutes(duracion);
+
+        String errorHorario = validarHorario(inicio, fin);
+        if (errorHorario != null) {
+            PreReservaResponse r = PreReservaResponse.error(errorHorario);
+            r.setAlternativas(horariosLibres(inicio, duracion));
+            return ResponseEntity.badRequest().body(r);
+        }
+
+        // Solapamiento, ignorando la propia cita
+        for (ReservationEntity c : reservationDao.findSolapadas(inicio, fin)) {
+            if (!c.getIdReserva().equals(id)) {
+                PreReservaResponse r = new PreReservaResponse();
+                r.setDisponible(false);
+                r.setEstado("OCUPADO");
+                r.setMensaje("Ese horario ya está ocupado.");
+                r.setAlternativas(horariosLibres(inicio, duracion));
+                return new ResponseEntity<>(r, HttpStatus.CONFLICT);
+            }
+        }
+
+        LocalDateTime anterior = reserva.getFechaInicio();
+        String sede = deducirSede(inicio);
+
+        reserva.setFechaInicio(inicio);
+        reserva.setFechaFin(fin);
+        reserva.setSede(sede);
+        reservationDao.save(reserva);
+
+        UserEntity p = reserva.getUsuario();
+
+        PreReservaResponse r = new PreReservaResponse();
+        r.setDisponible(true);
+        r.setReservaId(reserva.getIdReserva());
+        r.setEstado(reserva.getEstadoCita());
+        r.setNombrePaciente(p != null ? p.getNombre() : "");
+        r.setCorreo(p != null ? p.getEmail() : null);
+        r.setTelefono(p != null ? p.getTelefono() : null);
+        r.setTelegramUserId(p != null ? p.getTelegramUserId() : null);
+        r.setServicio(s != null ? s.getNombreS() : "");
+        r.setValor(s != null ? s.getPrecioIndividual() : null);
+        r.setSede(sede);
+        r.setGoogleCalendarId(reserva.getGoogleCalendarId());
+        r.setFechaInicio(inicio.format(ISO));
+        r.setFechaFin(fin.format(ISO));
+        r.setDuracionMinutos(duracion);
+        r.setMensaje("Cita #" + id + " de " + r.getNombrePaciente() + " movida del "
+                + anterior.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " a las "
+                + anterior.format(HUMANO) + " al "
+                + inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " a las "
+                + inicio.format(HUMANO) + " en " + sede + ".");
 
         return ResponseEntity.ok(r);
     }
@@ -378,6 +525,15 @@ public class BotReservaController {
         return s == null ? "" : s.replaceAll("[^0-9]", "");
     }
 
+    /** True si ese chat de Telegram pertenece a la administradora o a la fisioterapeuta. */
+    private boolean esAdministrador(String telegramUserId) {
+        if (telegramUserId == null || telegramUserId.isBlank()) return false;
+        for (UserEntity u : userDao.findAllByTelegramUserId(telegramUserId)) {
+            if (u.getRol() == TipoUsuario.ADMIN || u.getRol() == TipoUsuario.FISIO) return true;
+        }
+        return false;
+    }
+
     /** Identifica al usuario de Telegram y devuelve su rol. */
     @GetMapping("/usuario/{telegramUserId}")
     public ResponseEntity<java.util.Map<String, Object>> identificarUsuario(
@@ -452,6 +608,7 @@ public class BotReservaController {
 
         List<String> horasOcupadas = new ArrayList<>();
         for (ReservationEntity r : reservasDelDia) {
+            if (!r.isEstadoR()) continue;               // ignorar canceladas
             if (r.getFechaInicio() != null) {
                 horasOcupadas.add(r.getFechaInicio().toLocalTime().format(formatoHora));
             }
@@ -495,7 +652,10 @@ public class BotReservaController {
         DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
 
         for (ReservationEntity r : reservas) {
+            if (!r.isEstadoR()) continue;               // ignorar canceladas
+
             Map<String, Object> item = new HashMap<>();
+            item.put("idReserva", r.getIdReserva());
             item.put("hora", r.getFechaInicio() != null ? r.getFechaInicio().toLocalTime().format(formatoHora) : "");
 
             String nombrePaciente = "Sin asignar";
