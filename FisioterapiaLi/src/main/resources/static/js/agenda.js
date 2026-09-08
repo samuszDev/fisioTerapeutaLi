@@ -241,3 +241,60 @@ document.addEventListener("click", event => {
         }
     }
 });
+function cargarVistaSemanal(citasArray) {
+    // 1. Definir los contenedores de los días de la semana
+    const diasContenedores = {
+        0: document.getElementById('col-domingo'),
+        1: document.getElementById('col-lunes'),
+        2: document.getElementById('col-martes'),
+        3: document.getElementById('col-miercoles'),
+        4: document.getElementById('col-jueves'),
+        5: document.getElementById('col-viernes'),
+        6: document.getElementById('col-sabado')
+    };
+
+    // 2. Limpiar todas las columnas antes de pintar
+    Object.values(diasContenedores).forEach(contenedor => {
+        if (contenedor) contenedor.innerHTML = '';
+    });
+
+    if (!Array.isArray(citasArray) || citasArray.length === 0) return;
+
+    // 3. Recorrer y distribuir las citas según su fecha de inicio
+    citasArray.forEach(cita => {
+        if (!cita.fechaInicio) return;
+
+        // Extraer la fecha (ej: "2026-09-08T10:00:00" -> se toma la parte de la fecha)
+        const fechaStr = cita.fechaInicio.split('T')[0];
+        const partesFecha = fechaStr.split('-');
+
+        if (partesFecha.length !== 3) return;
+
+        // Crear la fecha asegurando zona horaria local o interpretando año, mes (0-11), día
+        const anio = parseInt(partesFecha[0], 10);
+        const mes = parseInt(partesFecha[1], 10) - 1;
+        const dia = parseInt(partesFecha[2], 10);
+        const fechaObj = new Date(anio, mes, dia);
+
+        const diaSemana = fechaObj.getDay(); // 0 (Dom) al 6 (Sáb)
+        const contenedorDia = diasContenedores[diaSemana];
+
+        if (contenedorDia) {
+            const horaStr = cita.fechaInicio.includes('T') ? cita.fechaInicio.split('T')[1].substring(0, 5) : '';
+            const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'Paciente';
+            const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre) : '';
+            const estadoCita = cita.estadoCita || 'CONFIRMADA';
+
+            const card = document.createElement('div');
+            card.className = `weekly-appointment-card estado-${estadoCita.toLowerCase()}`;
+            card.style.cssText = "background: #fff; border-left: 4px solid var(--gold, #c5a880); padding: 8px; margin-bottom: 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 13px;";
+
+            card.innerHTML = `
+                <div style="font-weight: 600; color: #1e293b;">${horaStr} - ${pacienteNombre}</div>
+                <div style="color: #64748b; font-size: 12px;">${servicioNombre}</div>
+            `;
+
+            contenedorDia.appendChild(card);
+        }
+    });
+}
