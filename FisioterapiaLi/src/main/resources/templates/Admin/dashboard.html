@@ -6,6 +6,8 @@
     <title>La Fisioterapeuta Li · Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/Admin.css}">
     <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
 </head>
 <body>
 
@@ -49,9 +51,12 @@
         </nav>
 
         <div class="sidebar-footer">
-            <span>Lina Murillo (Fisioterapeuta)</span>
-            <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
-            <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
+            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="footer-avatar">
+            <div class="footer-info">
+                <span>Lina Murillo (Fisioterapeuta)</span>
+                <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
+                <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
+            </div>
         </div>
     </aside>
     <main class="main-content">
@@ -61,10 +66,12 @@
         </header>
         <section class="page active" id="dashboard">
             <div class="page-header">
-                <div>
-                    <span class="eyebrow">LA FISIOTERAPEUTA LI · ADMINISTRACIÓN</span>
-                    <h1>Dashboard</h1>
-                    <p>Resumen general del consultorio.</p>
+                <div class="dashboard-title-row">
+                    <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="title-avatar">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p>Resumen general del consultorio.</p>
+                    </div>
                 </div>
 
                 <div class="header-actions">
@@ -74,85 +81,87 @@
                 </div>
             </div>
 
-            <div class="stats-grid">
-                <article class="stat-card">
-                    <span class="card-dot teal"></span>
-                    <div class="stat-icon navy">
-                        <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+            <div class="dashboard-columns">
+                <div class="dashboard-main">
+                    <div class="stats-grid">
+                        <article class="stat-card">
+                            <span class="card-dot teal"></span>
+                            <div class="stat-icon navy">
+                                <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+                            </div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Citas de hoy</div>
+                            <span class="stat-pill">+2 vs. ayer</span>
+                        </article>
+
+                        <article class="stat-card alt">
+                            <span class="card-dot gold"></span>
+                            <div class="stat-icon gold">
+                                <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+                            </div>
+                            <div class="stat-value">132</div>
+                            <div class="stat-label">Pacientes activos</div>
+                            <span class="stat-pill">+12 este mes</span>
+                        </article>
+
+                        <article class="stat-card">
+                            <span class="card-dot teal"></span>
+                            <div class="stat-icon navy">
+                                <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+                            </div>
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Pendientes de pago</div>
+                            <span class="stat-pill warning">Requiere seguimiento</span>
+                        </article>
+
+                        <article class="stat-card alt">
+                            <span class="card-dot gold"></span>
+                            <div class="stat-icon gold">
+                                <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+                            </div>
+                            <div class="stat-value">27</div>
+                            <div class="stat-label">Referidos completados</div>
+                            <span class="stat-pill">Meta mensual: 30</span>
+                        </article>
                     </div>
-                    <div class="stat-value">8</div>
-                    <div class="stat-label">Citas de hoy</div>
-                    <span class="stat-pill">+2 vs. ayer</span>
-                </article>
 
-                <article class="stat-card alt">
-                    <span class="card-dot gold"></span>
-                    <div class="stat-icon gold">
-                        <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
-                    </div>
-                    <div class="stat-value">132</div>
-                    <div class="stat-label">Pacientes activos</div>
-                    <span class="stat-pill">+12 este mes</span>
-                </article>
+                    <article class="panel">
+                        <div class="panel-title">Agenda de hoy</div>
 
-                <article class="stat-card">
-                    <span class="card-dot teal"></span>
-                    <div class="stat-icon navy">
-                        <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
-                    </div>
-                    <div class="stat-value">3</div>
-                    <div class="stat-label">Pendientes de pago</div>
-                    <span class="stat-pill warning">Requiere seguimiento</span>
-                </article>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Paciente</th>
+                                    <th>Servicio</th>
+                                    <th>Estado</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>8:00 am</td><td>Laura Gómez</td><td>Fisioterapia general</td>
+                                    <td><span class="status confirmed">Confirmada</span></td>
+                                </tr>
+                                <tr>
+                                    <td>9:30 am</td><td>Andrés Ruiz</td><td>Terapia deportiva</td>
+                                    <td><span class="status confirmed">Confirmada</span></td>
+                                </tr>
+                                <tr>
+                                    <td>11:00 am</td><td>María Torres</td><td>Rehabilitación postquirúrgica</td>
+                                    <td><span class="status pending">Pendiente</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2:15 pm</td><td>Carlos Peña</td><td>Masoterapia</td>
+                                    <td><span class="status cancelled">Cancelada</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </div>
 
-                <article class="stat-card alt">
-                    <span class="card-dot gold"></span>
-                    <div class="stat-icon gold">
-                        <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
-                    </div>
-                    <div class="stat-value">27</div>
-                    <div class="stat-label">Referidos completados</div>
-                    <span class="stat-pill">Meta mensual: 30</span>
-                </article>
-            </div>
-
-            <div class="dashboard-grid">
-                <article class="panel">
-                    <div class="panel-title">Agenda de hoy</div>
-
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>Hora</th>
-                                <th>Paciente</th>
-                                <th>Servicio</th>
-                                <th>Estado</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>8:00 am</td><td>Laura Gómez</td><td>Fisioterapia general</td>
-                                <td><span class="status confirmed">Confirmada</span></td>
-                            </tr>
-                            <tr>
-                                <td>9:30 am</td><td>Andrés Ruiz</td><td>Terapia deportiva</td>
-                                <td><span class="status confirmed">Confirmada</span></td>
-                            </tr>
-                            <tr>
-                                <td>11:00 am</td><td>María Torres</td><td>Rehabilitación postquirúrgica</td>
-                                <td><span class="status pending">Pendiente</span></td>
-                            </tr>
-                            <tr>
-                                <td>2:15 pm</td><td>Carlos Peña</td><td>Masoterapia</td>
-                                <td><span class="status cancelled">Cancelada</span></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </article>
-
-                <article class="panel panel-dark">
+                <article class="panel panel-dark dashboard-side">
                     <div class="panel-title">Actividad rápida</div>
 
                     <div class="progress-item">
@@ -170,9 +179,22 @@
                         <div class="progress-track"><i class="gold" style="width: 38%"></i></div>
                     </div>
 
-                    <div class="reminder-box">
-                        <strong>Recordatorio</strong>
-                        <p>Confirmar el pago pendiente de Carlos Peña antes del viernes.</p>
+                    <div class="reminder-list">
+                        <div class="reminder-box">
+                            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="reminder-avatar">
+                            <div>
+                                <strong>Recordatorio</strong>
+                                <p>Confirmar el pago pendiente de Carlos Peña antes del viernes.</p>
+                            </div>
+                        </div>
+
+                        <div class="reminder-box">
+                            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="reminder-avatar">
+                            <div>
+                                <strong>Seguimiento</strong>
+                                <p>Llamar a María Torres para confirmar su próxima sesión de rehabilitación.</p>
+                            </div>
+                        </div>
                     </div>
                 </article>
             </div>

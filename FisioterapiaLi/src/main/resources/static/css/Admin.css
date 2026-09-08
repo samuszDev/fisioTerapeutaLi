@@ -72,17 +72,18 @@ button {
 
 .nav-item {
     width: 100%;
-    min-height: 40px;
+    min-height: 46px;
     border: 0;
     border-radius: 9px;
     background: transparent;
     color: #fff;
     padding: 10px 12px;
     text-align: left;
+    text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
+    gap: 10px;
+    font-size: 14.5px;
     font-weight: 650;
     transition: background .2s ease;
 }
@@ -253,7 +254,6 @@ h1 {
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 570px;
 }
 
 th {
@@ -783,9 +783,9 @@ td {
 
 
 .nav-item img {
-    width: 13px;
-    height: 13px;
-    flex: 0 0 13px;
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
     object-fit: contain;
 }
 
@@ -1063,6 +1063,9 @@ td {
 
 table {
     font-size: 13px;
+}
+
+.wide-table {
     min-width: 760px;
 }
 
@@ -1774,4 +1777,439 @@ tbody tr:hover {
 .ref-badge.has-refs {
     background: rgba(95, 214, 214, .18);
     color: #12294a;
+}
+
+/* ===================================================================
+   NUEVA IDENTIDAD VISUAL DEL DASHBOARD
+   (sidebar en degradado azul con líneas decorativas, fondo claro con
+   el mismo motivo, panel "Actividad rápida" ahora en tono claro)
+   Todo escopado a :has(#dashboard) / #dashboard para no tocar el
+   resto de las páginas del admin.
+   =================================================================== */
+
+/* --- Sidebar: degradado azul + líneas onduladas decorativas --- */
+/* (degradado que nunca llega a blanco puro, para que los íconos y el
+   texto blanco de siempre se sigan viendo bien sin recolorearlos) */
+
+.sidebar {
+    position: relative;
+}
+
+.sidebar > * {
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar:has(.nav-item[href*="dashboard"].active) {
+    background: linear-gradient(180deg, #4a6da3 0%, #2f5590 55%, #1a3a63 100%);
+    overflow: hidden;
+}
+
+.sidebar:has(.nav-item[href*="dashboard"].active)::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -40px -40px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat bottom center;
+    background-size: contain;
+    filter: brightness(0) invert(1);
+    opacity: .3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.sidebar:has(.nav-item[href*="dashboard"].active) .nav-item:hover,
+.sidebar:has(.nav-item[href*="dashboard"].active) .nav-item.active {
+    background: rgba(255, 255, 255, .18);
+}
+
+/* --- Fondo del contenido: claro, con las líneas doradas reales del sitio --- */
+
+.main-content:has(#dashboard) {
+    background: #f3f6fb;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content:has(#dashboard)::before {
+    content: "";
+    position: absolute;
+    inset: auto -60px -60px auto;
+    width: 520px;
+    height: 520px;
+    background: url("../images/lineas_dorada.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .55;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#dashboard)::after {
+    content: "";
+    position: absolute;
+    inset: -60px auto auto -60px;
+    width: 420px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat top left;
+    background-size: contain;
+    opacity: .3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#dashboard) > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Las mismas líneas, más sutiles, detrás de los paneles del dashboard */
+
+#dashboard .panel {
+    position: relative;
+    overflow: hidden;
+}
+
+#dashboard .panel::before {
+    content: "";
+    position: absolute;
+    inset: auto -30px -30px auto;
+    width: 320px;
+    height: 220px;
+    background: url("../images/lineas_azul.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .2;
+    pointer-events: none;
+}
+
+#dashboard .dashboard-side::before {
+    background-image: url("../images/lineas_dorada.png");
+    opacity: .26;
+}
+
+#dashboard .panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Panel "Actividad rápida": ahora claro en vez de navy oscuro --- */
+
+.panel-dark {
+    background: #fff;
+    border: 1px solid var(--border);
+}
+
+.panel-dark .panel-title {
+    color: var(--text);
+}
+
+.panel-dark .progress-label span {
+    color: var(--text);
+}
+
+.panel-dark .progress-label b {
+    color: var(--muted);
+}
+
+.panel-dark .progress-track {
+    background: #eef1f6;
+}
+
+.panel-dark .reminder-box {
+    background: var(--gold-light);
+    border: 1px solid rgba(211, 168, 107, .3);
+}
+
+.panel-dark .reminder-box strong {
+    color: var(--gold-dark);
+}
+
+.panel-dark .reminder-box p {
+    color: var(--text);
+}
+
+/* ===== FOTO REAL DE LINA MURILLO EN EL DASHBOARD ===== */
+/* Se activan solas con :has() cuando el markup incluye la foto,
+   así que no afectan Agenda/Clientes/Servicios/Reportes. */
+
+.sidebar-footer:has(.footer-avatar) {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 12%;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, .55);
+}
+
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.reminder-box:has(.reminder-avatar) {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.reminder-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 12%;
+    flex-shrink: 0;
+}
+
+/* ===== BARRA DE ACCIONES EN PÍLDORA (solo Dashboard) ===== */
+/* Misma idea visual que la barra "Inicio/Servicios..." de la referencia,
+   pero con los botones reales del panel en vez de esos textos. */
+
+#dashboard .header-actions {
+    background: linear-gradient(90deg, #e7ecf5, #cfdaeb);
+    border-radius: 50px;
+    padding: 9px 10px;
+    box-shadow: 0 6px 18px rgba(18, 41, 74, .12);
+}
+
+#dashboard .header-actions .btn {
+    border-radius: 30px;
+    padding: 10px 20px;
+}
+
+/* ===== TÍTULO DEL DASHBOARD: foto circular + tipografía llamativa ===== */
+
+.dashboard-title-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.title-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 12%;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 16px rgba(18, 41, 74, .18);
+    flex-shrink: 0;
+}
+
+#dashboard h1 {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 40px;
+    background: linear-gradient(90deg, var(--navy), #1f8f9d, var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--navy);
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2px;
+}
+
+/* Texto que antes iba arriba del título, ahora dentro de la píldora */
+
+/* (el texto que iba en la píldora se quitó a pedido) */
+
+/* ===== LAYOUT: Actividad rápida sube y ocupa toda la altura a la derecha ===== */
+
+.dashboard-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(280px, .95fr);
+    gap: 14px;
+    align-items: stretch;
+}
+
+.dashboard-main {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+.dashboard-main .stats-grid {
+    margin-bottom: 0;
+}
+
+.dashboard-side {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-side .reminder-box {
+    margin-top: auto;
+}
+
+@media (max-width: 1050px) {
+    .dashboard-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .dashboard-title-row {
+        gap: 12px;
+    }
+
+    .title-avatar {
+        width: 50px;
+        height: 50px;
+    }
+
+    #dashboard h1 {
+        font-size: 28px;
+    }
+}
+
+/* ===== ACTIVIDAD RÁPIDA: más lleno, con dos recordatorios ===== */
+
+#dashboard .progress-item {
+    margin-bottom: 26px;
+}
+
+#dashboard .progress-track {
+    height: 9px;
+}
+
+.reminder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.dashboard-side .reminder-box {
+    margin-top: 0;
+    padding: 14px;
+}
+
+.reminder-avatar {
+    width: 42px;
+    height: 42px;
+}
+
+/* ===================================================================
+   MISMA IDENTIDAD VISUAL, AHORA EN AGENDA Y CITAS
+   Escopado a :has(.nav-item[href*="agenda"].active) / #agenda para no
+   afectar Dashboard, Clientes, Servicios ni Reportes.
+   =================================================================== */
+
+.sidebar:has(.nav-item[href*="agenda"].active) {
+    background: linear-gradient(180deg, #4a6da3 0%, #2f5590 55%, #1a3a63 100%);
+    overflow: hidden;
+}
+
+.sidebar:has(.nav-item[href*="agenda"].active)::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -40px -40px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat bottom center;
+    background-size: contain;
+    filter: brightness(0) invert(1);
+    opacity: .3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.sidebar:has(.nav-item[href*="agenda"].active) .nav-item:hover,
+.sidebar:has(.nav-item[href*="agenda"].active) .nav-item.active {
+    background: rgba(255, 255, 255, .18);
+}
+
+.main-content:has(#agenda) {
+    background: #f3f6fb;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content:has(#agenda)::before {
+    content: "";
+    position: absolute;
+    inset: auto -60px -60px auto;
+    width: 520px;
+    height: 520px;
+    background: url("../images/lineas_dorada.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .55;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#agenda)::after {
+    content: "";
+    position: absolute;
+    inset: -60px auto auto -60px;
+    width: 420px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat top left;
+    background-size: contain;
+    opacity: .3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#agenda) > * {
+    position: relative;
+    z-index: 1;
+}
+
+#agenda .panel {
+    position: relative;
+    overflow: hidden;
+}
+
+#agenda .panel::before {
+    content: "";
+    position: absolute;
+    inset: auto -30px -30px auto;
+    width: 320px;
+    height: 220px;
+    background: url("../images/lineas_azul.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .12;
+    pointer-events: none;
+}
+
+#agenda .weekly-view::before {
+    background-image: url("../images/lineas_dorada.png");
+    opacity: .16;
+}
+
+#agenda .panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+#agenda h1 {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 38px;
+    background: linear-gradient(90deg, var(--navy), #1f8f9d, var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--navy);
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2px;
+}
+
+#agenda .header-actions {
+    background: linear-gradient(90deg, #e7ecf5, #cfdaeb);
+    border-radius: 50px;
+    padding: 9px 10px;
+    box-shadow: 0 6px 18px rgba(18, 41, 74, .12);
+}
+
+#agenda .header-actions .btn {
+    border-radius: 30px;
+    padding: 10px 22px;
 }
