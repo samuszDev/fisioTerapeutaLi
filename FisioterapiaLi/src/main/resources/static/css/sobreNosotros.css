@@ -24,9 +24,14 @@ body{
 }
 
 .script{
-    font-family:'Great Vibes', cursive;
     color:var(--navy-800);
     font-weight:700;
+}
+.hero-title{
+    font-family:'Great Vibes', cursive;
+}
+.signoff.script{
+    font-size:15px;
 }
 
 .wrap{
@@ -238,6 +243,32 @@ section{
     background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);
     padding:10px 16px; border-radius:30px; font-size:13.5px; white-space:nowrap;
 }
+.btn-age {
+    position: absolute;
+    bottom: 50px;
+    right: 50%;
+    left: auto;
+    transform: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: radial-gradient(circle at 50% 50%, #f3da90, #b69334, #b69334);
+    color: #0a2c5c;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    padding: 14px 30px 14px 18px;
+    border-radius: 50px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    white-space: nowrap;
+    z-index: 4;
+    transition: background .25s ease, transform .25s ease;
+}
+
+.btn-age:hover {
+    background: #d1a53a;
+    transform: translateY(-2px);
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width:960px){
@@ -253,4 +284,15 @@ section{
     .enfoque{grid-template-columns:1fr;}
     .enfoque-media{flex-direction:column;}
     .cta-bar{flex-direction:column; text-align:center;}
+}
+@media (max-width: 900px) {
+    .btn-age {
+        position: static;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        margin: 24px auto 30px;
+        display: flex;
+        width: fit-content;
+    }
 }
