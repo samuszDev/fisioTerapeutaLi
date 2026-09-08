@@ -22,7 +22,6 @@
         </div>
 
         <nav class="sidebar-nav">
-            <!-- Se reemplazaron los <button> por <a> para enrutamiento nativo con Spring Boot -->
             <a class="nav-item active" th:href="@{/admin/dashboard}">
                 <span class="nav-dot"></span>
                 <img th:src="@{/css/assets/dashboard.svg}" alt="" aria-hidden="true">
@@ -65,6 +64,7 @@
             </div>
         </div>
     </aside>
+
     <main class="main-content">
         <header class="mobile-header">
             <button id="menuButton" class="menu-button">☰</button>
@@ -81,7 +81,6 @@
                 </div>
 
                 <div class="header-actions">
-                    <!-- Estos botones mantienen data-open-view si abren modales mediante JS -->
                     <button class="btn btn-outline" data-open-view="reports">Ver reportes</button>
                     <button class="btn btn-gold" data-open-view="new-appointment">+ Agendar cita</button>
                 </div>
@@ -90,49 +89,53 @@
             <div class="dashboard-columns">
                 <div class="dashboard-main">
                     <div class="stats-grid">
+                        <!-- 1. Citas de hoy -->
                         <article class="stat-card">
                             <span class="card-dot teal"></span>
                             <div class="stat-top">
                                 <div class="stat-icon navy">
                                     <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
                                 </div>
-                                <div class="stat-value">8</div>
+                                <div class="stat-value" id="statCitasHoy">0</div>
                             </div>
                             <div class="stat-label">Citas de hoy</div>
                             <span class="stat-pill">+2 vs. ayer</span>
                         </article>
 
+                        <!-- 2. Pacientes activos -->
                         <article class="stat-card alt">
                             <span class="card-dot gold"></span>
                             <div class="stat-top">
                                 <div class="stat-icon gold">
                                     <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
                                 </div>
-                                <div class="stat-value">132</div>
+                                <div class="stat-value" id="statPacientesActivos">0</div>
                             </div>
                             <div class="stat-label">Pacientes activos</div>
                             <span class="stat-pill">+12 este mes</span>
                         </article>
 
+                        <!-- 3. Pendientes de pago -->
                         <article class="stat-card">
                             <span class="card-dot teal"></span>
                             <div class="stat-top">
                                 <div class="stat-icon navy">
                                     <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
                                 </div>
-                                <div class="stat-value">3</div>
+                                <div class="stat-value" id="statPendientesPago">0</div>
                             </div>
                             <div class="stat-label">Pendientes de pago</div>
                             <span class="stat-pill warning">Requiere seguimiento</span>
                         </article>
 
+                        <!-- 4. Referidos completados -->
                         <article class="stat-card alt">
                             <span class="card-dot gold"></span>
                             <div class="stat-top">
                                 <div class="stat-icon gold">
                                     <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
                                 </div>
-                                <div class="stat-value">27</div>
+                                <div class="stat-value" id="statReferidos">0</div>
                             </div>
                             <div class="stat-label">Referidos completados</div>
                             <span class="stat-pill">Meta mensual: 30</span>
@@ -152,22 +155,9 @@
                                     <th>Estado</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="agendaHoyRows">
                                 <tr>
-                                    <td>8:00 am</td><td>Laura Gómez</td><td>Fisioterapia general</td>
-                                    <td><span class="status confirmed">Confirmada</span></td>
-                                </tr>
-                                <tr>
-                                    <td>9:30 am</td><td>Andrés Ruiz</td><td>Terapia deportiva</td>
-                                    <td><span class="status confirmed">Confirmada</span></td>
-                                </tr>
-                                <tr>
-                                    <td>11:00 am</td><td>María Torres</td><td>Rehabilitación postquirúrgica</td>
-                                    <td><span class="status pending">Pendiente</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2:15 pm</td><td>Carlos Peña</td><td>Masoterapia</td>
-                                    <td><span class="status cancelled">Cancelada</span></td>
+                                    <td colspan="4" style="text-align:center;">Cargando citas de hoy...</td>
                                 </tr>
                                 </tbody>
                             </table>

@@ -128,42 +128,16 @@ function openInternalView(viewName) {
         }
     }
 
-    // 3. NUEVA CITA / RESERVA
-    if (viewName === "new-appointment") {
-        fetch("/api/modal/pacientes")
-            .then(res => res.json())
-            .then(pacientes => {
-                const selectP = document.getElementById("selectPaciente");
-                if (!selectP) return;
-
-                const clientes = pacientes.filter(p => p.rol === "CLIENTE");
-                selectP.innerHTML = '<option value="">Seleccionar paciente...</option>';
-                clientes.forEach(p => {
-                    selectP.innerHTML += `<option value="${p.idUsuario}">${p.nombre} (${p.documento || 'S/D'})</option>`;
-                });
-            }).catch(err => console.error("Error al cargar pacientes", err));
-
-        fetch("/api/modal/servicios")
-            .then(res => res.json())
-            .then(servicios => {
-                const selectS = document.getElementById("selectServicio");
-                if (!selectS) return;
-
-                selectS.innerHTML = '<option value="">Seleccionar servicio...</option>';
-                servicios.forEach(s => {
-                    const nombreReal = s.nombreS || s.nombre || 'Servicio sin nombre';
-                    const idReal = s.idServicio || s.id || '';
-                    selectS.innerHTML += `<option value="${idReal}">${nombreReal}</option>`;
-                });
-            }).catch(err => console.error("Error al cargar servicios", err));
-
+    // 3. EDITAR CITA (AGENDA)
+    if (viewName === "edit-appointment") {
         const finishBtn = document.getElementById("modalFinish");
+
         if (finishBtn) {
             const newFinishBtn = finishBtn.cloneNode(true);
             finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
 
             newFinishBtn.addEventListener("click", () => {
-                const form = document.getElementById("newAppointmentForm");
+                const form = document.getElementById("editAppointmentForm");
                 if (!form) return;
 
                 if (!form.checkValidity()) {
@@ -173,31 +147,37 @@ function openInternalView(viewName) {
 
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
+                const idReserva = data.idReserva;
 
-                fetch("/api/modal/citas", {
-                    method: "POST",
+                if (!idReserva) {
+                    alert("Error: No se encontró el ID de la reserva a modificar.");
+                    return;
+                }
+
+                fetch(`/api/modal/citas/${idReserva}`, {
+                    method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 })
                     .then(async response => {
                         if (response.ok) {
-                            alert("¡Cita agendada correctamente!");
+                            alert("¡Cita actualizada correctamente!");
                             closeInternalView();
                             window.location.reload();
                         } else {
                             const errorMsg = await response.text();
-                            alert("Error del servidor: " + errorMsg);
+                            alert("Error al actualizar la cita: " + errorMsg);
                         }
                     })
                     .catch(error => {
                         console.error("Error de red:", error);
-                        alert("Error al conectar con el backend.");
+                        alert("Error al intentar conectar con el servidor.");
                     });
             });
         }
     }
 
-    // 4. NUEVO SERVICIO
+    // 4. NUEVO SERVICIO (Restaurado y protegido)
     if (viewName === "new-service") {
         const finishBtn = document.getElementById("modalFinish");
 
@@ -215,7 +195,14 @@ function openInternalView(viewName) {
                 }
 
                 const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
+                const rawData = Object.fromEntries(formData.entries());
+
+                const data = {
+                    nombreS: rawData.nombreS || rawData.nombreService,
+                    precioIndividual: Number(rawData.precioIndividual || rawData.precio),
+                    duracionS: rawData.duracionS || rawData.duracion,
+                    estadoS: rawData.estadoS === "true" || rawData.estado === "ACTIVO"
+                };
 
                 fetch("/api/modal/servicios", {
                     method: "POST",
@@ -235,6 +222,62 @@ function openInternalView(viewName) {
                     .catch(error => {
                         console.error("Error de red:", error);
                         alert("Error al intentar conectar con el backend.");
+                    });
+            });
+        }
+    }
+
+    // 5. EDITAR SERVICIO
+    if (viewName === "edit-service") {
+        const finishBtn = document.getElementById("modalFinish");
+
+        if (finishBtn) {
+            const newFinishBtn = finishBtn.cloneNode(true);
+            finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
+
+            newFinishBtn.addEventListener("click", () => {
+                const form = document.getElementById("editServiceForm");
+                if (!form) return;
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const idServicio = document.getElementById("editIdServicio").value;
+                const formData = new FormData(form);
+                const rawData = Object.fromEntries(formData.entries());
+
+                if (!idServicio) {
+                    alert("Error: No se encontró el ID del servicio a modificar.");
+                    return;
+                }
+
+                const data = {
+                    nombreS: rawData.nombreS,
+                    precioIndividual: Number(rawData.precioIndividual),
+                    duracionS: rawData.duracionS,
+                    estadoS: rawData.estadoS === "true"
+                };
+
+                fetch(`/api/modal/servicios/${idServicio}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Servicio actualizado correctamente!");
+                            closeInternalView();
+                            window.location.reload();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error al actualizar el servicio: " + errorMsg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error de red:", error);
+                        alert("Error al intentar conectar con el servidor.");
                     });
             });
         }

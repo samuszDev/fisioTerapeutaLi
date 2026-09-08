@@ -1,3 +1,4 @@
+// REGISTRO DE VISTAS INTERNAS PARA EL MÓDULO DE CLIENTES
 if (typeof registerInternalViews === "function") {
     registerInternalViews({
         "new-client": {
@@ -25,7 +26,7 @@ if (typeof registerInternalViews === "function") {
                     </div>
                     <div class="form-field">
                         <label>Fecha de nacimiento</label>
-                        <input type="date" name="fechaNacimiento" placeholder="dd/mm/aaaa">
+                        <input type="date" name="fechaNacimiento">
                     </div>
                     <div class="form-field">
                         <label>Género</label>
@@ -186,71 +187,55 @@ if (typeof registerInternalViews === "function") {
     });
 }
 
-// Carga automática de la lista y gestión de eventos en la tabla
+// VARIABLE GLOBAL PARA ALMACENAR LOS CLIENTES
+let todosLosClientes = [];
+
+// CARGA AUTOMÁTICA Y GESTIÓN DE EVENTOS
 document.addEventListener("DOMContentLoaded", () => {
-    const tableBody = document.querySelector(".wide-table tbody");
+    fetch("/api/modal/pacientes")
+        .then(response => response.json())
+        .then(pacientes => {
+            if (!pacientes || pacientes.length === 0) {
+                renderizarTablaClientes([]);
+                return;
+            }
 
-    if (tableBody) {
-        fetch("/api/modal/pacientes")
-            .then(response => response.json())
-            .then(pacientes => {
-                if (!pacientes || pacientes.length === 0) {
-                    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No hay clientes registrados.</td></tr>";
-                    return;
-                }
+            // Filtrar únicamente los que tienen rol CLIENTE
+            todosLosClientes = pacientes.filter(p => p.rol === "CLIENTE");
+            renderizarTablaClientes(todosLosClientes);
+        })
+        .catch(error => {
+            console.error("Error al cargar lista de clientes:", error);
+            renderizarTablaClientes([]);
+        });
 
-                const clientesFiltrados = pacientes.filter(p => p.rol === "CLIENTE");
-
-                if (clientesFiltrados.length === 0) {
-                    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No se encontraron clientes activos.</td></tr>";
-                    return;
-                }
-
-                tableBody.innerHTML = "";
-
-                clientesFiltrados.forEach((p, idx) => {
-                    const inicial = (p.nombre || "S").trim().charAt(0).toUpperCase();
-                    const avatarColor = idx % 2 === 0 ? "navy" : "gold";
-                    const referidos = p.contadorReferidos !== undefined ? p.contadorReferidos : 0;
-
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>
-                                <div class="patient-cell">
-                                    <span class="avatar-circle ${avatarColor}">${inicial}</span>
-                                    <span>${p.nombre || 'Sin nombre'}</span>
-                                </div>
-                            </td>
-                            <td>${p.documento || 'N/A'}</td>
-                            <td>${p.telefono || 'N/A'}</td>
-                            <td>${p.eps || '-'}</td>
-                            <td><span class="ref-badge${referidos > 0 ? ' has-refs' : ''}">${referidos}</span></td>
-                            <td><span class="status confirmed">Activo</span></td>
-                            <td>
-                                <button class="table-action" data-open-view="clinical-history" 
-                                    data-id="${p.idUsuario}" 
-                                    data-nombre="${p.nombre || ''}" 
-                                    data-documento="${p.documento || ''}">Historial clínico</button>
-                                <button class="table-action btn-edit" data-open-view="edit-client" 
-                                    data-id="${p.idUsuario}" 
-                                    data-nombre="${p.nombre || ''}" 
-                                    data-documento="${p.documento || ''}" 
-                                    data-eps="${p.eps || ''}" 
-                                    data-telefono="${p.telefono || ''}" 
-                                    data-email="${p.email || ''}" 
-                                    data-contacto="${p.contactoEmergencia || ''}" style="margin-left: 8px;">Editar</button>
-                                <button class="table-action btn-delete" data-id="${p.idUsuario}" style="color: #d9534f; margin-left: 8px;">Eliminar</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            })
-            .catch(error => console.error("Error al cargar lista de clientes:", error));
+    // ==========================================
+    // VINCULACIÓN DIRECTA DE LOS FILTROS
+    // ==========================================
+    const btnFiltrar = document.getElementById("btnFiltrar");
+    if (btnFiltrar) {
+        btnFiltrar.onclick = (e) => {
+            e.preventDefault();
+            aplicarFiltrosClientes();
+        };
     }
 
-    // Delegación de eventos para los botones de la tabla dinámicos
+    const filtroNombre = document.getElementById("filtroNombre");
+    if (filtroNombre) {
+        // Filtra tanto al escribir como al presionar Enter
+        filtroNombre.addEventListener("input", aplicarFiltrosClientes);
+        filtroNombre.addEventListener("keyup", (e) => {
+            if (e.key === "Enter") aplicarFiltrosClientes();
+        });
+    }
+
+    const filtroEps = document.getElementById("filtroEps");
+    if (filtroEps) {
+        filtroEps.addEventListener("change", aplicarFiltrosClientes);
+    }
+
+    // DELEGACIÓN DE EVENTOS GLOBALES (Historial, Editar, Eliminar)
     document.addEventListener("click", event => {
-        // Lógica de llenado para el modal de historia clínica
         if (event.target.closest('[data-open-view="clinical-history"]')) {
             const btn = event.target.closest('[data-open-view="clinical-history"]');
             setTimeout(() => {
@@ -262,7 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 50);
         }
 
-        // Lógica de llenado para el modal de edición
         if (event.target.classList.contains("btn-edit")) {
             const btn = event.target;
             setTimeout(() => {
@@ -276,10 +260,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 50);
         }
 
-        // Lógica de eliminación (Delete)
         if (event.target.classList.contains("btn-delete")) {
             const idPaciente = event.target.dataset.id;
-            showConfirmDialog("¿Estás seguro de que deseas eliminar este cliente?").then(confirmado => {
+
+            const confirmFunc = typeof showConfirmDialog === "function"
+                ? showConfirmDialog("¿Estás seguro de que deseas eliminar este cliente?")
+                : Promise.resolve(confirm("¿Estás seguro de que deseas eliminar este cliente?"));
+
+            confirmFunc.then(confirmado => {
                 if (!confirmado) return;
 
                 fetch(`/api/modal/pacientes/${idPaciente}`, {
@@ -297,4 +285,147 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
+    // CAPTURAR EL BOTÓN "FINALIZADO" DEL MODAL (CREAR Y EDITAR)
+    document.addEventListener("click", event => {
+        if (event.target.id === "modalFinish") {
+            const formNew = document.getElementById("newClientForm");
+            const formEdit = document.getElementById("editClientForm");
+
+            if (formNew && formNew.offsetParent !== null) {
+                if (!formNew.checkValidity()) {
+                    formNew.reportValidity();
+                    return;
+                }
+
+                const formData = new FormData(formNew);
+                const data = Object.fromEntries(formData.entries());
+
+                fetch("/api/modal/pacientes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Paciente creado correctamente!");
+                            window.location.reload();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error al crear el paciente: " + errorMsg);
+                        }
+                    })
+                    .catch(err => console.error("Error de red al crear:", err));
+            }
+
+            if (formEdit && formEdit.offsetParent !== null) {
+                if (!formEdit.checkValidity()) {
+                    formEdit.reportValidity();
+                    return;
+                }
+
+                const formData = new FormData(formEdit);
+                const data = Object.fromEntries(formData.entries());
+                const idUsuario = data.idUsuario;
+
+                if (!idUsuario) {
+                    alert("Error: No se encontró el ID del usuario a modificar.");
+                    return;
+                }
+
+                fetch(`/api/modal/pacientes/${idUsuario}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Paciente actualizado correctamente!");
+                            window.location.reload();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error al actualizar el paciente: " + errorMsg);
+                        }
+                    })
+                    .catch(err => console.error("Error de red al actualizar:", err));
+            }
+        }
+    });
 });
+
+// FUNCIÓN DE FILTRADO EN MEMORIA
+function aplicarFiltrosClientes() {
+    const textoBusqueda = document.getElementById("filtroNombre")?.value || "";
+    const valEps = document.getElementById("filtroEps")?.value || "";
+
+    const normalizeText = (str) => {
+        if (!str) return "";
+        return str.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    };
+
+    const searchNormal = normalizeText(textoBusqueda);
+    const epsSelectNormal = normalizeText(valEps);
+
+    const clientesFiltrados = todosLosClientes.filter(p => {
+        const nombre = normalizeText(p.nombre);
+        const documento = normalizeText(p.documento);
+        const eps = normalizeText(p.eps);
+
+        const cumpleTexto = searchNormal === "" || nombre.includes(searchNormal) || documento.includes(searchNormal);
+        const cumpleEps = epsSelectNormal === "" || eps.includes(epsSelectNormal);
+
+        return cumpleTexto && cumpleEps;
+    });
+
+    renderizarTablaClientes(clientesFiltrados);
+}
+
+// RENDERIZAR TABLA DE CLIENTES
+function renderizarTablaClientes(clientesArray) {
+    const tableBody = document.querySelector(".wide-table tbody");
+    if (!tableBody) return;
+
+    if (!Array.isArray(clientesArray) || clientesArray.length === 0) {
+        tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No se encontraron clientes.</td></tr>";
+        return;
+    }
+
+    tableBody.innerHTML = "";
+
+    clientesArray.forEach((p, idx) => {
+        const inicial = (p.nombre || "S").trim().charAt(0).toUpperCase();
+        const avatarColor = idx % 2 === 0 ? "navy" : "gold";
+        const referidos = p.contadorReferidos !== undefined ? p.contadorReferidos : 0;
+
+        tableBody.innerHTML += `
+            <tr>
+                <td>
+                    <div class="patient-cell">
+                        <span class="avatar-circle ${avatarColor}">${inicial}</span>
+                        <span>${p.nombre || 'Sin nombre'}</span>
+                    </div>
+                </td>
+                <td>${p.documento || 'N/A'}</td>
+                <td>${p.telefono || 'N/A'}</td>
+                <td>${p.eps || '-'}</td>
+                <td><span class="ref-badge${referidos > 0 ? ' has-refs' : ''}">${referidos}</span></td>
+                <td><span class="status confirmed">Activo</span></td>
+                <td>
+                    <button class="table-action" data-open-view="clinical-history" 
+                        data-id="${p.idUsuario}" 
+                        data-nombre="${p.nombre || ''}" 
+                        data-documento="${p.documento || ''}">Historial clínico</button>
+                    <button class="table-action btn-edit" data-open-view="edit-client" 
+                        data-id="${p.idUsuario}" 
+                        data-nombre="${p.nombre || ''}" 
+                        data-documento="${p.documento || ''}" 
+                        data-eps="${p.eps || ''}" 
+                        data-telefono="${p.telefono || ''}" 
+                        data-email="${p.email || ''}" 
+                        data-contacto="${p.contactoEmergencia || ''}" style="margin-left: 8px;">Editar</button>
+                    <button class="table-action btn-delete" data-id="${p.idUsuario}" style="color: #d9534f; margin-left: 8px;">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    });
+}

@@ -88,6 +88,7 @@
             </div>
 
             <div class="stats-grid agenda-stats">
+                <!-- 1. Citas de hoy -->
                 <article class="stat-card">
                     <span class="card-dot teal"></span>
                     <div class="stat-top">
@@ -96,12 +97,13 @@
                                 <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
                             </svg>
                         </div>
-                        <div class="stat-value">8</div>
+                        <div class="stat-value" id="statCitasHoy">0</div>
                     </div>
                     <div class="stat-label">Citas de hoy</div>
-                    <span class="stat-pill">Sede Tunja</span>
+                    <span class="stat-pill">Al día</span>
                 </article>
 
+                <!-- 2. Confirmadas -->
                 <article class="stat-card alt">
                     <span class="card-dot gold"></span>
                     <div class="stat-top">
@@ -110,12 +112,13 @@
                                 <path d="M4 10.5l3.6 3.6L16 5.5"/>
                             </svg>
                         </div>
-                        <div class="stat-value">5</div>
+                        <div class="stat-value" id="statConfirmadas">0</div>
                     </div>
                     <div class="stat-label">Confirmadas</div>
-                    <span class="stat-pill">Al día</span>
+                    <span class="stat-pill">Registradas</span>
                 </article>
 
+                <!-- 3. Pendientes -->
                 <article class="stat-card">
                     <span class="card-dot teal"></span>
                     <div class="stat-top">
@@ -124,12 +127,13 @@
                                 <circle cx="10" cy="10.5" r="6.5"/><path d="M10 7v4l3 2"/>
                             </svg>
                         </div>
-                        <div class="stat-value">2</div>
+                        <div class="stat-value" id="statPendientes">0</div>
                     </div>
                     <div class="stat-label">Pendientes</div>
-                    <span class="stat-pill warning">Confirmar pago</span>
+                    <span class="stat-pill warning">Por confirmar</span>
                 </article>
 
+                <!-- 4. Canceladas -->
                 <article class="stat-card alt">
                     <span class="card-dot gold"></span>
                     <div class="stat-top">
@@ -138,10 +142,10 @@
                                 <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
                             </svg>
                         </div>
-                        <div class="stat-value">1</div>
+                        <div class="stat-value" id="statCanceladas">0</div>
                     </div>
                     <div class="stat-label">Canceladas</div>
-                    <span class="stat-pill">Esta semana</span>
+                    <span class="stat-pill">Histórico</span>
                 </article>
             </div>
 
@@ -150,23 +154,23 @@
                     <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="9" cy="9" r="6"/><path d="m17 17-3.6-3.6"/>
                     </svg>
-                    <input type="text" placeholder="Buscar por paciente...">
+                    <input type="text" id="filtroPaciente" placeholder="Buscar por paciente...">
                 </div>
 
-                <select class="filter-select">
+                <select class="filter-select" id="filtroEstado">
                     <option value="">Todos los estados</option>
                     <option value="confirmada">Confirmada</option>
                     <option value="pendiente">Pendiente</option>
                     <option value="cancelada">Cancelada</option>
                 </select>
 
-                <select class="filter-select">
+                <select class="filter-select" id="filtroSede">
                     <option value="">Todas las sedes</option>
                     <option value="tunja">Sede Tunja</option>
                     <option value="turmeque">Sede Turmequé</option>
                 </select>
 
-                <button class="btn btn-outline">Filtrar</button>
+                <button class="btn btn-outline" id="btnFiltrar">Filtrar</button>
             </div>
 
             <div class="view-toggle">
@@ -259,7 +263,7 @@
 <script th:src="@{/js/common.js}"></script>
 <script th:src="@{/js/agenda.js}"></script>
 
-<!-- Selector de vista (lista/semanal): solo maneja visibilidad, no toca datos ni agenda.js -->
+<!-- Selector de vista (lista/semanal): maneja la visibilidad -->
 <script>
     document.querySelectorAll('.view-toggle-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {

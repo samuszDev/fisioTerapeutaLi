@@ -91,16 +91,16 @@
                     <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="9" cy="9" r="6"/><path d="m17 17-3.6-3.6"/>
                     </svg>
-                    <input type="text" placeholder="Buscar por nombre o documento...">
+                    <input type="text" id="filtroNombre" placeholder="Buscar por nombre o documento...">
                 </div>
 
-                <select class="filter-select">
+                <select class="filter-select" id="filtroEstado">
                     <option value="">Todos los estados</option>
                     <option value="activo">Activo</option>
                     <option value="inactivo">Inactivo</option>
                 </select>
 
-                <button class="btn btn-outline">Filtrar</button>
+                <button class="btn btn-outline" id="btnFiltrar">Filtrar</button>
             </div>
 
             <div class="panel">
@@ -118,22 +118,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
-                        </tr>
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
-                        </tr>
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
-                        </tr>
-                        <tr>
-                            <td></td><td></td><td></td><td></td><td></td><td><span class="status"></span></td>
-                            <td><button class="table-action" data-open-view="clinical-history">Ver historial clínico</button></td>
-                        </tr>
+                        <!-- Las filas dinámicas se cargarán mediante cliente.js -->
                         </tbody>
                     </table>
                 </div>

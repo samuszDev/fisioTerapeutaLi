@@ -66,6 +66,9 @@ if (typeof registerInternalViews === "function") {
             title: "Modificar cita",
             content: `
                 <form id="editAppointmentForm">
+                    <!-- ESTE INPUT OCULTO ES VITAL PARA ENVIAR EL ID AL SERVIDOR -->
+                    <input type="hidden" name="idReserva" id="editIdReserva">
+
                     <div class="internal-section">
                         <h3>Cita seleccionada</h3>
                         <div class="form-grid">
@@ -131,76 +134,159 @@ if (typeof registerInternalViews === "function") {
     });
 }
 
-// CARGA DINÁMICA DE CITAS DESDE LA BASE DE DATOS
+// VARIABLE GLOBAL PARA ALMACENAR LAS CITAS
+let todasLasCitas = [];
+
+// CARGA INICIAL DESDE EL BACKEND
 document.addEventListener("DOMContentLoaded", () => {
-    const tableBody = document.getElementById("agendaRows");
+    fetch("/api/modal/citas")
+        .then(response => {
+            if (!response.ok) throw new Error("Error del servidor: " + response.status);
+            return response.json();
+        })
+        .then(citas => {
+            todasLasCitas = citas;
+            actualizarTarjetasAgenda(todasLasCitas);
+            aplicarFiltros();
+        })
+        .catch(error => {
+            console.error("Error al obtener la lista de citas:", error);
+            const tableBody = document.getElementById("agendaRows");
+            if (tableBody) tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>Error al cargar las citas. Verifica que el servidor esté encendido.</td></tr>";
+        });
 
-    if (tableBody) {
-        fetch("/api/modal/citas")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Error del servidor: " + response.status);
-                }
-                return response.json();
-            })
-            .then(citas => {
-                // 👉 Renderizar siempre la vista semanal aunque la tabla esté vacía
-                cargarVistaSemanal(citas);
-
-                if (!Array.isArray(citas) || citas.length === 0) {
-                    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No hay citas agendadas.</td></tr>";
-                    return;
-                }
-
-                tableBody.innerHTML = ""; // Limpiar tabla
-
-                citas.forEach(cita => {
-                    let fechaHora = 'Sin definir';
-                    if (cita.fechaInicio) {
-                        fechaHora = cita.fechaInicio.replace('T', ' ').substring(0, 16);
-                    }
-
-                    const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'N/A';
-                    const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre || cita.servicio.nombreService) : 'N/A';
-                    const textoPago = cita.pagoConfirmado ? 'Pagado' : 'Pendiente';
-                    const estadoCita = cita.estadoCita || 'Confirmada';
-                    const idCita = cita.idReserva || cita.id;
-                    const fechaYMD = cita.fechaInicio ? cita.fechaInicio.substring(0, 10) : '';
-                    const horaHM = cita.fechaInicio ? cita.fechaInicio.substring(11, 16) : '';
-
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${fechaHora}</td>
-                            <td>${pacienteNombre}</td>
-                            <td>${servicioNombre}</td>
-                            <td>${cita.sede || 'Tunja'}</td>
-                            <td>${textoPago}</td>
-                            <td><span class="status">${estadoCita}</span></td>
-                            <td>
-                                <button class="table-action btn-edit-cita" data-open-view="edit-appointment" 
-                                    data-id="${idCita}"
-                                    data-paciente="${pacienteNombre}"
-                                    data-servicio="${servicioNombre}"
-                                    data-sede="${cita.sede || 'Tunja'}"
-                                    data-fecha="${fechaYMD}"
-                                    data-hora="${horaHM}"
-                                    data-estado="${cita.estadoCita || 'CONFIRMADA'}"
-                                    data-pago="${cita.pagoConfirmado ? 'PAGADO' : 'PENDIENTE'}">Editar</button>
-                                <button class="table-action btn-delete-cita" data-id="${idCita}" style="color: #d9534f; margin-left: 6px;">Eliminar</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            })
-            .catch(error => {
-                console.error("Error al obtener la lista de citas:", error);
-                tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>Error al cargar las citas. Verifica que el servidor esté encendido.</td></tr>";
-            });
+    // EVENTO DEL BOTÓN FILTRAR
+    const btnFiltrar = document.getElementById("btnFiltrar");
+    if (btnFiltrar) {
+        btnFiltrar.addEventListener("click", (e) => {
+            e.preventDefault();
+            aplicarFiltros();
+        });
     }
+
+    // Filtrar al presionar Enter en la búsqueda
+    const searchInput = document.getElementById("filtroPaciente");
+    if (searchInput) {
+        searchInput.addEventListener("keyup", (e) => {
+            if (e.key === "Enter") aplicarFiltros();
+        });
+    }
+
+    // Filtrar automáticamente al cambiar los selectores
+    const selectsFiltro = document.querySelectorAll(".filter-select");
+    selectsFiltro.forEach(select => select.addEventListener("change", aplicarFiltros));
 });
 
-// FUNCIÓN PARA RENDERIZAR LAS CITAS EN LA VISTA SEMANAL
-function cargarVistaSemanal(citas) {
+// LÓGICA DE FILTRADO FLEXIBLE Y ROBUSTA
+function aplicarFiltros() {
+    const textoPaciente = document.getElementById("filtroPaciente")?.value || "";
+    const valEstado = document.getElementById("filtroEstado")?.value || "";
+    const valSede = document.getElementById("filtroSede")?.value || "";
+
+    const normalizeText = (str) => {
+        if (!str) return "";
+        return str.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    };
+
+    const searchNormal = normalizeText(textoPaciente);
+    const estadoSelectNormal = normalizeText(valEstado);
+    const sedeSelectNormal = normalizeText(valSede);
+
+    const citasFiltradas = todasLasCitas.filter(cita => {
+        const nombrePaciente = cita.usuario ? normalizeText(cita.usuario.nombre) : "";
+        const estadoCita = normalizeText(cita.estadoCita || "confirmada");
+        const sedeCita = normalizeText(cita.sede || "tunja");
+
+        const cumplePaciente = searchNormal === "" || nombrePaciente.includes(searchNormal);
+        const cumpleEstado = estadoSelectNormal === "" || estadoCita.includes(estadoSelectNormal);
+        const cumpleSede = sedeSelectNormal === "" || sedeCita.includes(sedeSelectNormal);
+
+        return cumplePaciente && cumpleEstado && cumpleSede;
+    });
+
+    renderizarTablaCitas(citasFiltradas);
+    cargarVistaSemanal(citasFiltradas);
+}
+
+// RENDERIZAR TABLA PRINCIPAL (Lista)
+function renderizarTablaCitas(citasArray) {
+    const tableBody = document.getElementById("agendaRows");
+    if (!tableBody) return;
+
+    if (!Array.isArray(citasArray) || citasArray.length === 0) {
+        tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No se encontraron citas con estos filtros.</td></tr>";
+        return;
+    }
+
+    tableBody.innerHTML = "";
+
+    citasArray.forEach(cita => {
+        let fechaHora = 'Sin definir';
+        if (cita.fechaInicio) {
+            fechaHora = cita.fechaInicio.replace('T', ' ').substring(0, 16);
+        }
+
+        const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'N/A';
+        const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre || cita.servicio.nombreService) : 'N/A';
+        const textoPago = cita.pagoConfirmado ? 'Pagado' : 'Pendiente';
+        const estadoCita = cita.estadoCita || 'Confirmada';
+        const idCita = cita.idReserva || cita.id;
+        const fechaYMD = cita.fechaInicio ? cita.fechaInicio.substring(0, 10) : '';
+        const horaHM = cita.fechaInicio ? cita.fechaInicio.substring(11, 16) : '';
+
+        let estadoClass = "confirmed";
+        if (estadoCita.toUpperCase() === "PENDIENTE") estadoClass = "pending";
+        if (estadoCita.toUpperCase() === "CANCELADA") estadoClass = "cancelled";
+
+        tableBody.innerHTML += `
+            <tr>
+                <td>${fechaHora}</td>
+                <td>${pacienteNombre}</td>
+                <td>${servicioNombre}</td>
+                <td>${cita.sede || 'Tunja'}</td>
+                <td>${textoPago}</td>
+                <td><span class="status ${estadoClass}">${estadoCita}</span></td>
+                <td>
+                    <button class="table-action btn-edit-cita" data-open-view="edit-appointment" 
+                        data-id="${idCita}"
+                        data-paciente="${pacienteNombre}"
+                        data-servicio="${servicioNombre}"
+                        data-sede="${cita.sede || 'Tunja'}"
+                        data-fecha="${fechaYMD}"
+                        data-hora="${horaHM}"
+                        data-estado="${cita.estadoCita || 'CONFIRMADA'}"
+                        data-pago="${cita.pagoConfirmado ? 'PAGADO' : 'PENDIENTE'}">Editar</button>
+                    <button class="table-action btn-delete-cita" data-id="${idCita}" style="color: #d9534f; margin-left: 6px;">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+// ACTUALIZA LOS NÚMEROS DE LAS TARJETAS SUPERIORES
+function actualizarTarjetasAgenda(citas) {
+    const elHoy = document.getElementById("statCitasHoy");
+    const elConfirmadas = document.getElementById("statConfirmadas");
+    const elPendientes = document.getElementById("statPendientes");
+    const elCanceladas = document.getElementById("statCanceladas");
+
+    if (!elHoy || !Array.isArray(citas)) return;
+
+    const hoyStr = new Date().toISOString().substring(0, 10);
+
+    const citasHoy = citas.filter(c => c.fechaInicio && c.fechaInicio.startsWith(hoyStr)).length;
+    const confirmadas = citas.filter(c => c.estadoCita && c.estadoCita.toUpperCase() === "CONFIRMADA").length;
+    const pendientes = citas.filter(c => c.estadoCita && c.estadoCita.toUpperCase() === "PENDIENTE").length;
+    const canceladas = citas.filter(c => c.estadoCita && c.estadoCita.toUpperCase() === "CANCELADA").length;
+
+    elHoy.textContent = citasHoy;
+    if (elConfirmadas) elConfirmadas.textContent = confirmadas;
+    if (elPendientes) elPendientes.textContent = pendientes;
+    if (elCanceladas) elCanceladas.textContent = canceladas;
+}
+
+// RENDERIZA LAS TARJETAS EN LA VISTA SEMANAL
+function cargarVistaSemanal(citasArray) {
     const contenedoresDias = {
         1: document.getElementById('col-lunes'),
         2: document.getElementById('col-martes'),
@@ -211,22 +297,18 @@ function cargarVistaSemanal(citas) {
         0: document.getElementById('col-domingo')
     };
 
-    // Limpiar tarjetas anteriores de los contenedores
     Object.values(contenedoresDias).forEach(contenedor => {
         if (contenedor) contenedor.innerHTML = '';
     });
 
-    if (!Array.isArray(citas) || citas.length === 0) return;
+    if (!Array.isArray(citasArray) || citasArray.length === 0) return;
 
-    // Ordenar cronológicamente por fecha y hora antes de repartirlas en los días
-    // (ISO "YYYY-MM-DDTHH:mm:ss" se puede comparar directamente como texto)
-    const citasOrdenadas = [...citas].sort((a, b) => {
+    const citasOrdenadas = [...citasArray].sort((a, b) => {
         if (!a.fechaInicio) return 1;
         if (!b.fechaInicio) return -1;
         return a.fechaInicio.localeCompare(b.fechaInicio);
     });
 
-    // Calcular el rango de la semana actual (Lunes a Domingo)
     const hoy = new Date();
     const diaSemanaIndex = hoy.getDay() === 0 ? 7 : hoy.getDay();
 
@@ -241,7 +323,6 @@ function cargarVistaSemanal(citas) {
     citasOrdenadas.forEach(cita => {
         if (!cita.fechaInicio) return;
 
-        // Parsear fecha ISO "YYYY-MM-DDTHH:mm:ss"
         const partes = cita.fechaInicio.split("T");
         if (partes.length < 2) return;
 
@@ -250,18 +331,22 @@ function cargarVistaSemanal(citas) {
 
         const fechaCita = new Date(anio, mes - 1, dia, hora, min);
 
-        // Verificar si la cita pertenece a la semana actual
         if (fechaCita >= inicioSemana && fechaCita <= finSemana) {
-            const numeroDia = fechaCita.getDay(); // 0 = Domingo, 1 = Lunes...
+            const numeroDia = fechaCita.getDay();
             const contenedor = contenedoresDias[numeroDia];
 
             if (contenedor) {
                 const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'Paciente';
                 const horaFormateada = `${hora.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
                 const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre || 'Servicio') : '';
+                const estadoCita = (cita.estadoCita || "Confirmada").toUpperCase();
+
+                let borderColor = "#d4af37";
+                if (estadoCita === "PENDIENTE") borderColor = "#6c757d";
+                if (estadoCita === "CANCELADA") borderColor = "#d9534f";
 
                 contenedor.innerHTML += `
-                    <div style="background-color: #ffffff; border-left: 4px solid #d4af37; padding: 6px 8px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 0.75rem;">
+                    <div style="background-color: #ffffff; border-left: 4px solid ${borderColor}; padding: 6px 8px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 0.75rem;">
                         <strong style="color: #0b2239; display: block; font-size: 0.8rem;">${horaFormateada}</strong>
                         <div style="color: #212529; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${pacienteNombre}</div>
                         <div style="color: #6c757d; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${servicioNombre}</div>
@@ -272,7 +357,7 @@ function cargarVistaSemanal(citas) {
     });
 }
 
-// Listener global para el botón de editar cita (cargar datos en el formulario)
+// LISTENER GLOBAL PARA EDITAR CITAS
 document.addEventListener("click", event => {
     if (event.target.classList.contains("btn-edit-cita")) {
         const btn = event.target;
@@ -304,7 +389,7 @@ document.addEventListener("click", event => {
     }
 });
 
-// Listener global para eliminar citas desde la tabla
+// LISTENER GLOBAL PARA ELIMINAR CITAS
 document.addEventListener("click", event => {
     if (event.target.classList.contains("btn-delete-cita")) {
         const idCita = event.target.dataset.id;

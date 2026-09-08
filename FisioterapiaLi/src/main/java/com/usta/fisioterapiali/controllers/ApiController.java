@@ -76,7 +76,6 @@ public class ApiController {
             java.time.LocalDate fecha = java.time.LocalDate.parse(fechaForm);
             java.time.LocalTime horaInicio = java.time.LocalTime.parse(horaForm);
 
-            // 1. OBTENER LA DURACIÓN REAL DEL SERVICIO SELECCIONADO (Por defecto 60 min si no se encuentra)
             Long idServ = Long.parseLong(idServicioStr);
             Optional<ServiceEntity> servicioOpt = serviceDao.findById(idServ);
             if (servicioOpt.isEmpty()) {
@@ -88,47 +87,38 @@ public class ApiController {
             java.time.LocalDateTime fechaHoraInicio = java.time.LocalDateTime.of(fecha, horaInicio);
             java.time.LocalDateTime fechaHoraFin = fechaHoraInicio.plusMinutes(duracionMinutos);
 
-            // 2. VERIFICAR HORARIO LABORAL Y DESCANSO USANDO EL ScheduleDao
-            int diaSemana = fecha.getDayOfWeek().getValue(); // 1 = Lunes ... 7 = Domingo
+            int diaSemana = fecha.getDayOfWeek().getValue();
             Optional<com.usta.fisioterapiali.entities.ScheduleEntity> horarioOpt = scheduleDao.findByDiaSemana(diaSemana);
 
             if (horarioOpt.isPresent()) {
                 com.usta.fisioterapiali.entities.ScheduleEntity horario = horarioOpt.get();
 
-                // Validar apertura y cierre de la jornada
                 if (horaInicio.isBefore(horario.getHoraApertura()) || fechaHoraFin.toLocalTime().isAfter(horario.getHoraCierre())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body("La cita excede el horario de atención permitido (" + horario.getHoraApertura() + " - " + horario.getHoraCierre() + ").");
                 }
 
-                // Validar hora de descanso (almuerzo) si aplica
                 if (horario.getHoraInicioDescanso() != null && horario.getHoraFinDescanso() != null) {
                     boolean cruzaDescanso = fechaHoraInicio.toLocalTime().isBefore(horario.getHoraFinDescanso()) &&
                             fechaHoraFin.toLocalTime().isAfter(horario.getHoraInicioDescanso());
                     if (cruzaDescanso) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("El horario de la cita interfiere con el tiempo de almuerzo/descanso (" + horario.getHoraInicioDescanso() + " - " + horario.getHoraFinDescanso() + ").");
+                                .body("El horario de la cita interfiere con el tiempo de almuerzo/descanso.");
                     }
                 }
             }
 
-            // 3. VALIDAR SOLAPAMIENTO DE TIEMPO CON CITAS EXISTENTES (CRUCE DE RANGOS)
             List<ReservationEntity> citasExistentes = reservationDao.findAll();
             for (ReservationEntity cita : citasExistentes) {
                 if (cita.getFechaInicio() != null && cita.getFechaFin() != null) {
-                    // Dos rangos de tiempo se cruzan si: (InicioA < FinB) y (FinA > InicioB)
                     boolean seCruzan = fechaHoraInicio.isBefore(cita.getFechaFin()) && fechaHoraFin.isAfter(cita.getFechaInicio());
-
                     if (seCruzan) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("Ya existe una cita programada en este intervalo (" +
-                                        cita.getFechaInicio().toLocalTime() + " - " + cita.getFechaFin().toLocalTime() +
-                                        "). Debe esperar a que finalice el servicio actual.");
+                                .body("Ya existe una cita programada en este intervalo.");
                     }
                 }
             }
 
-            // 4. GUARDAR LA CITA SI EL ESPACIO ESTÁ COMPLETAMENTE LIBRE
             ReservationEntity nuevaCita = new ReservationEntity();
 
             if (payload.get("idUsuario") != null && !payload.get("idUsuario").isEmpty()) {
@@ -167,7 +157,6 @@ public class ApiController {
 
             ReservationEntity citaActual = citaOpt.get();
 
-            // 1. EXTRAER FECHA Y HORA ENVIADAS
             String fechaForm = payload.get("fecha");
             String horaForm = payload.get("hora");
 
@@ -181,7 +170,6 @@ public class ApiController {
                 java.time.LocalDateTime fechaHoraInicio = java.time.LocalDateTime.of(fecha, horaInicio);
                 java.time.LocalDateTime fechaHoraFin = fechaHoraInicio.plusMinutes(duracionMinutos);
 
-                // 2. VALIDAR DISPONIBILIDAD DE HORARIO LABORAL
                 int diaSemana = fecha.getDayOfWeek().getValue();
                 Optional<com.usta.fisioterapiali.entities.ScheduleEntity> horarioOpt = scheduleDao.findByDiaSemana(diaSemana);
 
@@ -203,7 +191,6 @@ public class ApiController {
                     }
                 }
 
-                // 3. VALIDAR CRUCES (Excluyendo la cita actual que estamos editando)
                 List<ReservationEntity> citasExistentes = reservationDao.findAll();
                 for (ReservationEntity c : citasExistentes) {
                     if (!c.getIdReserva().equals(id) && c.getFechaInicio() != null && c.getFechaFin() != null) {
@@ -215,12 +202,10 @@ public class ApiController {
                     }
                 }
 
-                // Actualizamos las fechas si pasaron las validaciones
                 citaActual.setFechaInicio(fechaHoraInicio);
                 citaActual.setFechaFin(fechaHoraFin);
             }
 
-            // 4. ACTUALIZAR LOS DEMÁS CAMPOS
             if (payload.get("sede") != null) citaActual.setSede(payload.get("sede"));
             if (payload.get("estado") != null) citaActual.setEstadoCita(payload.get("estado"));
             if (payload.get("estadoPago") != null) citaActual.setPagoConfirmado("PAGADO".equalsIgnoreCase(payload.get("estadoPago")));
@@ -250,11 +235,12 @@ public class ApiController {
             String nombre = payload.get("nombreService") != null ? payload.get("nombreService") : payload.get("nombreS");
             servicio.setNombreS(nombre);
 
-            if (payload.get("precio") != null && !payload.get("precio").isEmpty()) {
-                servicio.setPrecioIndividual(Double.parseDouble(payload.get("precio")));
+            String precioStr = payload.get("precio") != null ? payload.get("precio") : payload.get("precioIndividual");
+            if (precioStr != null && !precioStr.isEmpty()) {
+                servicio.setPrecioIndividual(Double.parseDouble(precioStr));
             }
 
-            String duracionStr = payload.get("duracion");
+            String duracionStr = payload.get("duracion") != null ? payload.get("duracion") : payload.get("duracionS");
             if (duracionStr != null && !duracionStr.isEmpty()) {
                 String soloNumeros = duracionStr.replaceAll("[^0-9]", "");
                 servicio.setDuracionS(soloNumeros.isEmpty() ? 30 : Integer.parseInt(soloNumeros));
@@ -262,8 +248,8 @@ public class ApiController {
                 servicio.setDuracionS(30);
             }
 
-            String estadoStr = payload.get("estado");
-            servicio.setEstadoS(estadoStr == null || "ACTIVO".equalsIgnoreCase(estadoStr));
+            String estadoStr = payload.get("estado") != null ? payload.get("estado") : String.valueOf(payload.get("estadoS"));
+            servicio.setEstadoS(estadoStr == null || "true".equalsIgnoreCase(estadoStr) || "ACTIVO".equalsIgnoreCase(estadoStr));
 
             ServiceEntity nuevoServicio = serviceDao.save(servicio);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
@@ -272,6 +258,67 @@ public class ApiController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al guardar el servicio: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/servicios/{id}")
+    public ResponseEntity<?> actualizarServicio(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            Optional<ServiceEntity> servicioOpt = serviceDao.findById(id);
+            if (servicioOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Servicio no encontrado.");
+            }
+
+            ServiceEntity servicio = servicioOpt.get();
+
+            Object nombreObj = payload.get("nombreS") != null ? payload.get("nombreS") : payload.get("nombreService");
+            if (nombreObj != null) {
+                servicio.setNombreS(nombreObj.toString());
+            }
+
+            Object precioObj = payload.get("precioIndividual") != null ? payload.get("precioIndividual") : payload.get("precio");
+            if (precioObj != null && !precioObj.toString().isEmpty()) {
+                servicio.setPrecioIndividual(Double.parseDouble(precioObj.toString()));
+            }
+
+            Object duracionObj = payload.get("duracionS") != null ? payload.get("duracionS") : payload.get("duracion");
+            if (duracionObj != null) {
+                String duracionStr = duracionObj.toString();
+                String soloNumeros = duracionStr.replaceAll("[^0-9]", "");
+                servicio.setDuracionS(soloNumeros.isEmpty() ? null : Integer.parseInt(soloNumeros));
+            }
+
+            Object estadoObj = payload.get("estadoS") != null ? payload.get("estadoS") : payload.get("estado");
+            if (estadoObj != null) {
+                if (estadoObj instanceof Boolean) {
+                    servicio.setEstadoS((Boolean) estadoObj);
+                } else {
+                    String estStr = estadoObj.toString();
+                    servicio.setEstadoS(Boolean.parseBoolean(estStr) || "ACTIVO".equalsIgnoreCase(estStr));
+                }
+            }
+
+            serviceDao.save(servicio);
+            return ResponseEntity.ok("Servicio actualizado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar el servicio: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/servicios/{id}")
+    public ResponseEntity<?> eliminarServicio(@PathVariable Long id) {
+        try {
+            if (!serviceDao.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Servicio no encontrado.");
+            }
+            serviceDao.deleteById(id);
+            return ResponseEntity.ok("Servicio eliminado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el servicio: " + e.getMessage());
         }
     }
 
@@ -344,6 +391,41 @@ public class ApiController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar el paciente: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<?> obtenerEstadisticasDashboard() {
+        try {
+            java.time.LocalDate hoy = java.time.LocalDate.now();
+            List<ReservationEntity> todasLasCitas = reservationDao.findAll();
+
+            long citasHoy = todasLasCitas.stream()
+                    .filter(c -> c.getFechaInicio() != null && c.getFechaInicio().toLocalDate().equals(hoy))
+                    .count();
+
+            long pacientesActivos = userDao.findByRol(TipoUsuario.CLIENTE).size();
+
+            long pendientesPago = todasLasCitas.stream()
+                    .filter(c -> !Boolean.TRUE.equals(c.getPagoConfirmado()))
+                    .count();
+
+            int referidosCompletados = userDao.findByRol(TipoUsuario.CLIENTE).stream()
+                    .mapToInt(u -> u.getContadorReferidos() != null ? u.getContadorReferidos() : 0)
+                    .sum();
+
+            Map<String, Object> stats = new java.util.HashMap<>();
+            stats.put("citasHoy", citasHoy);
+            stats.put("pacientesActivos", pacientesActivos);
+            stats.put("pendientesPago", pendientesPago);
+            stats.put("referidosCompletados", referidosCompletados);
+
+            return ResponseEntity.ok(stats);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener estadísticas: " + e.getMessage());
         }
     }
 }
