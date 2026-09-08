@@ -1726,3 +1726,52 @@ tbody tr:hover {
     word-break: break-word;
     white-space: normal;
 }
+
+/* ===== TABLA DE CLIENTES: un poco más de color, sin exagerar ===== */
+
+.patient-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.avatar-circle.navy {
+    background: var(--navy);
+}
+
+.avatar-circle.gold {
+    background: linear-gradient(#f3da90, #b69334);
+    color: #1a3a63;
+}
+
+.ref-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 7px;
+    border-radius: 20px;
+    background: #eef2f6;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ref-badge.has-refs {
+    background: rgba(95, 214, 214, .18);
+    color: #12294a;
+}

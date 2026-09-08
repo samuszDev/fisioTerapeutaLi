@@ -208,15 +208,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 tableBody.innerHTML = "";
 
-                clientesFiltrados.forEach(p => {
+                clientesFiltrados.forEach((p, idx) => {
+                    const inicial = (p.nombre || "S").trim().charAt(0).toUpperCase();
+                    const avatarColor = idx % 2 === 0 ? "navy" : "gold";
+                    const referidos = p.contadorReferidos !== undefined ? p.contadorReferidos : 0;
+
                     tableBody.innerHTML += `
                         <tr>
-                            <td>${p.nombre || 'Sin nombre'}</td>
+                            <td>
+                                <div class="patient-cell">
+                                    <span class="avatar-circle ${avatarColor}">${inicial}</span>
+                                    <span>${p.nombre || 'Sin nombre'}</span>
+                                </div>
+                            </td>
                             <td>${p.documento || 'N/A'}</td>
                             <td>${p.telefono || 'N/A'}</td>
                             <td>${p.eps || '-'}</td>
-                            <td>${p.contadorReferidos !== undefined ? p.contadorReferidos : 0}</td>
-                            <td><span class="status">Activo</span></td>
+                            <td><span class="ref-badge${referidos > 0 ? ' has-refs' : ''}">${referidos}</span></td>
+                            <td><span class="status confirmed">Activo</span></td>
                             <td>
                                 <button class="table-action" data-open-view="clinical-history" 
                                     data-id="${p.idUsuario}" 
@@ -241,6 +250,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Delegación de eventos para los botones de la tabla dinámicos
     document.addEventListener("click", event => {
+        // Lógica de llenado para el modal de historia clínica
+        if (event.target.closest('[data-open-view="clinical-history"]')) {
+            const btn = event.target.closest('[data-open-view="clinical-history"]');
+            setTimeout(() => {
+                const nombreSpan = document.getElementById("historyPacienteNombre");
+                if (nombreSpan) nombreSpan.textContent = btn.dataset.nombre || "—";
+
+                const documentoSpan = document.getElementById("historyPacienteDocumento");
+                if (documentoSpan) documentoSpan.textContent = btn.dataset.documento || "—";
+            }, 50);
+        }
+
         // Lógica de llenado para el modal de edición
         if (event.target.classList.contains("btn-edit")) {
             const btn = event.target;
@@ -254,19 +275,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("editContactoEmergencia").value = btn.dataset.contacto;
             }, 50);
         }
-        // Lógica de llenado para el modal de historia clínica
-        if (event.target.closest('[data-open-view="clinical-history"]')) {
-            const btn = event.target.closest('[data-open-view="clinical-history"]');
-            setTimeout(() => {
-                const nombreSpan = document.getElementById("historyPacienteNombre");
-                if (nombreSpan) nombreSpan.textContent = btn.dataset.nombre || "—";
 
-                const documentoSpan = document.getElementById("historyPacienteDocumento");
-                if (documentoSpan) documentoSpan.textContent = btn.dataset.documento || "—";
-            }, 50);
-        }
-
-// Lógica de eliminación (Delete)
+        // Lógica de eliminación (Delete)
         if (event.target.classList.contains("btn-delete")) {
             const idPaciente = event.target.dataset.id;
             showConfirmDialog("¿Estás seguro de que deseas eliminar este cliente?").then(confirmado => {
