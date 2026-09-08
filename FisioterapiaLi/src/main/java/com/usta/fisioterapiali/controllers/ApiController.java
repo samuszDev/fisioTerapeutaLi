@@ -1,9 +1,11 @@
 package com.usta.fisioterapiali.controllers;
 
+import com.usta.fisioterapiali.entities.RegistrationEntity;
 import com.usta.fisioterapiali.entities.ReservationEntity;
 import com.usta.fisioterapiali.entities.ServiceEntity;
 import com.usta.fisioterapiali.entities.UserEntity;
 import com.usta.fisioterapiali.enums.TipoUsuario;
+import com.usta.fisioterapiali.models.Daos.RegistrationDao;
 import com.usta.fisioterapiali.models.Daos.ReservationDao;
 import com.usta.fisioterapiali.models.Daos.ScheduleDao;
 import com.usta.fisioterapiali.models.Daos.ServiceDao;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +35,25 @@ public class ApiController {
 
     @Autowired
     private ScheduleDao scheduleDao;
+
+    @Autowired
+    private RegistrationDao registrationDao;
+
+    private void registrarAccion(String origen, String accion) {
+        try {
+            RegistrationEntity registro = new RegistrationEntity();
+            registro.setFechaHora(LocalDateTime.now());
+            registro.setOrigen(origen);
+            registro.setAccion(accion);
+            List<UserEntity> usuarios = userDao.findAll();
+            if (!usuarios.isEmpty()) {
+                registro.setUsuario(usuarios.get(0));
+            }
+            registrationDao.save(registro);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // --- MÉTODOS PARA CITAS / AGENDA ---
 
@@ -54,6 +76,7 @@ public class ApiController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cita no encontrada.");
             }
             reservationDao.deleteById(id);
+            registrarAccion("AGENDA", "Eliminación de cita ID: " + id);
             return ResponseEntity.ok("Cita eliminada correctamente");
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,6 +161,7 @@ public class ApiController {
             nuevaCita.setFechaFin(fechaHoraFin);
 
             reservationDao.save(nuevaCita);
+            registrarAccion("AGENDA", "Creación de cita para el servicio: " + servicio.getNombreS());
             return ResponseEntity.status(HttpStatus.CREATED).body("Cita guardada correctamente");
 
         } catch (Exception e) {
@@ -211,6 +235,7 @@ public class ApiController {
             if (payload.get("estadoPago") != null) citaActual.setPagoConfirmado("PAGADO".equalsIgnoreCase(payload.get("estadoPago")));
 
             reservationDao.save(citaActual);
+            registrarAccion("AGENDA", "Actualización de cita ID: " + id);
             return ResponseEntity.ok("Cita actualizada correctamente");
 
         } catch (Exception e) {
@@ -252,6 +277,7 @@ public class ApiController {
             servicio.setEstadoS(estadoStr == null || "true".equalsIgnoreCase(estadoStr) || "ACTIVO".equalsIgnoreCase(estadoStr));
 
             ServiceEntity nuevoServicio = serviceDao.save(servicio);
+            registrarAccion("SERVICIOS", "Creación de servicio: " + servicio.getNombreS());
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
 
         } catch (Exception e) {
@@ -299,6 +325,7 @@ public class ApiController {
             }
 
             serviceDao.save(servicio);
+            registrarAccion("SERVICIOS", "Actualización de servicio: " + servicio.getNombreS());
             return ResponseEntity.ok("Servicio actualizado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
@@ -314,6 +341,7 @@ public class ApiController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Servicio no encontrado.");
             }
             serviceDao.deleteById(id);
+            registrarAccion("SERVICIOS", "Eliminación de servicio ID: " + id);
             return ResponseEntity.ok("Servicio eliminado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
@@ -344,6 +372,7 @@ public class ApiController {
             if (cliente.getContadorReferidos() == null) cliente.setContadorReferidos(0);
 
             UserEntity nuevoCliente = userDao.save(cliente);
+            registrarAccion("CLIENTES", "Creación de paciente: " + nuevoCliente.getNombre());
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoCliente);
 
         } catch (Exception e) {
@@ -371,6 +400,7 @@ public class ApiController {
             paciente.setContactoEmergencia(clienteActualizado.getContactoEmergencia());
 
             userDao.save(paciente);
+            registrarAccion("CLIENTES", "Actualización de paciente: " + paciente.getNombre());
             return ResponseEntity.ok("Paciente actualizado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
@@ -386,6 +416,7 @@ public class ApiController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado.");
             }
             userDao.deleteById(id);
+            registrarAccion("CLIENTES", "Eliminación de paciente ID: " + id);
             return ResponseEntity.ok("Paciente eliminado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
@@ -426,6 +457,18 @@ public class ApiController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al obtener estadísticas: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/reportes/historial")
+    public ResponseEntity<?> obtenerHistorial() {
+        try {
+            List<RegistrationEntity> listaRegistros = registrationDao.findAllByOrderByFechaHoraDesc();
+            return ResponseEntity.ok(listaRegistros);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al consultar el historial: " + e.getMessage());
         }
     }
 }

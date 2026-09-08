@@ -128,7 +128,50 @@ function openInternalView(viewName) {
         }
     }
 
-    // 3. EDITAR CITA (AGENDA)
+    // 3. NUEVA CITA (AGENDA) - ¡Agregado!
+    if (viewName === "new-appointment") {
+        const finishBtn = document.getElementById("modalFinish");
+
+        if (finishBtn) {
+            const newFinishBtn = finishBtn.cloneNode(true);
+            finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
+
+            newFinishBtn.addEventListener("click", () => {
+                const form = document.getElementById("newAppointmentForm");
+                if (!form) return;
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                fetch("/api/modal/citas", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Cita agendada correctamente!");
+                            closeInternalView();
+                            window.location.reload();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error al agendar la cita: " + errorMsg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error de red:", error);
+                        alert("Error al intentar conectar con el servidor.");
+                    });
+            });
+        }
+    }
+
+    // 4. EDITAR CITA (AGENDA)
     if (viewName === "edit-appointment") {
         const finishBtn = document.getElementById("modalFinish");
 
@@ -177,7 +220,7 @@ function openInternalView(viewName) {
         }
     }
 
-    // 4. NUEVO SERVICIO (Restaurado y protegido)
+    // 5. NUEVO SERVICIO (Restaurado y protegido)
     if (viewName === "new-service") {
         const finishBtn = document.getElementById("modalFinish");
 
@@ -227,7 +270,7 @@ function openInternalView(viewName) {
         }
     }
 
-    // 5. EDITAR SERVICIO
+    // 6. EDITAR SERVICIO
     if (viewName === "edit-service") {
         const finishBtn = document.getElementById("modalFinish");
 
