@@ -15,5 +15,6 @@ public interface UserDao extends JpaRepository<UserEntity, Long> {
     List<UserEntity> findAllByOrderByNombreAsc();
     Optional<UserEntity> findByDocumento(String documento);
     boolean existsByDocumento(String documento);
+    List<UserEntity> findAllByTelefono(String telefono);
     
 }

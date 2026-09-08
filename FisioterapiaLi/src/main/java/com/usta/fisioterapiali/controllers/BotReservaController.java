@@ -176,23 +176,51 @@ public class BotReservaController {
     @Transactional
     public ResponseEntity<PreReservaResponse> confirmarPago(@PathVariable Long id) {
         Optional<ReservationEntity> opt = reservationDao.findById(id);
-        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(PreReservaResponse.error("No existe la reserva " + id + "."));
+        }
 
         ReservationEntity reserva = opt.get();
-        reserva.setPagoConfirmado(true);
-        reserva.setEstadoCita("CONFIRMADA");
-        reservationDao.save(reserva);
+
+        if (!reserva.isEstadoR()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(PreReservaResponse.error("Esa reserva está cancelada."));
+        }
+
+        // Idempotente: si Lina aprieta el botón dos veces, responde igual sin fallar.
+        boolean yaEstaba = Boolean.TRUE.equals(reserva.getPagoConfirmado());
+        if (!yaEstaba) {
+            reserva.setPagoConfirmado(true);
+            reserva.setEstadoCita("CONFIRMADA");
+            reservationDao.save(reserva);
+        }
+
+        UserEntity p = reserva.getUsuario();
+        ServiceEntity s = reserva.getServicio();
 
         PreReservaResponse r = new PreReservaResponse();
         r.setDisponible(true);
         r.setReservaId(reserva.getIdReserva());
         r.setEstado("CONFIRMADA");
-        r.setNombrePaciente(reserva.getUsuario().getNombre());
-        r.setServicio(reserva.getServicio().getNombreS());
+        r.setNombrePaciente(p != null ? p.getNombre() : "");
+        r.setCorreo(p != null ? p.getEmail() : null);
+        r.setTelefono(p != null ? p.getTelefono() : null);
+        r.setTelegramUserId(p != null ? p.getTelegramUserId() : null);
+        r.setServicio(s != null ? s.getNombreS() : "");
+        r.setValor(s != null ? s.getPrecioIndividual() : null);
         r.setSede(reserva.getSede());
+        r.setGoogleCalendarId(reserva.getGoogleCalendarId());
         r.setFechaInicio(reserva.getFechaInicio().format(ISO));
         r.setFechaFin(reserva.getFechaFin().format(ISO));
-        r.setMensaje("Cita confirmada.");
+        r.setDuracionMinutos(s != null ? s.getDuracionS() : null);
+        r.setMensaje(yaEstaba
+                ? "Esta cita ya estaba confirmada."
+                : "Pago confirmado. Cita de " + r.getNombrePaciente() + " el "
+                + reserva.getFechaInicio().format(
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " a las "
+                + reserva.getFechaInicio().format(HUMANO) + " en " + reserva.getSede() + ".");
+
         return ResponseEntity.ok(r);
     }
 
@@ -289,24 +317,65 @@ public class BotReservaController {
     }
 
     private UserEntity buscarOCrearPaciente(PreReservaRequest req) {
-        UserEntity existente = userDao.findByEmail(req.getCorreo());
-        if (existente != null) return existente;
+        String chatId = resolverTelegram(req.getTelegramUserId());
 
-        if (!esVacio(req.getDocumento())) {
-            Optional<UserEntity> porDoc = userDao.findByDocumento(req.getDocumento());
-            if (porDoc.isPresent()) return porDoc.get();
+        // 1. Por correo (normalizado)
+        String correo = req.getCorreo() == null ? "" : req.getCorreo().trim().toLowerCase();
+        if (!correo.isEmpty()) {
+            UserEntity porCorreo = userDao.findByEmail(correo);
+            if (porCorreo != null) return completarTelegram(porCorreo, chatId);
         }
 
+        // 2. Por documento
+        if (!esVacio(req.getDocumento())) {
+            Optional<UserEntity> porDoc = userDao.findByDocumento(req.getDocumento().trim());
+            if (porDoc.isPresent()) return completarTelegram(porDoc.get(), chatId);
+        }
+
+        // 3. Por teléfono (solo dígitos, para que 300 777 8899 y 3007778899 sean el mismo)
+        String tel = soloDigitos(req.getTelefono());
+        if (tel.length() >= 7) {
+            for (UserEntity u : userDao.findAllByTelefono(req.getTelefono().trim())) {
+                if (u.getRol() == TipoUsuario.CLIENTE) return completarTelegram(u, chatId);
+            }
+        }
+
+        // 4. No existe: se crea
         UserEntity nuevo = new UserEntity();
         nuevo.setNombre(req.getNombrePaciente());
-        nuevo.setEmail(req.getCorreo());
+        nuevo.setEmail(correo);
         nuevo.setTelefono(req.getTelefono());
         nuevo.setDocumento(req.getDocumento());
         nuevo.setRol(TipoUsuario.CLIENTE);
-        //nuevo.setTelegramUserId(req.getTelegramUserId());
-        // Clave aleatoria: el paciente creado desde Telegram no inicia sesión todavía
+        nuevo.setTelegramUserId(chatId);
         nuevo.setClave(passwordEncoder.encode(UUID.randomUUID().toString()));
         return userDao.save(nuevo);
+    }
+
+    /**
+     * Devuelve el chat id solo si no pertenece ya a la administradora o a la
+     * fisioterapeuta. Evita que, cuando Lina agenda para un paciente desde su
+     * propio chat, las confirmaciones de ese paciente terminen llegándole a ella.
+     */
+    private String resolverTelegram(String telegramUserId) {
+        if (telegramUserId == null || telegramUserId.isBlank()) return null;
+        for (UserEntity u : userDao.findAllByTelegramUserId(telegramUserId)) {
+            if (u.getRol() == TipoUsuario.ADMIN || u.getRol() == TipoUsuario.FISIO) return null;
+        }
+        return telegramUserId;
+    }
+
+    /** Si el paciente ya existía pero sin chat de Telegram, se lo completamos. */
+    private UserEntity completarTelegram(UserEntity u, String telegramUserId) {
+        if (telegramUserId != null && esVacio(u.getTelegramUserId())) {
+            u.setTelegramUserId(telegramUserId);
+            return userDao.save(u);
+        }
+        return u;
+    }
+
+    private String soloDigitos(String s) {
+        return s == null ? "" : s.replaceAll("[^0-9]", "");
     }
 
     /** Identifica al usuario de Telegram y devuelve su rol. */
@@ -447,5 +516,42 @@ public class BotReservaController {
         }
 
         return ResponseEntity.ok(agenda);
+    }
+    @GetMapping("/reserva/pendiente/{telegramUserId}")
+    public ResponseEntity<Map<String, Object>> reservaPendiente(
+            @PathVariable String telegramUserId) {
+
+        Map<String, Object> r = new HashMap<>();
+        List<UserEntity> usuarios = userDao.findAllByTelegramUserId(telegramUserId);
+        if (usuarios.isEmpty()) {
+            r.put("existe", false);
+            return ResponseEntity.ok(r);
+        }
+
+        ReservationEntity pendiente = null;
+        for (UserEntity u : usuarios) {
+            for (ReservationEntity res : reservationDao.findByUsuario_IdUsuario(u.getIdUsuario())) {
+                if (!res.isEstadoR()) continue;
+                if (Boolean.TRUE.equals(res.getPagoConfirmado())) continue;
+                if (pendiente == null || res.getFechaInicio().isAfter(pendiente.getFechaInicio())) {
+                    pendiente = res;
+                }
+            }
+        }
+
+        if (pendiente == null) {
+            r.put("existe", false);
+            return ResponseEntity.ok(r);
+        }
+
+        r.put("existe", true);
+        r.put("reservaId", pendiente.getIdReserva());
+        r.put("nombrePaciente", pendiente.getUsuario().getNombre());
+        r.put("servicio", pendiente.getServicio() != null
+                ? pendiente.getServicio().getNombreS() : "");
+        r.put("sede", pendiente.getSede());
+        r.put("fechaInicio", pendiente.getFechaInicio().format(ISO));
+        r.put("googleCalendarId", pendiente.getGoogleCalendarId());
+        return ResponseEntity.ok(r);
     }
 }

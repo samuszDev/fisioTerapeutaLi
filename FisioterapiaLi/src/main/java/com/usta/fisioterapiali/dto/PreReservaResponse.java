@@ -24,6 +24,11 @@ public class PreReservaResponse {
     private String fechaFin;
     private Integer duracionMinutos;
 
+    private String correo;
+    private String telefono;
+    private String googleCalendarId;
+    private String telegramUserId;
+
     /** Mensaje listo para que el bot se lo reenvíe al paciente. */
     private String mensaje;
 
