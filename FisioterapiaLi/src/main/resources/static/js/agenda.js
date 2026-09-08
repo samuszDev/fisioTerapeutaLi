@@ -218,6 +218,14 @@ function cargarVistaSemanal(citas) {
 
     if (!Array.isArray(citas) || citas.length === 0) return;
 
+    // Ordenar cronológicamente por fecha y hora antes de repartirlas en los días
+    // (ISO "YYYY-MM-DDTHH:mm:ss" se puede comparar directamente como texto)
+    const citasOrdenadas = [...citas].sort((a, b) => {
+        if (!a.fechaInicio) return 1;
+        if (!b.fechaInicio) return -1;
+        return a.fechaInicio.localeCompare(b.fechaInicio);
+    });
+
     // Calcular el rango de la semana actual (Lunes a Domingo)
     const hoy = new Date();
     const diaSemanaIndex = hoy.getDay() === 0 ? 7 : hoy.getDay();
@@ -230,7 +238,7 @@ function cargarVistaSemanal(citas) {
     finSemana.setDate(inicioSemana.getDate() + 6);
     finSemana.setHours(23, 59, 59, 999);
 
-    citas.forEach(cita => {
+    citasOrdenadas.forEach(cita => {
         if (!cita.fechaInicio) return;
 
         // Parsear fecha ISO "YYYY-MM-DDTHH:mm:ss"

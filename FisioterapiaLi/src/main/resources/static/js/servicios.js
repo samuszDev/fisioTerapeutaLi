@@ -8,11 +8,11 @@ if (typeof registerInternalViews === "function") {
                 <form class="form-grid" id="newServiceForm">
                     <div class="form-field">
                         <label>Nombre del servicio</label>
-                        <input type="text" name="nombreService" required>
+                        <input type="text" name="nombreService" placeholder="Ej: Sesión de rehabilitación, Masoterapia..." required>
                     </div>
                     <div class="form-field">
                         <label>Precio</label>
-                        <input type="number" name="precio" required>
+                        <input type="number" name="precio" placeholder="Ej: 100000" required>
                     </div>
                     <div class="form-field">
                         <label>Duración</label>
@@ -27,7 +27,7 @@ if (typeof registerInternalViews === "function") {
                     </div>
                     <div class="form-field full">
                         <label>Descripción</label>
-                        <textarea name="descripcion" rows="4" placeholder="Detalles del tratamiento..."></textarea>
+                        <textarea name="descripcion" rows="4" placeholder="Describe brevemente en qué consiste el tratamiento..."></textarea>
                     </div>
                 </form>
             `

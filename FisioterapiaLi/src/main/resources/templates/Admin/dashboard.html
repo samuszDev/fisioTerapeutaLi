@@ -51,9 +51,15 @@
         </nav>
 
         <div class="sidebar-footer">
-            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="footer-avatar">
-            <div class="footer-info">
-                <span>Lina Murillo (Fisioterapeuta)</span>
+            <div class="footer-header">
+                <span class="footer-icon">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="10" cy="7" r="3"/><path d="M4 17c.5-3 2.4-4.5 6-4.5s5.5 1.5 6 4.5"/>
+                    </svg>
+                </span>
+                <strong>Lina Murillo (Fisioterapeuta)</strong>
+            </div>
+            <div class="footer-details">
                 <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
                 <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
             </div>
@@ -86,40 +92,48 @@
                     <div class="stats-grid">
                         <article class="stat-card">
                             <span class="card-dot teal"></span>
-                            <div class="stat-icon navy">
-                                <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+                            <div class="stat-top">
+                                <div class="stat-icon navy">
+                                    <img th:src="@{/css/assets/calendar.svg}" alt="" aria-hidden="true">
+                                </div>
+                                <div class="stat-value">8</div>
                             </div>
-                            <div class="stat-value">8</div>
                             <div class="stat-label">Citas de hoy</div>
                             <span class="stat-pill">+2 vs. ayer</span>
                         </article>
 
                         <article class="stat-card alt">
                             <span class="card-dot gold"></span>
-                            <div class="stat-icon gold">
-                                <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+                            <div class="stat-top">
+                                <div class="stat-icon gold">
+                                    <img th:src="@{/css/assets/clients.svg}" alt="" aria-hidden="true">
+                                </div>
+                                <div class="stat-value">132</div>
                             </div>
-                            <div class="stat-value">132</div>
                             <div class="stat-label">Pacientes activos</div>
                             <span class="stat-pill">+12 este mes</span>
                         </article>
 
                         <article class="stat-card">
                             <span class="card-dot teal"></span>
-                            <div class="stat-icon navy">
-                                <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+                            <div class="stat-top">
+                                <div class="stat-icon navy">
+                                    <img th:src="@{/css/assets/reports.svg}" alt="" aria-hidden="true">
+                                </div>
+                                <div class="stat-value">3</div>
                             </div>
-                            <div class="stat-value">3</div>
                             <div class="stat-label">Pendientes de pago</div>
                             <span class="stat-pill warning">Requiere seguimiento</span>
                         </article>
 
                         <article class="stat-card alt">
                             <span class="card-dot gold"></span>
-                            <div class="stat-icon gold">
-                                <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+                            <div class="stat-top">
+                                <div class="stat-icon gold">
+                                    <img th:src="@{/css/assets/services.svg}" alt="" aria-hidden="true">
+                                </div>
+                                <div class="stat-value">27</div>
                             </div>
-                            <div class="stat-value">27</div>
                             <div class="stat-label">Referidos completados</div>
                             <span class="stat-pill">Meta mensual: 30</span>
                         </article>
@@ -181,19 +195,29 @@
 
                     <div class="reminder-list">
                         <div class="reminder-box">
-                            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="reminder-avatar">
-                            <div>
+                            <div class="reminder-header">
+                                <span class="reminder-icon">
+                                    <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M10 3a4 4 0 0 0-4 4v2.5c0 .8-.3 1.6-.9 2.1L4 12.5h12l-1.1-1c-.6-.5-.9-1.3-.9-2V7a4 4 0 0 0-4-4z"/>
+                                        <path d="M8.3 15a1.8 1.8 0 0 0 3.4 0"/>
+                                    </svg>
+                                </span>
                                 <strong>Recordatorio</strong>
-                                <p>Confirmar el pago pendiente de Carlos Peña antes del viernes.</p>
                             </div>
+                            <p>Confirmar el pago pendiente de Carlos Peña antes del viernes.</p>
                         </div>
 
                         <div class="reminder-box">
-                            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="reminder-avatar">
-                            <div>
+                            <div class="reminder-header">
+                                <span class="reminder-icon">
+                                    <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M10 3a4 4 0 0 0-4 4v2.5c0 .8-.3 1.6-.9 2.1L4 12.5h12l-1.1-1c-.6-.5-.9-1.3-.9-2V7a4 4 0 0 0-4-4z"/>
+                                        <path d="M8.3 15a1.8 1.8 0 0 0 3.4 0"/>
+                                    </svg>
+                                </span>
                                 <strong>Seguimiento</strong>
-                                <p>Llamar a María Torres para confirmar su próxima sesión de rehabilitación.</p>
                             </div>
+                            <p>Llamar a María Torres para confirmar su próxima sesión de rehabilitación.</p>
                         </div>
                     </div>
                 </article>

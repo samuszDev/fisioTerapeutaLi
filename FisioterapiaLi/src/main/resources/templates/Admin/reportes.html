@@ -53,10 +53,15 @@
         </nav>
 
         <div class="sidebar-footer">
-            <!-- CORRECCIÓN: Datos reales del consultorio -->
-            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="footer-avatar">
-            <div class="footer-info">
-                <span>Lina Murillo (Fisioterapeuta)</span>
+            <div class="footer-header">
+                <span class="footer-icon">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="10" cy="7" r="3"/><path d="M4 17c.5-3 2.4-4.5 6-4.5s5.5 1.5 6 4.5"/>
+                    </svg>
+                </span>
+                <strong>Lina Murillo (Fisioterapeuta)</strong>
+            </div>
+            <div class="footer-details">
                 <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
                 <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
             </div>
@@ -87,42 +92,50 @@
             <div class="report-stats">
                 <article class="report-stat">
                     <span class="card-dot teal"></span>
-                    <div class="stat-icon navy">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4 16V9M10 16V5M16 16v-3"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon navy">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 16V9M10 16V5M16 16v-3"/>
+                            </svg>
+                        </div>
+                        <strong>$12.450.000</strong>
                     </div>
-                    <strong>$12.450.000</strong>
                     <span>Ingresos del mes</span>
                 </article>
                 <article class="report-stat alt">
                     <span class="card-dot gold"></span>
-                    <div class="stat-icon gold">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon gold">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
+                            </svg>
+                        </div>
+                        <strong>184</strong>
                     </div>
-                    <strong>184</strong>
                     <span>Citas atendidas</span>
                 </article>
                 <article class="report-stat">
                     <span class="card-dot teal"></span>
-                    <div class="stat-icon navy">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon navy">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
+                            </svg>
+                        </div>
+                        <strong>12</strong>
                     </div>
-                    <strong>12</strong>
                     <span>Cancelaciones</span>
                 </article>
                 <article class="report-stat alt">
                     <span class="card-dot gold"></span>
-                    <div class="stat-icon gold">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="10" cy="7" r="3"/><path d="M4 17c.5-3 2.4-4.5 6-4.5s5.5 1.5 6 4.5"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon gold">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="10" cy="7" r="3"/><path d="M4 17c.5-3 2.4-4.5 6-4.5s5.5 1.5 6 4.5"/>
+                            </svg>
+                        </div>
+                        <strong>27</strong>
                     </div>
-                    <strong>27</strong>
                     <span>Pacientes nuevos</span>
                 </article>
             </div>

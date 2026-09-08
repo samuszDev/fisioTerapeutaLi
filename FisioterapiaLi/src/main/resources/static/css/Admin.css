@@ -1462,19 +1462,37 @@ tbody tr:hover {
     margin-top: auto;
     display: flex;
     flex-direction: column;
+    gap: 10px;
     background: rgba(211, 168, 107, .16);
     border: 1px solid rgba(211, 168, 107, .3);
     border-radius: 14px;
-    padding: 14px 14px;
-    gap: 5px;
+    padding: 14px;
     color: #f3e6cf;
-    font-size: 9px;
+    font-size: 11px;
 }
 
-.sidebar-footer span:first-child {
+.footer-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-header strong {
     color: #fff;
     font-weight: 800;
-    font-size: 10.5px;
+    font-size: 13.5px;
+    line-height: 1.25;
+}
+
+.footer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 2px;
+}
+
+.footer-details span {
+    font-size: 11px;
 }
 
 /* --- Fondo del dashboard: gris azulado, sin el degradé decorativo de esquina --- */
@@ -1706,8 +1724,10 @@ tbody tr:hover {
 /* (degradado que nunca llega a blanco puro, para que los íconos y el
    texto blanco de siempre se sigan viendo bien sin recolorearlos) */
 
-.sidebar {
-    position: relative;
+@media (min-width: 761px) {
+    .sidebar {
+        position: relative;
+    }
 }
 
 .sidebar > * {
@@ -1845,44 +1865,6 @@ tbody tr:hover {
 /* ===== FOTO REAL DE LINA MURILLO EN EL DASHBOARD ===== */
 /* Se activan solas con :has() cuando el markup incluye la foto,
    así que no afectan Agenda/Clientes/Servicios/Reportes. */
-
-.sidebar-footer:has(.footer-avatar) {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-}
-
-.footer-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: 50% 12%;
-    flex-shrink: 0;
-    border: 2px solid rgba(255, 255, 255, .55);
-}
-
-.footer-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-}
-
-.reminder-box:has(.reminder-avatar) {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-}
-
-.reminder-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: 50% 12%;
-    flex-shrink: 0;
-}
 
 /* ===== BARRA DE ACCIONES EN PÍLDORA (solo Dashboard) ===== */
 /* Misma idea visual que la barra "Inicio/Servicios..." de la referencia,
@@ -2500,4 +2482,206 @@ tbody tr:hover {
     right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--gold), var(--teal));
+}
+
+/* ===================================================================
+   AJUSTES FINALES DE USABILIDAD (tarjetas, fotos, botones, selector)
+   =================================================================== */
+
+/* --- Tarjetas de stat-card / report-stat: ícono junto al número,
+   texto descriptivo debajo de ambos, y letra más grande --- */
+
+.stat-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.stat-top .stat-icon {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.stat-value {
+    font-size: 30px;
+    margin-bottom: 0;
+}
+
+.stat-label {
+    font-size: 12.5px;
+}
+
+.stat-pill {
+    font-size: 11.5px;
+}
+
+.report-stat strong {
+    font-size: 27px;
+    margin-bottom: 0;
+}
+
+.report-stat span {
+    font-size: 12.5px;
+}
+
+/* --- Botones de acción de tabla (Historial clínico / Editar / Eliminar): más grandes --- */
+
+.table-action {
+    font-size: 13px;
+    padding: 4px 2px;
+}
+
+/* --- Ícono de reemplazo para la foto repetida (sidebar y recordatorios) --- */
+
+.footer-icon,
+.reminder-icon {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.footer-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--navy-light);
+    border: 2px solid rgba(255, 255, 255, .35);
+}
+
+.footer-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.reminder-icon {
+    width: 34px;
+    height: 34px;
+    background: var(--gold-dark);
+}
+
+.reminder-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* --- Selector Vista lista / Vista semanal (Agenda) --- */
+
+.view-toggle {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    background: #eef1f6;
+    border-radius: 30px;
+    margin-bottom: 14px;
+}
+
+.view-toggle-btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 26px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.view-toggle-btn.active {
+    background: var(--navy);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(18, 41, 74, .2);
+}
+
+/* ===================================================================
+   AJUSTES RESPONSIVE FALTANTES
+   (lo nuevo que agregamos no estaba cubierto por los breakpoints
+   originales de 1050px / 760px / 480px)
+   =================================================================== */
+
+/* --- Vista semanal de Agenda: la cuadrícula de 7 días no cabía en móvil --- */
+
+@media (max-width: 900px) {
+    .calendar-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .calendar-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 420px) {
+    .calendar-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Títulos en degradado: se achican en pantallas chicas (las 5 vistas) --- */
+
+@media (max-width: 760px) {
+    #dashboard h1,
+    #agenda h1,
+    #clientes h1,
+    #servicios h1,
+    #reportes h1 {
+        font-size: 26px;
+    }
+
+    .dashboard-title-row {
+        gap: 10px;
+    }
+
+    .title-avatar {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Las líneas decorativas de fondo son más discretas en móvil */
+    .main-content::before,
+    .main-content::after {
+        opacity: .18 !important;
+        width: 260px !important;
+        height: 260px !important;
+    }
+
+    /* La píldora de botones se acomoda en varias líneas si hace falta */
+    .header-actions {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    /* El selector Vista lista/semanal ocupa todo el ancho */
+    .view-toggle {
+        width: 100%;
+    }
+
+    .view-toggle-btn {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ===== RECORDATORIOS DEL DASHBOARD: ícono + título en la misma línea ===== */
+
+.reminder-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.reminder-header .reminder-icon {
+    margin: 0;
 }

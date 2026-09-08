@@ -51,9 +51,15 @@
         </nav>
 
         <div class="sidebar-footer">
-            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="footer-avatar">
-            <div class="footer-info">
-                <span>Lina Murillo (Fisioterapeuta)</span>
+            <div class="footer-header">
+                <span class="footer-icon">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="10" cy="7" r="3"/><path d="M4 17c.5-3 2.4-4.5 6-4.5s5.5 1.5 6 4.5"/>
+                    </svg>
+                </span>
+                <strong>Lina Murillo (Fisioterapeuta)</strong>
+            </div>
+            <div class="footer-details">
                 <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
                 <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
             </div>
@@ -84,48 +90,56 @@
             <div class="stats-grid agenda-stats">
                 <article class="stat-card">
                     <span class="card-dot teal"></span>
-                    <div class="stat-icon navy">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon navy">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M6 3v3M14 3v3M3 8h14"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value">8</div>
                     </div>
-                    <div class="stat-value">8</div>
                     <div class="stat-label">Citas de hoy</div>
                     <span class="stat-pill">Sede Tunja</span>
                 </article>
 
                 <article class="stat-card alt">
                     <span class="card-dot gold"></span>
-                    <div class="stat-icon gold">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4 10.5l3.6 3.6L16 5.5"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon gold">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 10.5l3.6 3.6L16 5.5"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value">5</div>
                     </div>
-                    <div class="stat-value">5</div>
                     <div class="stat-label">Confirmadas</div>
                     <span class="stat-pill">Al día</span>
                 </article>
 
                 <article class="stat-card">
                     <span class="card-dot teal"></span>
-                    <div class="stat-icon navy">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="10" cy="10.5" r="6.5"/><path d="M10 7v4l3 2"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon navy">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="10" cy="10.5" r="6.5"/><path d="M10 7v4l3 2"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value">2</div>
                     </div>
-                    <div class="stat-value">2</div>
                     <div class="stat-label">Pendientes</div>
                     <span class="stat-pill warning">Confirmar pago</span>
                 </article>
 
                 <article class="stat-card alt">
                     <span class="card-dot gold"></span>
-                    <div class="stat-icon gold">
-                        <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
-                        </svg>
+                    <div class="stat-top">
+                        <div class="stat-icon gold">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="10" cy="10.5" r="6.5"/><path d="M7.7 8.2l4.6 4.6M12.3 8.2l-4.6 4.6"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value">1</div>
                     </div>
-                    <div class="stat-value">1</div>
                     <div class="stat-label">Canceladas</div>
                     <span class="stat-pill">Esta semana</span>
                 </article>
@@ -155,57 +169,66 @@
                 <button class="btn btn-outline">Filtrar</button>
             </div>
 
-            <div class="panel">
-                <div class="table-container">
-                    <table class="wide-table">
-                        <thead>
-                        <tr>
-                            <th>Fecha / hora</th>
-                            <th>Paciente</th>
-                            <th>Servicio</th>
-                            <th>Sede</th>
-                            <th>Pago</th>
-                            <th>Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                        </thead>
-                        <tbody id="agendaRows">
-                        <!-- Las filas se cargarán dinámicamente mediante agenda.js -->
-                        </tbody>
-                    </table>
+            <div class="view-toggle">
+                <button type="button" class="view-toggle-btn active" data-view="list">Vista lista</button>
+                <button type="button" class="view-toggle-btn" data-view="week">Vista semanal</button>
+            </div>
+
+            <div class="view-list">
+                <div class="panel">
+                    <div class="table-container">
+                        <table class="wide-table">
+                            <thead>
+                            <tr>
+                                <th>Fecha / hora</th>
+                                <th>Paciente</th>
+                                <th>Servicio</th>
+                                <th>Sede</th>
+                                <th>Pago</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody id="agendaRows">
+                            <!-- Las filas se cargarán dinámicamente mediante agenda.js -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div class="weekly-view panel">
-                <h3 class="panel-title">Vista semanal</h3>
-                <div class="calendar-grid">
-                    <div class="calendar-day">
-                        <h4>Lun</h4>
-                        <div class="day-content" id="col-lunes"></div>
-                    </div>
-                    <div class="calendar-day">
-                        <h4>Mar</h4>
-                        <div class="day-content" id="col-martes"></div>
-                    </div>
-                    <div class="calendar-day">
-                        <h4>Mié</h4>
-                        <div class="day-content" id="col-miercoles"></div>
-                    </div>
-                    <div class="calendar-day">
-                        <h4>Jue</h4>
-                        <div class="day-content" id="col-jueves"></div>
-                    </div>
-                    <div class="calendar-day">
-                        <h4>Vie</h4>
-                        <div class="day-content" id="col-viernes"></div>
-                    </div>
-                    <div class="calendar-day">
-                        <h4>Sáb</h4>
-                        <div class="day-content" id="col-sabado"></div>
-                    </div>
-                    <div class="calendar-day">
-                        <h4>Dom</h4>
-                        <div class="day-content" id="col-domingo"></div>
+            <div class="view-week" style="display: none;">
+                <div class="weekly-view panel">
+                    <h3 class="panel-title">Vista semanal</h3>
+                    <div class="calendar-grid">
+                        <div class="calendar-day">
+                            <h4>Lun</h4>
+                            <div class="day-content" id="col-lunes"></div>
+                        </div>
+                        <div class="calendar-day">
+                            <h4>Mar</h4>
+                            <div class="day-content" id="col-martes"></div>
+                        </div>
+                        <div class="calendar-day">
+                            <h4>Mié</h4>
+                            <div class="day-content" id="col-miercoles"></div>
+                        </div>
+                        <div class="calendar-day">
+                            <h4>Jue</h4>
+                            <div class="day-content" id="col-jueves"></div>
+                        </div>
+                        <div class="calendar-day">
+                            <h4>Vie</h4>
+                            <div class="day-content" id="col-viernes"></div>
+                        </div>
+                        <div class="calendar-day">
+                            <h4>Sáb</h4>
+                            <div class="day-content" id="col-sabado"></div>
+                        </div>
+                        <div class="calendar-day">
+                            <h4>Dom</h4>
+                            <div class="day-content" id="col-domingo"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -235,5 +258,21 @@
 
 <script th:src="@{/js/common.js}"></script>
 <script th:src="@{/js/agenda.js}"></script>
+
+<!-- Selector de vista (lista/semanal): solo maneja visibilidad, no toca datos ni agenda.js -->
+<script>
+    document.querySelectorAll('.view-toggle-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.view-toggle-btn').forEach(function (b) {
+                b.classList.remove('active');
+            });
+            btn.classList.add('active');
+
+            const showWeek = btn.dataset.view === 'week';
+            document.querySelector('.view-list').style.display = showWeek ? 'none' : '';
+            document.querySelector('.view-week').style.display = showWeek ? '' : 'none';
+        });
+    });
+</script>
 </body>
 </html>
