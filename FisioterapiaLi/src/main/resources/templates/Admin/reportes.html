@@ -6,7 +6,7 @@
     <title>La Fisioterapeuta Li · Reportes</title>
     <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700;800&display=swap">
     <!-- CORRECCIÓN: Ruta de Thymeleaf apuntando a Admin.css -->
     <link rel="stylesheet" th:href="@{/css/Admin.css}">
 </head>
@@ -54,9 +54,12 @@
 
         <div class="sidebar-footer">
             <!-- CORRECCIÓN: Datos reales del consultorio -->
-            <span>Lina Murillo (Fisioterapeuta)</span>
-            <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
-            <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
+            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="footer-avatar">
+            <div class="footer-info">
+                <span>Lina Murillo (Fisioterapeuta)</span>
+                <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
+                <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
+            </div>
         </div>
     </aside>
 
@@ -68,13 +71,17 @@
 
         <section class="page active" id="reportes">
             <div class="page-header">
-                <div>
-                    <span class="eyebrow">VISIÓN ADMINISTRATIVA</span>
-                    <h1>Reportes e indicadores</h1>
-                    <p>Información para apoyar las decisiones de <span class="cursive-accent">Lina Murillo</span>.</p>
+                <div class="dashboard-title-row">
+                    <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="title-avatar">
+                    <div>
+                        <h1>Reportes e indicadores</h1>
+                        <p>Información para apoyar las decisiones de <span class="cursive-accent">Lina Murillo</span>.</p>
+                    </div>
                 </div>
 
-                <button class="btn btn-gold">⇩ Exportar reporte</button>
+                <div class="header-actions">
+                    <button class="btn btn-gold">⇩ Exportar reporte</button>
+                </div>
             </div>
 
             <div class="report-stats">

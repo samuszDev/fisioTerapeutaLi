@@ -56,14 +56,6 @@ button {
     flex-direction: column;
 }
 
-.sidebar-title {
-    color: #d0d7e7;
-    font-size: 10px;
-    letter-spacing: 1.7px;
-    font-weight: 800;
-    margin-bottom: 12px;
-}
-
 .sidebar-nav {
     display: flex;
     flex-direction: column;
@@ -229,12 +221,6 @@ h1 {
     margin-top: 10px;
 }
 
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.65fr) minmax(320px, .95fr);
-    gap: 14px;
-}
-
 .panel {
     padding: 17px;
 }
@@ -351,14 +337,6 @@ td {
     margin-bottom: 13px;
 }
 
-.filter-placeholder {
-    width: 220px;
-    height: 36px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: #fff;
-}
-
 .table-action {
     border: 0;
     background: transparent;
@@ -373,33 +351,6 @@ td {
 
 .weekly-view {
     margin-top: 14px;
-}
-
-.week-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-}
-
-.day {
-    min-height: 95px;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    padding: 9px;
-    color: var(--muted);
-    font-size: 9px;
-}
-
-.day strong {
-    color: var(--text);
-    font-size: 10px;
-}
-
-.day div {
-    margin-top: 13px;
-    min-height: 40px;
-    background: #f6f8fa;
-    border-radius: 6px;
 }
 
 .services-grid {
@@ -630,18 +581,6 @@ td {
     margin-bottom: 8px;
 }
 
-.placeholder-line {
-    height: 10px;
-    width: 85%;
-    background: #edf1f5;
-    border-radius: 3px;
-    margin-bottom: 7px;
-}
-
-.placeholder-line.short {
-    width: 55%;
-}
-
 .clinical-top {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -685,10 +624,6 @@ td {
     .stats-grid,
     .report-stats {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
     }
 
     .services-grid {
@@ -753,10 +688,6 @@ td {
     .services-grid,
     .reports-grid {
         grid-template-columns: 1fr;
-    }
-
-    .week-grid {
-        grid-template-columns: repeat(2, 1fr);
     }
 
     .form-grid,
@@ -1020,22 +951,6 @@ td {
 .toolbar {
     flex-wrap: wrap;
     align-items: center;
-}
-
-.day-date {
-    color: var(--gold-dark);
-    font-weight: 800;
-}
-
-.day-count {
-    display: inline-block;
-    margin-top: 30px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    background: rgba(95, 214, 214, .18);
-    color: #12294a;
-    font-size: 9px;
-    font-weight: 700;
 }
 /* ===== LOGO REAL DE LA MARCA EN EL SIDEBAR ===== */
 
@@ -2212,4 +2127,377 @@ tbody tr:hover {
 #agenda .header-actions .btn {
     border-radius: 30px;
     padding: 10px 22px;
+}
+
+/* ===================================================================
+   MISMA IDENTIDAD VISUAL, AHORA EN CLIENTES
+   Escopado a :has(.nav-item[href*="clientes"].active) / #clientes.
+   =================================================================== */
+
+.sidebar:has(.nav-item[href*="clientes"].active) {
+    background: linear-gradient(180deg, #4a6da3 0%, #2f5590 55%, #1a3a63 100%);
+    overflow: hidden;
+}
+
+.sidebar:has(.nav-item[href*="clientes"].active)::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -40px -40px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat bottom center;
+    background-size: contain;
+    filter: brightness(0) invert(1);
+    opacity: .3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.sidebar:has(.nav-item[href*="clientes"].active) .nav-item:hover,
+.sidebar:has(.nav-item[href*="clientes"].active) .nav-item.active {
+    background: rgba(255, 255, 255, .18);
+}
+
+.main-content:has(#clientes) {
+    background: #f3f6fb;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content:has(#clientes)::before {
+    content: "";
+    position: absolute;
+    inset: auto -60px -60px auto;
+    width: 520px;
+    height: 520px;
+    background: url("../images/lineas_dorada.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .55;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#clientes)::after {
+    content: "";
+    position: absolute;
+    inset: -60px auto auto -60px;
+    width: 420px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat top left;
+    background-size: contain;
+    opacity: .3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#clientes) > * {
+    position: relative;
+    z-index: 1;
+}
+
+#clientes .panel {
+    position: relative;
+    overflow: hidden;
+}
+
+#clientes .panel::before {
+    content: "";
+    position: absolute;
+    inset: auto -30px -30px auto;
+    width: 320px;
+    height: 220px;
+    background: url("../images/lineas_azul.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .12;
+    pointer-events: none;
+}
+
+#clientes .panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+#clientes h1 {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 38px;
+    background: linear-gradient(90deg, var(--navy), #1f8f9d, var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--navy);
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2px;
+}
+
+#clientes .header-actions {
+    background: linear-gradient(90deg, #e7ecf5, #cfdaeb);
+    border-radius: 50px;
+    padding: 9px 10px;
+    box-shadow: 0 6px 18px rgba(18, 41, 74, .12);
+}
+
+#clientes .header-actions .btn {
+    border-radius: 30px;
+    padding: 10px 22px;
+}
+
+/* ===================================================================
+   MISMA IDENTIDAD VISUAL, AHORA EN SERVICIOS
+   Escopado a :has(.nav-item[href*="servicios"].active) / #servicios.
+   =================================================================== */
+
+.sidebar:has(.nav-item[href*="servicios"].active) {
+    background: linear-gradient(180deg, #4a6da3 0%, #2f5590 55%, #1a3a63 100%);
+    overflow: hidden;
+}
+
+.sidebar:has(.nav-item[href*="servicios"].active)::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -40px -40px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat bottom center;
+    background-size: contain;
+    filter: brightness(0) invert(1);
+    opacity: .3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.sidebar:has(.nav-item[href*="servicios"].active) .nav-item:hover,
+.sidebar:has(.nav-item[href*="servicios"].active) .nav-item.active {
+    background: rgba(255, 255, 255, .18);
+}
+
+.main-content:has(#servicios) {
+    background: #f3f6fb;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content:has(#servicios)::before {
+    content: "";
+    position: absolute;
+    inset: auto -60px -60px auto;
+    width: 520px;
+    height: 520px;
+    background: url("../images/lineas_dorada.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .55;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#servicios)::after {
+    content: "";
+    position: absolute;
+    inset: -60px auto auto -60px;
+    width: 420px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat top left;
+    background-size: contain;
+    opacity: .3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#servicios) > * {
+    position: relative;
+    z-index: 1;
+}
+
+#servicios h1 {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 38px;
+    background: linear-gradient(90deg, var(--navy), #1f8f9d, var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--navy);
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2px;
+}
+
+#servicios .header-actions {
+    background: linear-gradient(90deg, #e7ecf5, #cfdaeb);
+    border-radius: 50px;
+    padding: 9px 10px;
+    box-shadow: 0 6px 18px rgba(18, 41, 74, .12);
+}
+
+#servicios .header-actions .btn {
+    border-radius: 30px;
+    padding: 10px 22px;
+}
+
+/* --- Ondas decorativas detrás de la grilla de servicios --- */
+
+#servicios .services-grid {
+    position: relative;
+}
+
+#servicios .services-grid::before {
+    content: "";
+    position: absolute;
+    inset: auto -30px -30px auto;
+    width: 340px;
+    height: 240px;
+    background: url("../images/lineas_azul.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .1;
+    pointer-events: none;
+    z-index: 0;
+}
+
+#servicios .service-card {
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Línea de acento dorado/teal arriba de cada tarjeta (la que te gustó) --- */
+
+.service-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+}
+
+/* ===================================================================
+   MISMA IDENTIDAD VISUAL, AHORA EN REPORTES
+   Escopado a :has(.nav-item[href*="reports"].active) / #reportes.
+   =================================================================== */
+
+.sidebar:has(.nav-item[href*="reports"].active) {
+    background: linear-gradient(180deg, #4a6da3 0%, #2f5590 55%, #1a3a63 100%);
+    overflow: hidden;
+}
+
+.sidebar:has(.nav-item[href*="reports"].active)::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -40px -40px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat bottom center;
+    background-size: contain;
+    filter: brightness(0) invert(1);
+    opacity: .3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.sidebar:has(.nav-item[href*="reports"].active) .nav-item:hover,
+.sidebar:has(.nav-item[href*="reports"].active) .nav-item.active {
+    background: rgba(255, 255, 255, .18);
+}
+
+.main-content:has(#reportes) {
+    background: #f3f6fb;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content:has(#reportes)::before {
+    content: "";
+    position: absolute;
+    inset: auto -60px -60px auto;
+    width: 520px;
+    height: 520px;
+    background: url("../images/lineas_dorada.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .55;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#reportes)::after {
+    content: "";
+    position: absolute;
+    inset: -60px auto auto -60px;
+    width: 420px;
+    height: 420px;
+    background: url("../images/lineas_azul.png") no-repeat top left;
+    background-size: contain;
+    opacity: .3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main-content:has(#reportes) > * {
+    position: relative;
+    z-index: 1;
+}
+
+#reportes .panel {
+    position: relative;
+    overflow: hidden;
+}
+
+#reportes .panel::before {
+    content: "";
+    position: absolute;
+    inset: auto -30px -30px auto;
+    width: 320px;
+    height: 220px;
+    background: url("../images/lineas_azul.png") no-repeat bottom right;
+    background-size: contain;
+    opacity: .12;
+    pointer-events: none;
+}
+
+#reportes .reports-grid .panel:last-child::before {
+    background-image: url("../images/lineas_dorada.png");
+    opacity: .16;
+}
+
+#reportes .panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+#reportes h1 {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 38px;
+    background: linear-gradient(90deg, var(--navy), #1f8f9d, var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--navy);
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2px;
+}
+
+#reportes .header-actions {
+    background: linear-gradient(90deg, #e7ecf5, #cfdaeb);
+    border-radius: 50px;
+    padding: 9px 10px;
+    box-shadow: 0 6px 18px rgba(18, 41, 74, .12);
+}
+
+#reportes .header-actions .btn {
+    border-radius: 30px;
+    padding: 10px 22px;
+}
+
+/* Línea de acento dorado/teal arriba de cada tarjeta de indicador */
+
+.report-stat {
+    overflow: hidden;
+}
+
+.report-stat::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
 }

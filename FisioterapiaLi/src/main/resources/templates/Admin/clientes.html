@@ -6,6 +6,8 @@
     <title>La Fisioterapeuta Li · Clientes</title>
     <link rel="stylesheet" th:href="@{/css/Admin.css}">
     <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
 </head>
 <body>
 
@@ -48,9 +50,12 @@
         </nav>
 
         <div class="sidebar-footer">
-            <span>Lina Murillo (Fisioterapeuta)</span>
-            <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
-            <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
+            <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="footer-avatar">
+            <div class="footer-info">
+                <span>Lina Murillo (Fisioterapeuta)</span>
+                <span>Sede Tunja (L-V) / Turmequé (S-D)</span>
+                <span>Lun - Dom: 7:00 a.m. - 8:00 p.m.</span>
+            </div>
         </div>
     </aside>
 
@@ -62,13 +67,17 @@
 
         <section class="page active" id="clientes">
             <div class="page-header">
-                <div>
-                    <span class="eyebrow">GESTIÓN DE PACIENTES</span>
-                    <h1>Clientes</h1>
-                    <p>Consulta información básica y accede a la ficha.</p>
+                <div class="dashboard-title-row">
+                    <img th:src="@{/images/lina_murillo.png}" alt="Lina Murillo" class="title-avatar">
+                    <div>
+                        <h1>Clientes</h1>
+                        <p>Consulta información básica y accede a la ficha.</p>
+                    </div>
                 </div>
 
-                <button class="btn btn-gold" data-open-view="new-client">+ Crear cliente</button>
+                <div class="header-actions">
+                    <button class="btn btn-gold" data-open-view="new-client">+ Crear cliente</button>
+                </div>
             </div>
 
             <div class="toolbar">
