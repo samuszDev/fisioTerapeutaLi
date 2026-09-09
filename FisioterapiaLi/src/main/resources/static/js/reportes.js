@@ -1,14 +1,18 @@
-// REGISTRO DE VISTAS INTERNAS PARA EL MÓDULO DE REPORTES (Si se requiere algún filtro o detalle adicional)
+// REGISTRO DE VISTAS INTERNAS PARA EL MÓDULO DE REPORTES
 if (typeof registerInternalViews === "function") {
     registerInternalViews({
-        // Puedes agregar vistas de filtros avanzados o detalles de auditoría aquí si lo requieres luego
+        // Vistas internas de filtros avanzados o auditoría
     });
 }
 
-// CARGA DINÁMICA DEL HISTORIAL Y AUDITORÍA DE REGISTROS
 document.addEventListener("DOMContentLoaded", () => {
+    cargarHistorialYMetricas();
+});
+
+function cargarHistorialYMetricas() {
     const historialGrid = document.getElementById("historialGrid");
 
+    // 1. Cargar el historial y auditoría
     if (historialGrid) {
         fetch("/api/modal/reportes/historial")
             .then(response => {
@@ -47,4 +51,78 @@ document.addEventListener("DOMContentLoaded", () => {
                 historialGrid.innerHTML = "<tr><td colspan='4' style='text-align:center; padding: 20px; color: #d9534f;'>Error al cargar los reportes del sistema.</td></tr>";
             });
     }
-});
+
+    // 2. Cargar datos reales para calcular las métricas de los paneles superiores
+    Promise.all([
+        fetch("/api/modal/citas").then(res => res.ok ? res.json() : []),
+        fetch("/api/modal/pacientes").then(res => res.ok ? res.json() : [])
+    ])
+        .then(([citas, pacientes]) => {
+            calcularYMostrarMetricas(citas, pacientes);
+        })
+        .catch(err => console.error("Error al cargar datos para métricas:", err));
+}
+
+function calcularYMostrarMetricas(citas, pacientes) {
+    const fechaActual = new Date();
+    const mesActual = fechaActual.getMonth();
+    const anioActual = fechaActual.getFullYear();
+
+    let ingresosMes = 0;
+    let citasAtendidas = 0;
+    let cancelaciones = 0;
+    let pacientesNuevos = 0;
+
+    if (Array.isArray(citas)) {
+        citas.forEach(cita => {
+            const estado = (cita.estadoCita || cita.estado || "").toUpperCase();
+
+            if (estado === "CONFIRMADA" || estado === "ATENDIDA" || estado === "FINALIZADA") {
+                citasAtendidas++;
+            }
+
+            if (estado === "CANCELADA") {
+                cancelaciones++;
+            }
+
+            if (cita.fechaInicio) {
+                const fechaCita = new Date(cita.fechaInicio);
+                if (fechaCita.getMonth() === mesActual && fechaCita.getFullYear() === anioActual) {
+                    if (cita.pagoConfirmado || estado === "CONFIRMADA" || estado === "ATENDIDA" || estado === "FINALIZADA") {
+                        const valorServicio = cita.servicio && (cita.servicio.precio || cita.servicio.costo)
+                            ? Number(cita.servicio.precio || cita.servicio.costo)
+                            : 0;
+                        ingresosMes += valorServicio;
+                    }
+                }
+            }
+        });
+    }
+
+    if (Array.isArray(pacientes)) {
+        pacientes.forEach(p => {
+            if (p.rol === "CLIENTE") {
+                pacientesNuevos++;
+            }
+        });
+    }
+
+    // Actualización de los elementos en el DOM (asegúrate de asignar estos IDs a los números en tu HTML de reportes)
+    const elIngresos = document.getElementById("statIngresosMes");
+    const elAtendidas = document.getElementById("statCitasAtendidas");
+    const elCanceladas = document.getElementById("statCancelacionesReportes");
+    const elNuevos = document.getElementById("statPacientesNuevos");
+
+    if (elIngresos) {
+        elIngresos.textContent = "$" + ingresosMes.toLocaleString("es-CO");
+    }
+    if (elAtendidas) {
+        elAtendidas.textContent = citasAtendidas;
+    }
+    if (elCanceladas) {
+        elCanceladas.textContent = cancelaciones;
+    }
+    if (elNuevos) {
+        elNuevos.textContent = pacientesNuevos;
+    }
+}

@@ -358,22 +358,61 @@ public class ApiController {
     }
 
     @PostMapping("/pacientes")
-    public ResponseEntity<?> guardarPaciente(@RequestBody UserEntity cliente) {
+    public ResponseEntity<?> guardarPaciente(@RequestBody Map<String, Object> payload) {
         try {
-            if (cliente.getDocumento() != null && !cliente.getDocumento().isBlank()) {
-                Optional<UserEntity> existePaciente = userDao.findByDocumento(cliente.getDocumento());
+            String documento = (String) payload.get("documento");
+            String nombre = (String) payload.get("nombre");
+            String referidoPor = (String) payload.get("referidoPor"); // Campo opcional
+
+            if (documento != null && !documento.isBlank()) {
+                Optional<UserEntity> existePaciente = userDao.findByDocumento(documento);
                 if (existePaciente.isPresent()) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El número de documento ya está registrado.");
+                    // Si el documento ya existe, incrementamos su contador de referidos
+                    UserEntity clienteExistente = existePaciente.get();
+                    int contadorActual = clienteExistente.getContadorReferidos() != null ? clienteExistente.getContadorReferidos() : 0;
+                    clienteExistente.setContadorReferidos(contadorActual + 1);
+
+                    userDao.save(clienteExistente);
+                    registrarAccion("CLIENTES", "Incremento de referidos para el paciente: " + clienteExistente.getNombre());
+
+                    return ResponseEntity.ok("El documento ya estaba registrado. Se ha incrementado el contador de referidos correctamente para: " + clienteExistente.getNombre());
                 }
             }
 
-            if (cliente.getRol() == null) cliente.setRol(TipoUsuario.CLIENTE);
-            if (cliente.getClave() == null || cliente.getClave().isBlank()) cliente.setClave("123456");
-            if (cliente.getContadorReferidos() == null) cliente.setContadorReferidos(0);
+            // Crear nuevo usuario si no existe
+            UserEntity nuevoCliente = new UserEntity();
+            nuevoCliente.setNombre(nombre);
+            nuevoCliente.setDocumento(documento);
+            
 
-            UserEntity nuevoCliente = userDao.save(cliente);
-            registrarAccion("CLIENTES", "Creación de paciente: " + nuevoCliente.getNombre());
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoCliente);
+            if (payload.get("fechaNacimiento") != null && !((String) payload.get("fechaNacimiento")).isEmpty()) {
+                nuevoCliente.setFechaNacimiento(java.time.LocalDate.parse((String) payload.get("fechaNacimiento")));
+            }
+
+            nuevoCliente.setGenero((String) payload.get("genero"));
+            nuevoCliente.setEps((String) payload.get("eps"));
+            nuevoCliente.setTelefono((String) payload.get("telefono"));
+            nuevoCliente.setEmail((String) payload.get("email"));
+            nuevoCliente.setContactoEmergencia((String) payload.get("contactoEmergencia"));
+
+            // Opcional: Si ingresaron un documento de referido, puedes buscarlo o simplemente guardarlo si tienes el campo en la entidad
+            if (referidoPor != null && !referidoPor.isBlank()) {
+                Optional<UserEntity> referenteOpt = userDao.findByDocumento(referidoPor);
+                if (referenteOpt.isPresent()) {
+                    UserEntity referente = referenteOpt.get();
+                    int refActual = referente.getContadorReferidos() != null ? referente.getContadorReferidos() : 0;
+                    referente.setContadorReferidos(refActual + 1);
+                    userDao.save(referente);
+                }
+            }
+
+            nuevoCliente.setRol(TipoUsuario.CLIENTE);
+            nuevoCliente.setClave("123456");
+            nuevoCliente.setContadorReferidos(0);
+
+            UserEntity clienteGuardado = userDao.save(nuevoCliente);
+            registrarAccion("CLIENTES", "Creación de paciente: " + clienteGuardado.getNombre());
+            return ResponseEntity.status(HttpStatus.CREATED).body(clienteGuardado);
 
         } catch (Exception e) {
             e.printStackTrace();
