@@ -91,6 +91,27 @@ nav {
     justify-content: flex-end;
 }
 
+.btn-usuario {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-usuario img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.btn-usuario:hover {
+    transform: scale(1.08);
+}
+
 .btn-reservar {
     display: flex;
     align-items: center;
