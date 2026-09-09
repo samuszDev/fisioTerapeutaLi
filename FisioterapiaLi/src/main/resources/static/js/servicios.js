@@ -60,6 +60,17 @@ if (typeof registerInternalViews === "function") {
     });
 }
 
+// OBTENER CABECERAS CSRF PARA EVITAR ERRORES 403 EN POST/PUT/DELETE
+function getFetchHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
+    if (csrfToken && csrfHeader) {
+        headers[csrfHeader] = csrfToken;
+    }
+    return headers;
+}
+
 // Íconos SVG según palabras clave en el nombre del servicio
 function getServiceIcon(nombre) {
     const n = (nombre || "").toLowerCase();
@@ -111,7 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const servicesGrid = document.getElementById("serviciosGrid");
 
     if (servicesGrid) {
-        fetch("/api/modal/servicios")
+        fetch("/api/modal/servicios", {
+            headers: getFetchHeaders()
+        })
             .then(response => {
                 if (!response.ok) throw new Error("Error del servidor: " + response.status);
                 return response.json();
@@ -179,7 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!confirmado) return;
 
                 fetch(`/api/modal/servicios/${idServicio}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: getFetchHeaders()
                 })
                     .then(async response => {
                         if (response.ok) {
