@@ -1084,3 +1084,207 @@ body {
     height: auto;
     display: block;
 }
+
+
+
+/* ==========================================================================
+   EFECTOS MODERNOS, ANIMACIONES Y MEJORAS VISUALES
+   ========================================================================== */
+
+/* 1. Transiciones globales más suaves */
+*, *::before, *::after {
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+}
+
+/* 2. Botones interactivos con movimiento y brillo al pasar el cursor */
+.btn-agenda, .btn {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-agenda:hover, .btn-primary:hover, .btn-secondary:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(7, 59, 117, 0.4);
+}
+
+.btn-agenda:active, .btn-primary:active {
+    transform: translateY(-1px);
+}
+
+/* Efecto de destello de luz sobre los botones */
+.btn-agenda::after, .btn::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(30deg);
+    transition: all 0.6s ease;
+}
+
+.btn-agenda:hover::after, .btn:hover::after {
+    left: 120%;
+}
+
+/* 3. Animación de flotación suave en la estrella y la foto del Hero */
+@keyframes flotar {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.estrela-img {
+    animation: flotar 4s ease-in-out infinite;
+}
+
+.hero-photo {
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hero-photo:hover {
+    transform: translate(-50px, -45px) scale(1.02);
+}
+
+/* 4. Barra de contacto con efecto Glassmorphism (Cristal) */
+.contact-bar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(7, 59, 117, 0.15);
+}
+
+.contact-item {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.contact-item:hover {
+    transform: translateY(-3px);
+}
+
+.contact-item:hover .icon-circle {
+    transform: scale(1.15) rotate(5deg);
+    background-color: var(--blue-medium);
+}
+
+.icon-circle {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* 5. Tarjetas de Servicios con elevación e iluminación */
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 18px 35px rgba(7, 59, 117, 0.12);
+}
+
+.card-image-wrapper {
+    overflow: hidden;
+}
+
+.card-image-wrapper img {
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-image-wrapper img {
+    transform: scale(1.08);
+}
+
+/* 6. Efecto de entrada/deslizamiento en Feature Cards (Fisioterapia) */
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-left 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.feature-card:hover {
+    transform: translateX(10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--blue-medium);
+}
+
+.feature-card:hover .icon-box {
+    transform: scale(1.1) rotate(-8deg);
+    background-color: var(--blue-dark);
+}
+
+.icon-box {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* 7. Animación interactiva para las Ondas de fondo */
+@keyframes ondaMovimiento {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03) translateY(-5px); }
+    100% { transform: scale(1); }
+}
+
+.onda-izquierda, .onda-izquierda-dorada {
+    animation: ondaMovimiento 8s ease-in-out infinite;
+}
+
+/* 8. Efectos para la sección de Banners interactivos */
+.banner-side {
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-side::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.banner-side:hover::before {
+    opacity: 1;
+}
+
+.person-img {
+    transition: transform 0.5s ease;
+}
+
+.banner-container_baner:hover .person-img {
+    transform: translateX(-50%) scale(1.03);
+}
+
+/* 9. Efecto Pulso en la viñeta (dot) */
+@keyframes pulso {
+    0% { box-shadow: 0 0 0 0 rgba(7, 59, 117, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(7, 59, 117, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(7, 59, 117, 0); }
+}
+
+.dot {
+    animation: pulso 2s infinite;
+}
+
+/* ==========================================================================
+   Efecto Resplandor Azul al pasar el cursor sobre la .card
+   ========================================================================== */
+
+.card {
+    border: 2px solid transparent;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Estado seleccionado suave al pasar el cursor */
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #26a8fb;
+    box-shadow:
+            0 0 10px rgba(38, 168, 251, 0.35),
+            0 8px 20px rgba(7, 59, 117, 0.12);
+}
+
+
