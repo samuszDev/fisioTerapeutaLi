@@ -101,6 +101,7 @@
                 </select>
 
                 <button class="btn btn-outline" id="btnFiltrar">Filtrar</button>
+                <button class="btn btn-outline" id="btnLimpiar" style="margin-left: 8px;">Limpiar</button>
             </div>
 
             <div class="panel">
@@ -149,5 +150,27 @@
 
 <script th:src="@{/js/common.js}"></script>
 <script th:src="@{/js/cliente.js}"></script>
+
+<!-- Script para gestionar la acción del botón limpiar -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btnLimpiar = document.getElementById("btnLimpiar");
+        if (btnLimpiar) {
+            btnLimpiar.addEventListener("click", (e) => {
+                e.preventDefault();
+
+                const filtroNombre = document.getElementById("filtroNombre");
+                const filtroEstado = document.getElementById("filtroEstado");
+
+                if (filtroNombre) filtroNombre.value = "";
+                if (filtroEstado) filtroEstado.value = "";
+
+                if (typeof aplicarFiltrosClientes === "function") {
+                    aplicarFiltrosClientes();
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>

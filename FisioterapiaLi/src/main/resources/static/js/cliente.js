@@ -192,22 +192,7 @@ let todosLosClientes = [];
 
 // CARGA AUTOMÁTICA Y GESTIÓN DE EVENTOS
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("/api/modal/pacientes")
-        .then(response => response.json())
-        .then(pacientes => {
-            if (!pacientes || pacientes.length === 0) {
-                renderizarTablaClientes([]);
-                return;
-            }
-
-            // Filtrar únicamente los que tienen rol CLIENTE
-            todosLosClientes = pacientes.filter(p => p.rol === "CLIENTE");
-            renderizarTablaClientes(todosLosClientes);
-        })
-        .catch(error => {
-            console.error("Error al cargar lista de clientes:", error);
-            renderizarTablaClientes([]);
-        });
+    cargarClientes();
 
     // ==========================================
     // VINCULACIÓN DIRECTA DE LOS FILTROS
@@ -220,9 +205,23 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
+    // BOTÓN LIMPIAR FILTROS
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener("click", (e) => {
+            e.preventDefault();
+            const inputNombre = document.getElementById("filtroNombre");
+            const selectEps = document.getElementById("filtroEps");
+
+            if (inputNombre) inputNombre.value = "";
+            if (selectEps) selectEps.value = "";
+
+            aplicarFiltrosClientes();
+        });
+    }
+
     const filtroNombre = document.getElementById("filtroNombre");
     if (filtroNombre) {
-        // Filtra tanto al escribir como al presionar Enter
         filtroNombre.addEventListener("input", aplicarFiltrosClientes);
         filtroNombre.addEventListener("keyup", (e) => {
             if (e.key === "Enter") aplicarFiltrosClientes();
@@ -247,16 +246,25 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 50);
         }
 
-        if (event.target.classList.contains("btn-edit")) {
-            const btn = event.target;
+        // EDICIÓN DE CLIENTE (Carga la información actual en el formulario del modal)
+        const btnEdit = event.target.closest('.btn-edit');
+        if (btnEdit) {
             setTimeout(() => {
-                document.getElementById("editIdUsuario").value = btn.dataset.id;
-                document.getElementById("editNombre").value = btn.dataset.nombre;
-                document.getElementById("editDocumento").value = btn.dataset.documento;
-                document.getElementById("editEps").value = btn.dataset.eps;
-                document.getElementById("editTelefono").value = btn.dataset.telefono;
-                document.getElementById("editEmail").value = btn.dataset.email;
-                document.getElementById("editContactoEmergencia").value = btn.dataset.contacto;
+                const inputId = document.getElementById("editIdUsuario");
+                const inputNombre = document.getElementById("editNombre");
+                const inputDocumento = document.getElementById("editDocumento");
+                const inputEps = document.getElementById("editEps");
+                const inputTelefono = document.getElementById("editTelefono");
+                const inputEmail = document.getElementById("editEmail");
+                const inputContacto = document.getElementById("editContactoEmergencia");
+
+                if (inputId) inputId.value = btnEdit.dataset.id || "";
+                if (inputNombre) inputNombre.value = btnEdit.dataset.nombre || "";
+                if (inputDocumento) inputDocumento.value = btnEdit.dataset.documento || "";
+                if (inputEps) inputEps.value = btnEdit.dataset.eps || "";
+                if (inputTelefono) inputTelefono.value = btnEdit.dataset.telefono || "";
+                if (inputEmail) inputEmail.value = btnEdit.dataset.email || "";
+                if (inputContacto) inputContacto.value = btnEdit.dataset.contacto || "";
             }, 50);
         }
 
@@ -276,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     .then(response => {
                         if (response.ok) {
                             alert("Cliente eliminado exitosamente.");
-                            window.location.reload();
+                            cargarClientes();
                         } else {
                             response.text().then(msg => alert("Error al eliminar: " + msg));
                         }
@@ -286,6 +294,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+// FUNCIÓN PARA CARGAR CLIENTES DESDE LA API
+function cargarClientes() {
+    fetch("/api/modal/pacientes")
+        .then(response => response.json())
+        .then(pacientes => {
+            if (!pacientes || pacientes.length === 0) {
+                todosLosClientes = [];
+                renderizarTablaClientes([]);
+                return;
+            }
+
+            // Filtrar únicamente los que tienen rol CLIENTE
+            todosLosClientes = pacientes.filter(p => p.rol === "CLIENTE");
+            aplicarFiltrosClientes();
+        })
+        .catch(error => {
+            console.error("Error al cargar lista de clientes:", error);
+            renderizarTablaClientes([]);
+        });
+}
 
 // FUNCIÓN DE FILTRADO EN MEMORIA
 function aplicarFiltrosClientes() {
