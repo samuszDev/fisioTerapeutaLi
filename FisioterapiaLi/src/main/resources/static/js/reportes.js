@@ -7,6 +7,14 @@ if (typeof registerInternalViews === "function") {
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarHistorialYMetricas();
+
+    // VINCULACIÓN DEL BOTÓN DE EXPORTAR EXCEL
+    const btnExportar = document.getElementById("btnExportarExcel");
+    if (btnExportar) {
+        btnExportar.addEventListener("click", () => {
+            exportarTablaAExcel("historialGrid", "Historial_Auditoria_FisioterapiaLi.xls");
+        });
+    }
 });
 
 function cargarHistorialYMetricas() {
@@ -132,5 +140,88 @@ function calcularYMostrarMetricas(citas, pacientes) {
     }
     if (elNuevos) {
         elNuevos.textContent = pacientesNuevos;
+    }
+}
+
+// FUNCIÓN PARA EXPORTAR LA TABLA DE HISTORIAL A EXCEL
+function exportarTablaAExcel(idTabla, nombreArchivo) {
+    const tabla = document.getElementById(idTabla);
+    if (!tabla) {
+        if (typeof mostrarNotificacionPersonalizada === "function") {
+            mostrarNotificacionPersonalizada("No se encontró la tabla para exportar.", "error");
+        }
+        return;
+    }
+
+    let contenidoHTML = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #cbd5e1; padding: 8px 12px; font-family: 'Poppins', sans-serif; font-size: 12px; text-align: left; }
+                th { background-color: #1e293b; color: #ffffff; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Módulo / Origen</th>
+                        <th>Acción Realizada</th>
+                        <th>Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    const filas = tabla.querySelectorAll("tr");
+
+    if (filas.length === 0 || (filas.length === 1 && filas[0].querySelector("td[colspan]"))) {
+        if (typeof mostrarNotificacionPersonalizada === "function") {
+            mostrarNotificacionPersonalizada("No hay registros en el historial para exportar.", "error");
+        }
+        return;
+    }
+
+    filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("td");
+        if (celdas.length >= 4) {
+            const fecha = celdas[0].innerText;
+            const origen = celdas[1].innerText;
+            const accion = celdas[2].innerText;
+            const usuario = celdas[3].innerText;
+
+            contenidoHTML += `
+                <tr>
+                    <td>${fecha}</td>
+                    <td>${origen}</td>
+                    <td>${accion}</td>
+                    <td>${usuario}</td>
+                </tr>
+            `;
+        }
+    });
+
+    contenidoHTML += `
+                </tbody>
+            </table>
+        </body>
+        </html>
+    `;
+
+    const blob = new Blob([contenidoHTML], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const enlaceTemporal = document.createElement("a");
+    enlaceTemporal.href = url;
+    enlaceTemporal.download = nombreArchivo;
+    document.body.appendChild(enlaceTemporal);
+    enlaceTemporal.click();
+    document.body.removeChild(enlaceTemporal);
+
+    if (typeof mostrarNotificacionPersonalizada === "function") {
+        mostrarNotificacionPersonalizada("¡Historial exportado a Excel exitosamente!", "success");
     }
 }
