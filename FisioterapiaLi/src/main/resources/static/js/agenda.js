@@ -62,22 +62,22 @@ if (typeof registerInternalViews === "function") {
                         <div class="form-grid">
                             <div class="form-field">
                                 <label>Sede</label>
-                                <select name="sede" required>
+                                <select name="sede" id="editSede" required>
                                     <option value="Tunja">Sede Tunja</option>
                                     <option value="Turmequé">Sede Turmequé</option>
                                 </select>
                             </div>
                             <div class="form-field">
                                 <label>Nueva fecha</label>
-                                <input type="date" name="fecha" required>
+                                <input type="date" name="fecha" id="editFecha" required>
                             </div>
                             <div class="form-field">
                                 <label>Nueva hora</label>
-                                <input type="time" name="hora" required>
+                                <input type="time" name="hora" id="editHora" required>
                             </div>
                             <div class="form-field">
                                 <label>Estado</label>
-                                <select name="estado" required>
+                                <select name="estado" id="editEstado" required>
                                     <option value="PENDIENTE">Pendiente</option>
                                     <option value="CONFIRMADA">Confirmada</option>
                                     <option value="CANCELADA">Cancelada</option>
@@ -85,7 +85,7 @@ if (typeof registerInternalViews === "function") {
                             </div>
                             <div class="form-field">
                                 <label>Pago</label>
-                                <select name="estadoPago" required>
+                                <select name="estadoPago" id="editEstadoPago" required>
                                     <option value="PENDIENTE">Pendiente</option>
                                     <option value="PAGADO">Pagado</option>
                                 </select>
@@ -101,6 +101,34 @@ if (typeof registerInternalViews === "function") {
 let todasLasCitas = [];
 
 document.addEventListener("DOMContentLoaded", () => {
+    cargarCitas();
+
+    const btnFiltrar = document.getElementById("btnFiltrar");
+    if (btnFiltrar) {
+        btnFiltrar.addEventListener("click", (e) => {
+            e.preventDefault();
+            aplicarFiltros();
+        });
+    }
+
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener("click", (e) => {
+            e.preventDefault();
+            const inputPaciente = document.getElementById("filtroPaciente");
+            const selectEstado = document.getElementById("filtroEstado");
+            const selectSede = document.getElementById("filtroSede");
+
+            if (inputPaciente) inputPaciente.value = "";
+            if (selectEstado) selectEstado.value = "";
+            if (selectSede) selectSede.value = "";
+
+            aplicarFiltros();
+        });
+    }
+});
+
+function cargarCitas() {
     fetch("/api/modal/citas")
         .then(response => {
             if (!response.ok) throw new Error("Error del servidor: " + response.status);
@@ -112,15 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
             aplicarFiltros();
         })
         .catch(error => console.error("Error al obtener citas:", error));
-
-    const btnFiltrar = document.getElementById("btnFiltrar");
-    if (btnFiltrar) {
-        btnFiltrar.addEventListener("click", (e) => {
-            e.preventDefault();
-            aplicarFiltros();
-        });
-    }
-});
+}
 
 function aplicarFiltros() {
     const textoPaciente = document.getElementById("filtroPaciente")?.value || "";
@@ -184,13 +204,62 @@ function actualizarTarjetasAgenda(citas) {
 }
 
 function cargarVistaSemanal(citasArray) {
-    // Lógica de renderizado semanal
+    const diasContenedores = {
+        0: document.getElementById('col-domingo'),
+        1: document.getElementById('col-lunes'),
+        2: document.getElementById('col-martes'),
+        3: document.getElementById('col-miercoles'),
+        4: document.getElementById('col-jueves'),
+        5: document.getElementById('col-viernes'),
+        6: document.getElementById('col-sabado')
+    };
+
+    Object.values(diasContenedores).forEach(contenedor => {
+        if (contenedor) contenedor.innerHTML = '';
+    });
+
+    if (!Array.isArray(citasArray) || citasArray.length === 0) return;
+
+    citasArray.forEach(cita => {
+        if (!cita.fechaInicio) return;
+
+        const fechaStr = cita.fechaInicio.split('T')[0];
+        const partesFecha = fechaStr.split('-');
+
+        if (partesFecha.length !== 3) return;
+
+        const anio = parseInt(partesFecha[0], 10);
+        const mes = parseInt(partesFecha[1], 10) - 1;
+        const dia = parseInt(partesFecha[2], 10);
+        const fechaObj = new Date(anio, mes, dia);
+
+        const diaSemana = fechaObj.getDay();
+        const contenedorDia = diasContenedores[diaSemana];
+
+        if (contenedorDia) {
+            const horaStr = cita.fechaInicio.includes('T') ? cita.fechaInicio.split('T')[1].substring(0, 5) : '';
+            const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'Paciente';
+            const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre) : '';
+            const estadoCita = cita.estadoCita || 'CONFIRMADA';
+
+            const card = document.createElement('div');
+            card.className = `weekly-appointment-card estado-${estadoCita.toLowerCase()}`;
+            card.style.cssText = "background: #fff; border-left: 4px solid var(--gold, #c5a880); padding: 8px; margin-bottom: 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 13px;";
+
+            card.innerHTML = `
+                <div style="font-weight: 600; color: #1e293b;">${horaStr} - ${pacienteNombre}</div>
+                <div style="color: #64748b; font-size: 12px;">${servicioNombre}</div>
+            `;
+
+            contenedorDia.appendChild(card);
+        }
+    });
 }
 
 // CARGAR SELECTS DE PACIENTES Y SERVICIOS AL ABRIR EL MODAL DE NUEVA CITA
 document.addEventListener("click", event => {
-    const trigger = event.target.closest('[data-open-view="new-appointment"]');
-    if (trigger) {
+    const triggerNew = event.target.closest('[data-open-view="new-appointment"]');
+    if (triggerNew) {
         setTimeout(() => {
             const selectPaciente = document.getElementById("selectPaciente");
             const selectServicio = document.getElementById("selectServicio");
@@ -222,6 +291,41 @@ document.addEventListener("click", event => {
             }
         }, 50);
     }
+
+    // CARGAR DATOS EN EL MODAL DE EDICIÓN AL HACER CLIC EN "Editar"
+    const triggerEdit = event.target.closest('.btn-edit-cita');
+    if (triggerEdit) {
+        const idCita = triggerEdit.dataset.id;
+        const citaEncontrada = todasLasCitas.find(c => (c.idReserva == idCita || c.id == idCita));
+
+        if (citaEncontrada) {
+            setTimeout(() => {
+                const inputIdReserva = document.getElementById("editIdReserva");
+                const selectSede = document.getElementById("editSede");
+                const inputFecha = document.getElementById("editFecha");
+                const inputHora = document.getElementById("editHora");
+                const selectEstado = document.getElementById("editEstado");
+                const selectPago = document.getElementById("editEstadoPago");
+
+                if (inputIdReserva) inputIdReserva.value = idCita;
+                if (selectSede && citaEncontrada.sede) selectSede.value = citaEncontrada.sede;
+
+                if (citaEncontrada.fechaInicio) {
+                    const partes = citaEncontrada.fechaInicio.split('T');
+                    if (inputFecha) inputFecha.value = partes[0];
+                    if (inputHora && partes[1]) inputHora.value = partes[1].substring(0, 5);
+                }
+
+                if (selectEstado && citaEncontrada.estadoCita) {
+                    selectEstado.value = citaEncontrada.estadoCita;
+                }
+
+                if (selectPago) {
+                    selectPago.value = citaEncontrada.pagoConfirmado ? "PAGADO" : "PENDIENTE";
+                }
+            }, 50);
+        }
+    }
 });
 
 // ELIMINAR CITA
@@ -233,7 +337,7 @@ document.addEventListener("click", event => {
                 .then(res => {
                     if (res.ok) {
                         alert("Cita eliminada correctamente");
-                        window.location.reload();
+                        cargarCitas();
                     } else {
                         res.text().then(msg => alert("Error: " + msg));
                     }
@@ -241,60 +345,3 @@ document.addEventListener("click", event => {
         }
     }
 });
-function cargarVistaSemanal(citasArray) {
-    // 1. Definir los contenedores de los días de la semana
-    const diasContenedores = {
-        0: document.getElementById('col-domingo'),
-        1: document.getElementById('col-lunes'),
-        2: document.getElementById('col-martes'),
-        3: document.getElementById('col-miercoles'),
-        4: document.getElementById('col-jueves'),
-        5: document.getElementById('col-viernes'),
-        6: document.getElementById('col-sabado')
-    };
-
-    // 2. Limpiar todas las columnas antes de pintar
-    Object.values(diasContenedores).forEach(contenedor => {
-        if (contenedor) contenedor.innerHTML = '';
-    });
-
-    if (!Array.isArray(citasArray) || citasArray.length === 0) return;
-
-    // 3. Recorrer y distribuir las citas según su fecha de inicio
-    citasArray.forEach(cita => {
-        if (!cita.fechaInicio) return;
-
-        // Extraer la fecha (ej: "2026-09-08T10:00:00" -> se toma la parte de la fecha)
-        const fechaStr = cita.fechaInicio.split('T')[0];
-        const partesFecha = fechaStr.split('-');
-
-        if (partesFecha.length !== 3) return;
-
-        // Crear la fecha asegurando zona horaria local o interpretando año, mes (0-11), día
-        const anio = parseInt(partesFecha[0], 10);
-        const mes = parseInt(partesFecha[1], 10) - 1;
-        const dia = parseInt(partesFecha[2], 10);
-        const fechaObj = new Date(anio, mes, dia);
-
-        const diaSemana = fechaObj.getDay(); // 0 (Dom) al 6 (Sáb)
-        const contenedorDia = diasContenedores[diaSemana];
-
-        if (contenedorDia) {
-            const horaStr = cita.fechaInicio.includes('T') ? cita.fechaInicio.split('T')[1].substring(0, 5) : '';
-            const pacienteNombre = cita.usuario ? cita.usuario.nombre : 'Paciente';
-            const servicioNombre = cita.servicio ? (cita.servicio.nombreS || cita.servicio.nombre) : '';
-            const estadoCita = cita.estadoCita || 'CONFIRMADA';
-
-            const card = document.createElement('div');
-            card.className = `weekly-appointment-card estado-${estadoCita.toLowerCase()}`;
-            card.style.cssText = "background: #fff; border-left: 4px solid var(--gold, #c5a880); padding: 8px; margin-bottom: 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 13px;";
-
-            card.innerHTML = `
-                <div style="font-weight: 600; color: #1e293b;">${horaStr} - ${pacienteNombre}</div>
-                <div style="color: #64748b; font-size: 12px;">${servicioNombre}</div>
-            `;
-
-            contenedorDia.appendChild(card);
-        }
-    });
-}

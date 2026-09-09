@@ -171,6 +171,7 @@
                 </select>
 
                 <button class="btn btn-outline" id="btnFiltrar">Filtrar</button>
+                <button class="btn btn-outline" id="btnLimpiar" style="margin-left: 8px;">Limpiar</button>
             </div>
 
             <div class="view-toggle">
@@ -263,7 +264,7 @@
 <script th:src="@{/js/common.js}"></script>
 <script th:src="@{/js/agenda.js}"></script>
 
-<!-- Selector de vista (lista/semanal): maneja la visibilidad -->
+<!-- Selector de vista (lista/semanal) y lógica del botón limpiar -->
 <script>
     document.querySelectorAll('.view-toggle-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -277,6 +278,27 @@
             document.querySelector('.view-week').style.display = showWeek ? '' : 'none';
         });
     });
+
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            // 1. Limpiar los valores de los inputs y selects
+            const inputPaciente = document.getElementById("filtroPaciente");
+            const selectEstado = document.getElementById("filtroEstado");
+            const selectSede = document.getElementById("filtroSede");
+
+            if (inputPaciente) inputPaciente.value = "";
+            if (selectEstado) selectEstado.value = "";
+            if (selectSede) selectSede.value = "";
+
+            // 2. Volver a aplicar los filtros para actualizar la tabla y la vista semanal con todas las citas
+            if (typeof aplicarFiltros === "function") {
+                aplicarFiltros();
+            }
+        });
+    }
 </script>
 </body>
 </html>
