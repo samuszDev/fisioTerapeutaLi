@@ -23,7 +23,7 @@
         <h1><span class="texto-blanco">FISIOTERAPIA</span><br>PARA TU BIENESTAR</h1>
         <p>Recuperar tu movimiento, mejora <strong>tu calidad de vida.</strong></p>
     </div>
-    
+
 </div>
 <div class="desc">
     <h1 class="titulo">NUESTROS SERVICIOS</h1>
@@ -36,174 +36,722 @@
     </div>
     <h3 class="subt">Tratamientos personalizados para tu recuperación activa y bienestar integral</h3>
 </div>
-<div class="contenedor">
 
-    <!-- Prescripción de Ejercicio -->
-    <div class="fila fila-dos">
+<section class="servicios-wrapper">
+    <section class="servicio-card servicio-principal servicio-azul">
 
-        <section class="tarjeta tarjeta-azul">
-            <div class="tarjeta-header">
-                <div class="icono-linea"><img th:src="@{/images/rehabilitacion.png}" alt="Valoración inicial"></div>
-                <span class="numero">01</span>
-                <div class="titulo-grupo">
+        <div class="servicio-top">
+
+            <div class="servicio-identidad">
+                <div class="servicio-icono">
+                    <img th:src="@{/images/rehabilitacion.png}"
+                         alt="Valoración inicial y rehabilitación física">
+                </div>
+
+                <div>
+                    <span class="servicio-numero">01</span>
                     <h2>Valoración Inicial<br>y Rehabilitación Física</h2>
-                </div>
-            </div>
-            <div class="destacado-precio">
-                <span class="etiqueta">Valoración Inicial</span>
-                <div class="precio-caja">
-                    <span class="precio-grande">$100.000</span>
-                    <span class="nota-promo">Promoción: GRATIS al adquirir un paquete de terapias.</span>
-                </div>
-            </div>
-
-            <h3 class="subtitulo">Sesión de Rehabilitación / Terapia Física<br><span class="subtitulo-nota">(1 hora)</span></h3>
-
-            <ul class="lista-precios">
-                <li><span>Sesión individual</span><strong>$100.000</strong></li>
-                <li><span>Paquete de 5 sesiones</span><strong>$460.000 <em>($92.000 c/u)</em></strong></li>
-                <li><span>Paquete de 10 sesiones</span><strong>$850.000 <em>($85.000 c/u)</em></strong></li>
-            </ul>
-        </section>
-
-        <section class="tarjeta tarjeta-dorada">
-            <div class="tarjeta-header">
-                <div class="icono-linea"><img th:src="@{/images/pesa.png}" alt="Prescripción de ejercicio"></div>
-                <span class="numero">02</span>
-                <div class="titulo-grupo">
-                    <h2>Prescripción de Ejercicio</h2>
-                    <span class="duracion">(1 hora por sesión)</span>
-                </div>
-            </div>
-
-            <div class="dos-columnas">
-                <div class="columna">
-                    <h4>Planes Personalizados<br><span class="col-nota">(Individuales)</span></h4>
-                    <ul class="lista-precios lista-compacta">
-                        <li><span>Sesión individual</span><strong>$60.000</strong></li>
-                        <li><span>Paquete de 8 sesiones</span><strong>$400.000 <em>($50.000 c/u)</em></strong></li>
-                        <li><span>Paquete de 12 sesiones</span><strong>$580.000 <em>($48.333 c/u)</em></strong></li>
-                        <li><span>Paquete de 16 sesiones</span><strong>$720.000 <em>($45.000 c/u)</em></strong></li>
-                        <li><span>Paquete de 20 sesiones</span><strong>$800.000 <em>($40.000 c/u)</em></strong></li>
-                    </ul>
-                </div>
-                <div class="columna">
-                    <h4>Planes Grupales</h4>
-                    <p class="grupal-item"><strong>Grupal (4 personas)</strong><br>
-                        <span class="precio-inline">$150.000 p/p</span><br>
-                        <span class="grupal-detalle">(4 sesiones — $37.500 p/p)</span>
+                    <p class="servicio-descripcion">
+                        Evaluación y tratamiento personalizado para recuperar
+                        movilidad, función y bienestar físico.
                     </p>
-                    <p class="grupal-item"><strong>Grupal (hasta 8 personas)</strong></p>
-                    <ul class="lista-precios lista-compacta">
-                        <li><span>8 sesiones</span><strong>$227.000 p/p <em>($28.375 p/p)</em></strong></li>
-                        <li><span>12 sesiones</span><strong>$312.000 p/p <em>($26.000 p/p)</em></strong></li>
-                        <li><span>16 sesiones</span><strong>$364.000 p/p <em>($24.000 p/p)</em></strong></li>
-                        <li><span>20 sesiones</span><strong>$440.000 p/p <em>($22.000 p/p)</em></strong></li>
-                    </ul>
                 </div>
             </div>
-        </section>
 
-    </div>
+            <span class="servicio-duracion">
+                <i class="fa-regular fa-clock"></i>
+                1 hora
+            </span>
 
-    <!--Modulación Postejercicio -->
-    <section class="tarjeta tarjeta-azul">
-        <div class="bloque-header">
-            <div class="icono-linea icono-header">
-                <img th:src="@{/images/masaje.png}" alt="Modulación postejercicio">
+        </div>
+
+
+        <!-- PRECIO DESTACADO -->
+        <div class="precio-destacado">
+
+            <div class="precio-info">
+                <span class="precio-label">Valoración inicial</span>
+
+                <div class="precio-principal">
+                    <span>$100.000</span>
+                </div>
+
+                <span class="precio-beneficio">
+                    ✦ GRATIS al adquirir un paquete de terapias
+                </span>
             </div>
-            <span class="numero">03</span>
-            <div class="titulo-grupo">
-                <h2>Modulación postejercicio / Descargas musculares</h2>
-            <span class="duracion">(1 hora)</span>
-        </div>
+
         </div>
 
-        <div class="grid-tres">
-            <article class="sub-tarjeta">
-                <h4>Espalda</h4>
-                <span class="chip">$70.000</span>
-                <ul class="lista-simple">
-                    <li><strong>Cobertura anatómica:</strong> Espalda alta y espalda baja en su totalidad.</li>
-                    <li><strong>Técnicas e instrumental incluido:</strong> Terapia manual, terapia instrumental, ventosas (cupping) y pistola percutora.</li>
-                </ul>
-            </article>
 
-            <article class="sub-tarjeta">
-                <h4>Miembros Inferiores</h4>
-                <span class="chip">$90.000</span>
-                <ul class="lista-simple">
-                    <li><strong>Cobertura anatómica:</strong> Muslos, piernas y pies en su totalidad.</li>
-                    <li><strong>Técnicas e instrumental incluido:</strong> Presoterapia, terapia manual, terapia instrumental y pistola percutora.</li>
-                </ul>
-            </article>
+        <!-- PAQUETES -->
+        <div class="servicio-seccion">
 
-            <article class="sub-tarjeta">
-                <h4>Cuerpo Completo</h4>
-                <span class="chip">$150.000</span>
-                <ul class="lista-simple">
-                    <li><strong>Cobertura anatómica:</strong> Miembros inferiores, espalda, miembros superiores, cuello y pecho.</li>
-                    <li><strong>Técnicas e instrumental incluido:</strong> Presoterapia, terapia manual, terapia instrumental, termoterapia, ventosas y pistola percutora.</li>
-                </ul>
-            </article>
+            <div class="seccion-heading">
+                <div>
+                    <span class="seccion-label">REHABILITACIÓN</span>
+                    <h3>Sesiones de terapia física</h3>
+                </div>
+
+                <span class="seccion-tiempo">1 hora por sesión</span>
+            </div>
+
+
+            <div class="planes-grid">
+
+                <article class="plan-item">
+                    <div class="plan-info">
+                        <span class="plan-cantidad">01</span>
+                        <div>
+                            <strong>Sesión individual</strong>
+                            <small>Una sesión de tratamiento</small>
+                        </div>
+                    </div>
+
+                    <strong class="plan-precio">$100.000</strong>
+                </article>
+
+
+                <article class="plan-item plan-destacado">
+
+                    <div class="plan-badge">
+                        MÁS ELEGIDO
+                    </div>
+
+                    <div class="plan-info">
+                        <span class="plan-cantidad">05</span>
+                        <div>
+                            <strong>Paquete de 5 sesiones</strong>
+                            <small>$92.000 por sesión</small>
+                        </div>
+                    </div>
+
+                    <strong class="plan-precio">
+                        $460.000
+                    </strong>
+
+                </article>
+
+
+                <article class="plan-item">
+
+                    <div class="plan-info">
+                        <span class="plan-cantidad">10</span>
+                        <div>
+                            <strong>Paquete de 10 sesiones</strong>
+                            <small>$85.000 por sesión</small>
+                        </div>
+                    </div>
+
+                    <strong class="plan-precio">
+                        $850.000
+                    </strong>
+
+                </article>
+
+            </div>
+
         </div>
+
     </section>
 
 
-    <!-- Procedimientos Especializados -->
-    <section class="tarjeta tarjeta-dorada">
-        <div class="bloque-header">
-            <div class="icono-linea icono-header">
-                <img th:src="@{/images/inyeccion.png}" alt="Procedimientos especializados">
+
+    <!-- =====================================================
+         02. PRESCRIPCIÓN DE EJERCICIO
+    ====================================================== -->
+    <section class="servicio-card servicio-dorado">
+
+        <div class="servicio-top">
+
+            <div class="servicio-identidad">
+
+                <div class="servicio-icono">
+                    <img th:src="@{/images/pesa.png}"
+                         alt="Prescripción de ejercicio">
+                </div>
+
+                <div>
+                    <span class="servicio-numero">02</span>
+
+                    <h2>Prescripción de Ejercicio</h2>
+
+                    <p class="servicio-descripcion">
+                        Programas de ejercicio diseñados de acuerdo con tus
+                        objetivos, condición física y necesidades.
+                    </p>
+                </div>
+
             </div>
-            <span class="numero">04</span>
-            <div class="titulo-grupo">
-                <h2>Procedimientos especializados</h2>
+
+            <span class="servicio-duracion">
+                <i class="fa-regular fa-clock"></i>
+                1 hora
+            </span>
+
         </div>
+
+
+        <div class="planes-columns">
+
+            <!-- PLANES INDIVIDUALES -->
+            <div class="planes-column">
+
+                <div class="column-heading">
+
+                    <span class="column-icon">01</span>
+
+                    <div>
+                        <span>PERSONALIZADOS</span>
+                        <h3>Planes individuales</h3>
+                    </div>
+
+                </div>
+
+
+                <div class="planes-list">
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>Sesión individual</strong>
+                            <small>1 sesión</small>
+                        </div>
+                        <strong>$60.000</strong>
+                    </article>
+
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>Paquete de 8 sesiones</strong>
+                            <small>$50.000 por sesión</small>
+                        </div>
+                        <strong>$400.000</strong>
+                    </article>
+
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>Paquete de 12 sesiones</strong>
+                            <small>$48.333 por sesión</small>
+                        </div>
+                        <strong>$580.000</strong>
+                    </article>
+
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>Paquete de 16 sesiones</strong>
+                            <small>$45.000 por sesión</small>
+                        </div>
+                        <strong>$720.000</strong>
+                    </article>
+
+
+                    <article class="plan-row plan-row-best">
+
+                        <span class="mini-badge">
+                            MEJOR VALOR
+                        </span>
+
+                        <div>
+                            <strong>Paquete de 20 sesiones</strong>
+                            <small>$40.000 por sesión</small>
+                        </div>
+
+                        <strong>$800.000</strong>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+
+            <!-- PLANES GRUPALES -->
+            <div class="planes-column">
+
+                <div class="column-heading">
+
+                    <span class="column-icon">02</span>
+
+                    <div>
+                        <span>COMPARTIDOS</span>
+                        <h3>Planes grupales</h3>
+                    </div>
+
+                </div>
+
+
+                <div class="grupo-destacado">
+
+                    <div class="grupo-header">
+
+                        <div>
+                            <strong>Grupo de 4 personas</strong>
+                            <span>4 sesiones</span>
+                        </div>
+
+                        <strong>$150.000</strong>
+
+                    </div>
+
+                    <small>
+                        $37.500 por persona / sesión
+                    </small>
+
+                </div>
+
+
+                <div class="grupo-titulo">
+                    Hasta 8 personas
+                </div>
+
+
+                <div class="planes-list">
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>8 sesiones</strong>
+                            <small>$28.375 por persona</small>
+                        </div>
+
+                        <strong>$227.000</strong>
+                    </article>
+
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>12 sesiones</strong>
+                            <small>$26.000 por persona</small>
+                        </div>
+
+                        <strong>$312.000</strong>
+                    </article>
+
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>16 sesiones</strong>
+                            <small>$24.000 por persona</small>
+                        </div>
+
+                        <strong>$364.000</strong>
+                    </article>
+
+
+                    <article class="plan-row">
+                        <div>
+                            <strong>20 sesiones</strong>
+                            <small>$22.000 por persona</small>
+                        </div>
+
+                        <strong>$440.000</strong>
+                    </article>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="grid-cuatro">
-            <article class="sub-tarjeta sub-tarjeta-min">
-                <h4>Punción Seca</h4>
-                <span class="duracion-mini">(1 hora)</span>
-                <ul class="lista-precios lista-compacta">
-                    <li><span>Sesión individual</span><strong>$120.000</strong></li>
-                    <li><span>Paquete de 5 sesiones</span><strong>$525.000 <em>($105.000 c/u)</em></strong></li>
-                    <li><span>Paquete de 10 sesiones</span><strong>$950.000 <em>($95.000 c/u)</em></strong></li>
-                </ul>
-            </article>
-
-            <article class="sub-tarjeta sub-tarjeta-min">
-                <h4>Terapia Neural</h4>
-                <span class="duracion-mini">(1 a 2 horas)</span>
-                <ul class="lista-precios lista-compacta">
-                    <li><span>Sesión individual</span><strong>$150.000</strong></li>
-                    <li><span>Paquete de 5 sesiones</span><strong>$525.000 <em>($105.000 c/u)</em></strong></li>
-                    <li><span>Paquete de 10 sesiones</span><strong>$950.000 <em>($95.000 c/u)</em></strong></li>
-                </ul>
-            </article>
-
-            <article class="sub-tarjeta sub-tarjeta-min">
-                <h4>Plasma Rico en Plaquetas – PRP</h4>
-                <span class="duracion-mini">(1 a 2 horas)</span>
-                <ul class="lista-precios lista-compacta">
-                    <li><span>Sesión individual</span><strong>$250.000</strong></li>
-                    <li><span>Paquete de 5 sesiones</span><strong>$1.000.000 <em>($200.000 c/u)</em></strong></li>
-                    <li><span>Paquete de 10 sesiones</span><strong>$1.600.000 <em>($160.000 c/u)</em></strong></li>
-                </ul>
-            </article>
-
-            <article class="sub-tarjeta sub-tarjeta-min">
-                <h4>Sueroterapia</h4>
-                <span class="duracion-mini">(1 hora y media – 90 min)</span>
-                <ul class="lista-precios lista-compacta">
-                    <li><span>Sesión individual</span><strong>$300.000</strong></li>
-                    <li><span>Paquete de 5 sesiones</span><strong>$1.025.000 <em>($205.000 c/u)</em></strong></li>
-                    <li><span>Paquete de 10 sesiones</span><strong>$1.900.000 <em>($190.000 c/u)</em></strong></li>
-                </ul>
-            </article>
-        </div>
     </section>
+
+    <section class="servicio-card servicio-azul">
+
+        <div class="servicio-top">
+
+            <div class="servicio-identidad">
+
+                <div class="servicio-icono">
+                    <img th:src="@{/images/masaje.png}"
+                         alt="Modulación postejercicio">
+                </div>
+
+                <div>
+                    <span class="servicio-numero">03</span>
+
+                    <h2>Modulación postejercicio</h2>
+
+                    <p class="servicio-descripcion">
+                        Descargas musculares y recuperación física para
+                        disminuir tensión y favorecer la recuperación.
+                    </p>
+                </div>
+
+            </div>
+
+            <span class="servicio-duracion">
+                <i class="fa-regular fa-clock"></i>
+                1 hora
+            </span>
+
+        </div>
+
+
+        <div class="modalidades-grid">
+
+            <!-- ESPALDA -->
+            <article class="modalidad-card">
+
+                <div class="modalidad-top">
+                    <div>
+                        <span class="modalidad-numero">01</span>
+                        <h3>Espalda</h3>
+                    </div>
+
+                    <span class="modalidad-precio">
+                        $70.000
+                    </span>
+                </div>
+
+                <div class="modalidad-content">
+
+                    <div>
+                        <span class="detalle-label">COBERTURA</span>
+
+                        <p>
+                            Espalda alta y espalda baja en su totalidad.
+                        </p>
+                    </div>
+
+                    <div>
+                        <span class="detalle-label">TÉCNICAS</span>
+
+                        <p>
+                            Terapia manual, terapia instrumental,
+                            ventosas (cupping) y pistola percutora.
+                        </p>
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- MIEMBROS INFERIORES -->
+            <article class="modalidad-card">
+
+                <div class="modalidad-top">
+
+                    <div>
+                        <span class="modalidad-numero">02</span>
+                        <h3>Miembros inferiores</h3>
+                    </div>
+
+                    <span class="modalidad-precio">
+                        $90.000
+                    </span>
+
+                </div>
+
+                <div class="modalidad-content">
+
+                    <div>
+                        <span class="detalle-label">COBERTURA</span>
+
+                        <p>
+                            Muslos, piernas y pies en su totalidad.
+                        </p>
+                    </div>
+
+                    <div>
+                        <span class="detalle-label">TÉCNICAS</span>
+
+                        <p>
+                            Presoterapia, terapia manual, terapia
+                            instrumental y pistola percutora.
+                        </p>
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- CUERPO COMPLETO -->
+            <article class="modalidad-card modalidad-premium">
+
+                <div class="modalidad-top">
+
+                    <div>
+                        <span class="modalidad-numero">03</span>
+                        <h3>Cuerpo completo</h3>
+                    </div>
+
+                    <span class="modalidad-precio">
+                        $150.000
+                    </span>
+
+                </div>
+
+                <div class="modalidad-content">
+
+                    <div>
+                        <span class="detalle-label">COBERTURA</span>
+
+                        <p>
+                            Miembros inferiores, espalda, miembros
+                            superiores, cuello y pecho.
+                        </p>
+                    </div>
+
+                    <div>
+                        <span class="detalle-label">TÉCNICAS</span>
+
+                        <p>
+                            Presoterapia, terapia manual, terapia
+                            instrumental, termoterapia, ventosas y
+                            pistola percutora.
+                        </p>
+                    </div>
+
+                </div>
+
+                <span class="premium-label">
+                    TRATAMIENTO COMPLETO
+                </span>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         04. PROCEDIMIENTOS ESPECIALIZADOS
+    ====================================================== -->
+    <section class="servicio-card servicio-dorado">
+
+        <div class="servicio-top">
+
+            <div class="servicio-identidad">
+
+                <div class="servicio-icono">
+                    <img th:src="@{/images/inyeccion.png}"
+                         alt="Procedimientos especializados">
+                </div>
+
+                <div>
+
+                    <span class="servicio-numero">04</span>
+
+                    <h2>Procedimientos especializados</h2>
+
+                    <p class="servicio-descripcion">
+                        Procedimientos complementarios orientados al
+                        tratamiento y recuperación de diferentes condiciones.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="procedimientos-grid">
+
+            <!-- PUNCIÓN SECA -->
+            <article class="procedimiento-card">
+
+                <div class="procedimiento-header">
+
+                    <div>
+                        <span class="procedimiento-numero">01</span>
+                        <h3>Punción Seca</h3>
+                    </div>
+
+                    <span class="duracion-mini">
+                        1 hora
+                    </span>
+
+                </div>
+
+
+                <div class="procedimiento-precio">
+                    <span>Desde</span>
+                    <strong>$120.000</strong>
+                </div>
+
+
+                <div class="procedimiento-list">
+
+                    <div>
+                        <span>Sesión individual</span>
+                        <strong>$120.000</strong>
+                    </div>
+
+                    <div>
+                        <span>5 sesiones</span>
+                        <strong>$525.000</strong>
+                        <small>$105.000 c/u</small>
+                    </div>
+
+                    <div>
+                        <span>10 sesiones</span>
+                        <strong>$950.000</strong>
+                        <small>$95.000 c/u</small>
+                    </div>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- TERAPIA NEURAL -->
+            <article class="procedimiento-card">
+
+                <div class="procedimiento-header">
+
+                    <div>
+                        <span class="procedimiento-numero">02</span>
+                        <h3>Terapia Neural</h3>
+                    </div>
+
+                    <span class="duracion-mini">
+                        1–2 horas
+                    </span>
+
+                </div>
+
+
+                <div class="procedimiento-precio">
+                    <span>Desde</span>
+                    <strong>$150.000</strong>
+                </div>
+
+
+                <div class="procedimiento-list">
+
+                    <div>
+                        <span>Sesión individual</span>
+                        <strong>$150.000</strong>
+                    </div>
+
+                    <div>
+                        <span>5 sesiones</span>
+                        <strong>$525.000</strong>
+                        <small>$105.000 c/u</small>
+                    </div>
+
+                    <div>
+                        <span>10 sesiones</span>
+                        <strong>$950.000</strong>
+                        <small>$95.000 c/u</small>
+                    </div>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- PRP -->
+            <article class="procedimiento-card procedimiento-featured">
+
+                <span class="procedimiento-badge">
+                    DESTACADO
+                </span>
+
+                <div class="procedimiento-header">
+
+                    <div>
+                        <span class="procedimiento-numero">03</span>
+                        <h3>Plasma Rico en Plaquetas <small>PRP</small></h3>
+                    </div>
+
+                    <span class="duracion-mini">
+                        1–2 horas
+                    </span>
+
+                </div>
+
+
+                <div class="procedimiento-precio">
+                    <span>Desde</span>
+                    <strong>$250.000</strong>
+                </div>
+
+
+                <div class="procedimiento-list">
+
+                    <div>
+                        <span>Sesión individual</span>
+                        <strong>$250.000</strong>
+                    </div>
+
+                    <div>
+                        <span>5 sesiones</span>
+                        <strong>$1.000.000</strong>
+                        <small>$200.000 c/u</small>
+                    </div>
+
+                    <div>
+                        <span>10 sesiones</span>
+                        <strong>$1.600.000</strong>
+                        <small>$160.000 c/u</small>
+                    </div>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- SUEROTERAPIA -->
+            <article class="procedimiento-card">
+
+                <div class="procedimiento-header">
+
+                    <div>
+                        <span class="procedimiento-numero">04</span>
+                        <h3>Sueroterapia</h3>
+                    </div>
+
+                    <span class="duracion-mini">
+                        90 min
+                    </span>
+
+                </div>
+
+
+                <div class="procedimiento-precio">
+                    <span>Desde</span>
+                    <strong>$300.000</strong>
+                </div>
+
+
+                <div class="procedimiento-list">
+
+                    <div>
+                        <span>Sesión individual</span>
+                        <strong>$300.000</strong>
+                    </div>
+
+                    <div>
+                        <span>5 sesiones</span>
+                        <strong>$1.025.000</strong>
+                        <small>$205.000 c/u</small>
+                    </div>
+
+                    <div>
+                        <span>10 sesiones</span>
+                        <strong>$1.900.000</strong>
+                        <small>$190.000 c/u</small>
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </section>
+
+</section>
     <div class="imagenFinal">
     <img th:src="@{/images/nota.png}" alt="Descripción">
     <div class="texto-encima">
