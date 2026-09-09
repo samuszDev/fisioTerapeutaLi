@@ -916,3 +916,168 @@ body {
     pointer-events: none;
     opacity: 0.95;
 }
+
+.tarjeta-fisioterapia {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #F4F4F4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 5%;
+    overflow: hidden;
+}
+
+/* Imagen Izquierda Principal */
+.image-left-container {
+    flex: 0 0 30%;
+    max-width: 300px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transform: translate(-110px, -155px);
+}
+
+.image-left-container .img-left {
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    object-fit: contain;
+}
+
+/* Contenido Principal (Centro-Derecha) */
+.content-container {
+    flex: 1;
+    max-width: 650px;
+    margin-left: 40px;
+    margin-right: 600px;
+    z-index: 3;
+    margin-top: -140px;
+
+}
+
+/* Encabezado y Títulos */
+.header-linamurrilo h2 {
+    font-size: 2.5rem;
+    color: #0d3b66;
+    font-weight: 500;
+    font-style: italic;
+    margin-left: -50px;
+
+}
+
+.header-linamurrilo h1 {
+    font-size: 3rem;
+    color: #0d3b66;
+    font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    margin-top: 5px;
+    margin-left: -50px;
+
+}
+
+.header-linamurrilo .subtitle3 {
+    font-size: 2rem;
+    color: #3a86ff;
+    border-bottom: 3px solid #3a86ff;
+    display: inline-block;
+    padding-bottom: 2px;
+    margin-bottom: 20px;
+    margin-left: -50px;
+}
+
+.tagline {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.tagline strong {
+    color: #0d3b66;
+}
+
+/* Lista de Tarjetas */
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feature-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 600px
+
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    background-color: #26a8fb;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-right: 18px;
+    flex-shrink: 0;
+}
+
+.feature-text h4 {
+    font-size: 0.95rem;
+    color: #0d3b66;
+    text-transform: uppercase;
+    font-weight: 800;
+    border-left: 3px solid #0d3b66;
+    padding-left: 10px;
+    margin-bottom: 3px;
+}
+
+.feature-text p {
+    font-size: 0.88rem;
+    color: #555;
+    padding-left: 10px;
+}
+
+/* Imagen Superior Derecha en Esquina */
+.image-top-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 580px;
+    height: auto;
+    max-height: 250px;
+    z-index: 2;
+    transform: translate(130px, -80px);
+}
+
+.image-top-right .img-right {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-bottom-left-radius: 80px;
+}
+
+.footer-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 150px;
+    z-index: 4;
+    transform: translate(-30px, -150px);
+}
+
+.footer-badge img {
+    width: 280%;
+    height: auto;
+    display: block;
+}

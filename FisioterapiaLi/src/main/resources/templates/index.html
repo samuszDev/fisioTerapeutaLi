@@ -7,8 +7,6 @@
     <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <link rel="stylesheet" th:href="@{/css/layoutUser.css}">
-    <link rel="stylesheet" th:href="@{/css/service.css}">
-    <link rel="stylesheet" th:href="@{/css/sobreNosotros.css}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -325,6 +323,87 @@
     <img th:src="@{/images/Decoracion3.png}" alt="Decoracion3" class="Decoracion3">
     <img th:src="@{/images/Decoracion3.png}" alt="Decoracion3" class="Decoracion4">
 </div>
+
+
+<div class="tarjeta-fisioterapia">
+    <div class="image-left-container">
+        <img th:src="@{/images/lina_murillo1.png}" alt="Fisioterapeutali" class="img-left">
+    </div>
+
+    <div class="content-container">
+
+        <!-- Encabezado / Título -->
+        <div class="header-linamurrilo">
+            <h2>¿Por qué elegir a</h2>
+            <h1>LINA MURILLO</h1>
+            <h3 class="subtitle3">como tu fisioterapeuta?</h3>
+        </div>
+
+        <!-- Subtítulo Destacado -->
+        <p class="tagline">
+            Fisioterapia de <strong>Excelencia</strong> y rehabilitación <strong>Personalizada</strong>
+        </p>
+
+        <!-- Lista de Características / Tarjetas -->
+        <div class="features-list">
+
+            <div class="feature-card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="feature-text">
+                    <img th:src="@{/images/estrella.png}" alt="estrella" class="icon-box">
+                    <h4>MÁS DE 10 AÑOS DE EXPERIENCIA</h4>
+                    <p>en fisioterapia clínica y deportiva.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div class="feature-text">
+                    <h4>ATENCIÓN CENTRADA EN TI</h4>
+                    <p>enfocada en tu rehabilitación integral y bienestar.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-bone"></i>
+                </div>
+                <div class="feature-text">
+                    <h4>TRATAMIENTOS BASADOS EN EVIDENCIA</h4>
+                    <p>para una recuperación efectiva y duradera.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="feature-text">
+                    <h4>CONSULTORIO MODERNO Y CÓMODO</h4>
+                    <p>ubicado en Tunja, Boyacá, con fácil acceso.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Imagen Superior Derecha -->
+    <div class="image-top-right">
+        <img th:src="@{/images/lina_murillo2.png}" alt="Sesión" class="img-right">
+    </div>
+
+    <!-- Sello / Pie Inferior Izquierdo -->
+    <div class="footer-badge">
+        <img th:src="@{/images/Decoracion2.png}" alt="Sesión" class="img-dight">
+    </div>
+
+</div>
+
 
 <footer th:replace="~{layout/layoutUser :: footer}"></footer>
 </body>
