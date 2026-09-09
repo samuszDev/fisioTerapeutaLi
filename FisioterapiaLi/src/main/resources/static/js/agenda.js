@@ -197,10 +197,42 @@ function renderizarTablaCitas(citasArray) {
 }
 
 function actualizarTarjetasAgenda(citas) {
-    const elHoy = document.getElementById("statCitasHoy");
-    if (!elHoy || !Array.isArray(citas)) return;
+    if (!Array.isArray(citas)) return;
+
     const hoyStr = new Date().toISOString().substring(0, 10);
-    elHoy.textContent = citas.filter(c => c.fechaInicio && c.fechaInicio.startsWith(hoyStr)).length;
+
+    // 1. Citas de hoy
+    const elHoy = document.getElementById("statCitasHoy");
+    if (elHoy) {
+        elHoy.textContent = citas.filter(c => c.fechaInicio && c.fechaInicio.startsWith(hoyStr)).length;
+    }
+
+    // 2. Confirmadas
+    const elConfirmadas = document.getElementById("statConfirmadas");
+    if (elConfirmadas) {
+        elConfirmadas.textContent = citas.filter(c => {
+            const estado = (c.estadoCita || c.estado || "").toUpperCase();
+            return estado === "CONFIRMADA";
+        }).length;
+    }
+
+    // 3. Pendientes
+    const elPendientes = document.getElementById("statPendientes");
+    if (elPendientes) {
+        elPendientes.textContent = citas.filter(c => {
+            const estado = (c.estadoCita || c.estado || "").toUpperCase();
+            return estado === "PENDIENTE";
+        }).length;
+    }
+
+    // 4. Canceladas
+    const elCanceladas = document.getElementById("statCanceladas");
+    if (elCanceladas) {
+        elCanceladas.textContent = citas.filter(c => {
+            const estado = (c.estadoCita || c.estado || "").toUpperCase();
+            return estado === "CANCELADA";
+        }).length;
+    }
 }
 
 function cargarVistaSemanal(citasArray) {
@@ -337,6 +369,7 @@ document.addEventListener("click", event => {
                 .then(res => {
                     if (res.ok) {
                         alert("Cita eliminada correctamente");
+                        // 1. Volvemos a cargar las citas desde el servidor para refrescar el array global
                         cargarCitas();
                     } else {
                         res.text().then(msg => alert("Error: " + msg));
