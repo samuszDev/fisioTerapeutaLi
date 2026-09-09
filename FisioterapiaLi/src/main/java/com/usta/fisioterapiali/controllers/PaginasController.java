@@ -21,5 +21,8 @@ public class PaginasController {
         return "contactanos";
     }
 
-
+    @GetMapping("/index")
+    public String verIndex() {
+        return "index";
+    }
 }
