@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -77,6 +78,12 @@ public class UserEntity implements Serializable {
     @Size(max=60)
     @Column(name="eps", nullable = true, length = 60)
     private String eps;
+
+    @Column(name = "acepta_datos")
+    private Boolean aceptaDatos = false;
+
+    @Column(name = "fecha_aceptacion")
+    private LocalDateTime fechaAceptacion;
 
     public UserEntity(){
 
