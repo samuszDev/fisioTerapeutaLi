@@ -13,6 +13,7 @@ import com.usta.fisioterapiali.models.Daos.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.usta.fisioterapiali.entities.HistoriaClinicaEntity;
 import com.usta.fisioterapiali.models.Daos.HistoriaClinicaDao;
@@ -43,6 +44,9 @@ public class ApiController {
 
     @Autowired
     private HistoriaClinicaDao historiaClinicaDao;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // <-- 1. Inyectamos el encriptador aquí
 
 
     private void registrarAccion(String origen, String accion) {
@@ -389,7 +393,7 @@ public class ApiController {
             UserEntity nuevoCliente = new UserEntity();
             nuevoCliente.setNombre(nombre);
             nuevoCliente.setDocumento(documento);
-            
+
 
             if (payload.get("fechaNacimiento") != null && !((String) payload.get("fechaNacimiento")).isEmpty()) {
                 nuevoCliente.setFechaNacimiento(java.time.LocalDate.parse((String) payload.get("fechaNacimiento")));
@@ -413,7 +417,10 @@ public class ApiController {
             }
 
             nuevoCliente.setRol(TipoUsuario.CLIENTE);
-            nuevoCliente.setClave("123456");
+
+            // 2. APLICAMOS LA ENCRIPTACIÓN AQUÍ. Usamos el documento como clave segura.
+            nuevoCliente.setClave(passwordEncoder.encode(documento));
+
             nuevoCliente.setContadorReferidos(0);
 
             UserEntity clienteGuardado = userDao.save(nuevoCliente);
@@ -453,7 +460,6 @@ public class ApiController {
                     .body("Error al actualizar el paciente: " + e.getMessage());
         }
     }
-
     @DeleteMapping("/pacientes/{id}")
     public ResponseEntity<?> eliminarPaciente(@PathVariable Long id) {
         try {
