@@ -495,6 +495,10 @@ public class BotReservaController {
         nuevo.setDocumento(req.getDocumento());
         nuevo.setRol(TipoUsuario.CLIENTE);
         nuevo.setTelegramUserId(chatId);
+        if (chatId != null) {
+            nuevo.setAceptaDatos(true);
+            nuevo.setFechaAceptacion(LocalDateTime.now());
+        }
         nuevo.setClave(passwordEncoder.encode(UUID.randomUUID().toString()));
         return userDao.save(nuevo);
     }
@@ -512,13 +516,23 @@ public class BotReservaController {
         return telegramUserId;
     }
 
-    /** Si el paciente ya existía pero sin chat de Telegram, se lo completamos. */
+    /** Completa el chat de Telegram y registra la autorizacion de tratamiento de datos. */
     private UserEntity completarTelegram(UserEntity u, String telegramUserId) {
+        boolean cambio = false;
+
         if (telegramUserId != null && esVacio(u.getTelegramUserId())) {
             u.setTelegramUserId(telegramUserId);
-            return userDao.save(u);
+            cambio = true;
         }
-        return u;
+
+        // El paciente entrego sus datos el mismo, despues del aviso: eso es el consentimiento.
+        if (telegramUserId != null && !Boolean.TRUE.equals(u.getAceptaDatos())) {
+            u.setAceptaDatos(true);
+            u.setFechaAceptacion(LocalDateTime.now());
+            cambio = true;
+        }
+
+        return cambio ? userDao.save(u) : u;
     }
 
     private String soloDigitos(String s) {

@@ -46,6 +46,17 @@ navItems.forEach(item => {
     });
 });
 
+// OBTENER CABECERAS CSRF PARA EVITAR ERRORES 403 EN POST/PUT/DELETE
+function getFetchHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
+    if (csrfToken && csrfHeader) {
+        headers[csrfHeader] = csrfToken;
+    }
+    return headers;
+}
+
 // FUNCIÓN GLOBAL DE NOTIFICACIONES PERSONALIZADAS (TOAST)
 function mostrarNotificacionPersonalizada(mensaje, tipo = "error") {
     const alertaAntigua = document.getElementById("customToastAlert");
@@ -115,14 +126,14 @@ function openInternalView(viewName) {
 
                 fetch("/api/modal/pacientes", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: getFetchHeaders(),
                     body: JSON.stringify(data)
                 })
                     .then(async response => {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Paciente guardado correctamente!", "success");
                             closeInternalView();
-                            setTimeout(() => window.location.reload(), 1500);
+                            if (typeof cargarClientes === "function") cargarClientes();
                         } else {
                             const msg = await response.text();
                             mostrarNotificacionPersonalizada("Error del servidor: " + msg, "error");
@@ -153,14 +164,14 @@ function openInternalView(viewName) {
 
                 fetch(`/api/modal/pacientes/${idUsuario}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: getFetchHeaders(),
                     body: JSON.stringify(data)
                 })
                     .then(async response => {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Cliente actualizado correctamente!", "success");
                             closeInternalView();
-                            setTimeout(() => window.location.reload(), 1500);
+                            if (typeof cargarClientes === "function") cargarClientes();
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error: " + errorMsg, "error");
@@ -196,14 +207,14 @@ function openInternalView(viewName) {
 
                 fetch("/api/modal/citas", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: getFetchHeaders(),
                     body: JSON.stringify(data)
                 })
                     .then(async response => {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Cita agendada correctamente!", "success");
                             closeInternalView();
-                            setTimeout(() => window.location.reload(), 1500);
+                            if (typeof cargarCitas === "function") cargarCitas();
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error al agendar la cita: " + errorMsg, "error");
@@ -245,14 +256,14 @@ function openInternalView(viewName) {
 
                 fetch(`/api/modal/citas/${idReserva}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: getFetchHeaders(),
                     body: JSON.stringify(data)
                 })
                     .then(async response => {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Cita actualizada correctamente!", "success");
                             closeInternalView();
-                            setTimeout(() => window.location.reload(), 1500);
+                            if (typeof cargarCitas === "function") cargarCitas();
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error al actualizar la cita: " + errorMsg, "error");
@@ -295,14 +306,15 @@ function openInternalView(viewName) {
 
                 fetch("/api/modal/servicios", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: getFetchHeaders(),
                     body: JSON.stringify(data)
                 })
                     .then(async response => {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Servicio creado correctamente!", "success");
                             closeInternalView();
-                            setTimeout(() => window.location.reload(), 1500);
+                            // Recargar solo la sección disparando un evento de DOMContentLoaded simulado o función local
+                            location.reload(); // Solo si fuera necesario, pero de preferencia se recarga la grilla si existe función global
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error del servidor: " + errorMsg, "error");
@@ -351,14 +363,13 @@ function openInternalView(viewName) {
 
                 fetch(`/api/modal/servicios/${idServicio}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: getFetchHeaders(),
                     body: JSON.stringify(data)
                 })
                     .then(async response => {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Servicio actualizado correctamente!", "success");
                             closeInternalView();
-                            setTimeout(() => window.location.reload(), 1500);
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error al actualizar el servicio: " + errorMsg, "error");
