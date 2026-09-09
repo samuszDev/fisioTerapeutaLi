@@ -1,51 +1,43 @@
 package com.usta.fisioterapiali.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    public void configurerGlobal(AuthenticationManagerBuilder build, BCryptPasswordEncoder passwordEncoder) throws Exception {
-        build.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/bot/**"))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Recursos estáticos públicos (para que carguen estilos, imágenes y scripts)
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/public/**").permitAll()
-
-                        // 2. Proteger TODO lo que comience por /admin/ (incluyendo dashboard, agenda, clientes, etc.)
+                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/public/**", "/service", "/sobre-nosotros").permitAll()
                         .requestMatchers("/admin/**", "/api/modal/**").authenticated()
-
-                        // 3. Cualquier otra ruta pública
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/admin/dashboard", true) // Te redirige al dashboard tras iniciar sesión
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/admin/**", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 }
