@@ -187,6 +187,17 @@ if (typeof registerInternalViews === "function") {
     });
 }
 
+// OBTENER CABECERAS CSRF PARA EVITAR ERRORES 403 EN POST/PUT/DELETE
+function getFetchHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
+    if (csrfToken && csrfHeader) {
+        headers[csrfHeader] = csrfToken;
+    }
+    return headers;
+}
+
 // VARIABLE GLOBAL PARA ALMACENAR LOS CLIENTES
 let todosLosClientes = [];
 
@@ -281,7 +292,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!confirmado) return;
 
                 fetch(`/api/modal/pacientes/${idPaciente}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: getFetchHeaders()
                 })
                     .then(async response => {
                         if (response.ok) {
@@ -323,7 +335,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // FUNCIÓN PARA CARGAR CLIENTES DESDE LA API
 function cargarClientes() {
-    fetch("/api/modal/pacientes")
+    fetch("/api/modal/pacientes", {
+        headers: getFetchHeaders()
+    })
         .then(response => response.json())
         .then(pacientes => {
             if (!pacientes || pacientes.length === 0) {
