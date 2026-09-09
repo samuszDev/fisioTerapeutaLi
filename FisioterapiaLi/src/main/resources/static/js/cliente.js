@@ -190,6 +190,45 @@ if (typeof registerInternalViews === "function") {
 // VARIABLE GLOBAL PARA ALMACENAR LOS CLIENTES
 let todosLosClientes = [];
 
+// FUNCIÓN PARA MOSTRAR NOTIFICACIONES FLOTANTES ESTILIZADAS
+function mostrarNotificacionPersonalizada(mensaje, tipo = "error") {
+    const alertaAntigua = document.getElementById("customToastAlert");
+    if (alertaAntigua) alertaAntigua.remove();
+
+    const toast = document.createElement("div");
+    toast.id = "customToastAlert";
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #1e293b;
+        color: #ffffff;
+        padding: 16px 22px;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        z-index: 10000;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        border-left: 5px solid ${tipo === 'error' ? '#d9534f' : '#c5a880'};
+        max-width: 420px;
+    `;
+
+    toast.innerHTML = `
+        <div style="font-size: 20px;">${tipo === 'error' ? '⚠️' : 'ℹ️'}</div>
+        <div style="flex: 1; line-height: 1.4;">${mensaje}</div>
+        <button onclick="this.parentElement.remove()" style="background: transparent; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 0 4px;">&times;</button>
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        if (toast) toast.remove();
+    }, 6000);
+}
+
 // CARGA AUTOMÁTICA Y GESTIÓN DE EVENTOS
 document.addEventListener("DOMContentLoaded", () => {
     cargarClientes();
@@ -211,15 +250,16 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLimpiar.addEventListener("click", (e) => {
             e.preventDefault();
             const inputNombre = document.getElementById("filtroNombre");
-            const selectEps = document.getElementById("filtroEps");
+            const selectEstado = document.getElementById("filtroEstado");
 
             if (inputNombre) inputNombre.value = "";
-            if (selectEps) selectEps.value = "";
+            if (selectEstado) selectEstado.value = "";
 
             aplicarFiltrosClientes();
         });
     }
 
+    // FILTRADO EN TIEMPO REAL AL ESCRIBIR EN EL BUSCADOR
     const filtroNombre = document.getElementById("filtroNombre");
     if (filtroNombre) {
         filtroNombre.addEventListener("input", aplicarFiltrosClientes);
@@ -228,9 +268,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const filtroEps = document.getElementById("filtroEps");
-    if (filtroEps) {
-        filtroEps.addEventListener("change", aplicarFiltrosClientes);
+    // FILTRADO AUTOMÁTICO AL CAMBIAR EL ESTADO
+    const filtroEstado = document.getElementById("filtroEstado");
+    if (filtroEstado) {
+        filtroEstado.addEventListener("change", aplicarFiltrosClientes);
     }
 
     // DELEGACIÓN DE EVENTOS GLOBALES (Historial, Editar, Eliminar)
@@ -281,15 +322,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 fetch(`/api/modal/pacientes/${idPaciente}`, {
                     method: "DELETE"
                 })
-                    .then(response => {
+                    .then(async response => {
                         if (response.ok) {
-                            alert("Cliente eliminado exitosamente.");
+                            mostrarNotificacionPersonalizada("Cliente eliminado exitosamente.", "success");
                             cargarClientes();
                         } else {
-                            response.text().then(msg => alert("Error al eliminar: " + msg));
+                            const mensajeError = await response.text();
+                            if (response.status === 409 || mensajeError.includes("constraint") || mensajeError.includes("foreign key") || mensajeError.includes("Reservation") || mensajeError.includes("citas")) {
+                                mostrarNotificacionPersonalizada("No es posible eliminar este cliente porque tiene citas o reservas asociadas en la agenda. Debes eliminar sus citas primero.", "error");
+                            } else {
+                                mostrarNotificacionPersonalizada("No se pudo eliminar el cliente: " + mensajeError, "error");
+                            }
                         }
                     })
-                    .catch(err => console.error("Error de red al eliminar:", err));
+                    .catch(err => {
+                        console.error("Error de red al eliminar:", err);
+                        mostrarNotificacionPersonalizada("Ocurrió un error de conexión al intentar eliminar el cliente.", "error");
+                    });
             });
         }
     });
@@ -319,7 +368,7 @@ function cargarClientes() {
 // FUNCIÓN DE FILTRADO EN MEMORIA
 function aplicarFiltrosClientes() {
     const textoBusqueda = document.getElementById("filtroNombre")?.value || "";
-    const valEps = document.getElementById("filtroEps")?.value || "";
+    const valEstado = document.getElementById("filtroEstado")?.value || "";
 
     const normalizeText = (str) => {
         if (!str) return "";
@@ -327,17 +376,17 @@ function aplicarFiltrosClientes() {
     };
 
     const searchNormal = normalizeText(textoBusqueda);
-    const epsSelectNormal = normalizeText(valEps);
+    const estadoSelectNormal = normalizeText(valEstado);
 
     const clientesFiltrados = todosLosClientes.filter(p => {
         const nombre = normalizeText(p.nombre);
         const documento = normalizeText(p.documento);
-        const eps = normalizeText(p.eps);
+        const estadoCliente = normalizeText(p.estado || "activo");
 
         const cumpleTexto = searchNormal === "" || nombre.includes(searchNormal) || documento.includes(searchNormal);
-        const cumpleEps = epsSelectNormal === "" || eps.includes(epsSelectNormal);
+        const cumpleEstado = estadoSelectNormal === "" || estadoCliente === estadoSelectNormal;
 
-        return cumpleTexto && cumpleEps;
+        return cumpleTexto && cumpleEstado;
     });
 
     renderizarTablaClientes(clientesFiltrados);
@@ -359,6 +408,7 @@ function renderizarTablaClientes(clientesArray) {
         const inicial = (p.nombre || "S").trim().charAt(0).toUpperCase();
         const avatarColor = idx % 2 === 0 ? "navy" : "gold";
         const referidos = p.contadorReferidos !== undefined ? p.contadorReferidos : 0;
+        const estadoTexto = p.estado || "Activo";
 
         tableBody.innerHTML += `
             <tr>
@@ -372,7 +422,7 @@ function renderizarTablaClientes(clientesArray) {
                 <td>${p.telefono || 'N/A'}</td>
                 <td>${p.eps || '-'}</td>
                 <td><span class="ref-badge${referidos > 0 ? ' has-refs' : ''}">${referidos}</span></td>
-                <td><span class="status confirmed">Activo</span></td>
+                <td><span class="status confirmed">${estadoTexto}</span></td>
                 <td>
                     <button class="table-action" data-open-view="clinical-history" 
                         data-id="${p.idUsuario}" 

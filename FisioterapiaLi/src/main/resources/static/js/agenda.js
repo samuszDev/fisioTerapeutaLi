@@ -126,6 +126,22 @@ document.addEventListener("DOMContentLoaded", () => {
             aplicarFiltros();
         });
     }
+
+    // FILTRADO AUTOMÁTICO EN TIEMPO REAL (AL ESCRIBIR O CAMBIAR SELECTS)
+    const filtroPacienteInput = document.getElementById("filtroPaciente");
+    if (filtroPacienteInput) {
+        filtroPacienteInput.addEventListener("input", () => aplicarFiltros());
+    }
+
+    const filtroEstado = document.getElementById("filtroEstado");
+    if (filtroEstado) {
+        filtroEstado.addEventListener("change", () => aplicarFiltros());
+    }
+
+    const filtroSede = document.getElementById("filtroSede");
+    if (filtroSede) {
+        filtroSede.addEventListener("change", () => aplicarFiltros());
+    }
 });
 
 function cargarCitas() {
@@ -149,14 +165,20 @@ function aplicarFiltros() {
 
     const normalizeText = (str) => str ? str.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
 
+    const searchNormal = normalizeText(textoPaciente);
+    const estadoSelectNormal = normalizeText(valEstado);
+    const sedeSelectNormal = normalizeText(valSede);
+
     const citasFiltradas = todasLasCitas.filter(cita => {
         const nombrePaciente = cita.usuario ? normalizeText(cita.usuario.nombre) : "";
-        const estadoCita = normalizeText(cita.estadoCita || "confirmada");
+        const estadoCita = normalizeText(cita.estadoCita || cita.estado || "confirmada");
         const sedeCita = normalizeText(cita.sede || "tunja");
 
-        return (textoPaciente === "" || nombrePaciente.includes(normalizeText(textoPaciente))) &&
-            (valEstado === "" || estadoCita.includes(normalizeText(valEstado))) &&
-            (valSede === "" || sedeCita.includes(normalizeText(valSede)));
+        const cumplePaciente = searchNormal === "" || nombrePaciente.includes(searchNormal);
+        const cumpleEstado = estadoSelectNormal === "" || estadoCita === estadoSelectNormal;
+        const cumpleSede = sedeSelectNormal === "" || sedeCita.includes(sedeSelectNormal);
+
+        return cumplePaciente && cumpleEstado && cumpleSede;
     });
 
     renderizarTablaCitas(citasFiltradas);
@@ -201,13 +223,11 @@ function actualizarTarjetasAgenda(citas) {
 
     const hoyStr = new Date().toISOString().substring(0, 10);
 
-    // 1. Citas de hoy
     const elHoy = document.getElementById("statCitasHoy");
     if (elHoy) {
         elHoy.textContent = citas.filter(c => c.fechaInicio && c.fechaInicio.startsWith(hoyStr)).length;
     }
 
-    // 2. Confirmadas
     const elConfirmadas = document.getElementById("statConfirmadas");
     if (elConfirmadas) {
         elConfirmadas.textContent = citas.filter(c => {
@@ -216,7 +236,6 @@ function actualizarTarjetasAgenda(citas) {
         }).length;
     }
 
-    // 3. Pendientes
     const elPendientes = document.getElementById("statPendientes");
     if (elPendientes) {
         elPendientes.textContent = citas.filter(c => {
@@ -225,7 +244,6 @@ function actualizarTarjetasAgenda(citas) {
         }).length;
     }
 
-    // 4. Canceladas
     const elCanceladas = document.getElementById("statCanceladas");
     if (elCanceladas) {
         elCanceladas.textContent = citas.filter(c => {
@@ -369,7 +387,6 @@ document.addEventListener("click", event => {
                 .then(res => {
                     if (res.ok) {
                         alert("Cita eliminada correctamente");
-                        // 1. Volvemos a cargar las citas desde el servidor para refrescar el array global
                         cargarCitas();
                     } else {
                         res.text().then(msg => alert("Error: " + msg));
