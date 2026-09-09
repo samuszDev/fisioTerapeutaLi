@@ -8,12 +8,165 @@
   <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
   <link rel="stylesheet" th:href="@{/css/layoutUser.css}">
   <link rel="stylesheet" th:href="@{/css/contactanos.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap">
 </head>
 
 <body>
 <header th:replace="~{layout/layoutUser :: header('contactanos')}"></header>
 
+<!-- CONTACTO VISUAL -->
+<section class="contacto-visual">
+
+  <div class="contacto-card">
+
+    <!-- IMAGEN -->
+    <div class="contacto-imagen">
+
+      <div class="imagen-overlay"></div>
+
+      <img
+              th:src="@{/images/LINA_LLAMADA.png}"
+              alt="Lina Murillo - Fisioterapeuta">
+
+      <div class="imagen-badge">
+        <i class="fa-solid fa-heart-pulse"></i>
+
+        <div>
+          <strong>La Fisioterapeuta Li</strong>
+          <span>Lina Murillo</span>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- INFORMACIÓN -->
+    <div class="contacto-content">
+
+            <span class="contacto-label">
+                <i class="fa-solid fa-comments"></i>
+                HABLEMOS
+            </span>
+
+      <h2>
+        Tu bienestar
+        <span>comienza aquí.</span>
+      </h2>
+
+      <p class="contacto-description">
+        ¿Tienes preguntas sobre nuestros servicios,
+        quieres conocer cuál terapia es adecuada para ti
+        o deseas agendar una cita?
+      </p>
+
+      <p class="contacto-description">
+        Escríbenos directamente. Estaremos encantados
+        de orientarte y acompañarte en tu proceso.
+      </p>
+
+
+      <!-- BOTONES -->
+      <div class="contacto-buttons">
+
+        <a
+                href="https://wa.me/573113981422"
+                target="_blank"
+                class="contact-button whatsapp">
+
+                    <span class="button-icon">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </span>
+
+          <span class="button-text">
+                        <small>Escríbenos por</small>
+                        <strong>WhatsApp</strong>
+                    </span>
+
+          <i class="fa-solid fa-arrow-up-right-from-square button-arrow"></i>
+
+        </a>
+
+
+        <!-- TELEGRAM -->
+        <a
+                href="https://t.me/li_asistente_bot?start=agendar"
+                class="contact-button telegram">
+
+                    <span class="button-icon">
+                        <i class="fa-brands fa-telegram"></i>
+                    </span>
+
+          <span class="button-text">
+                        <small>Comunícate por</small>
+                        <strong>Telegram</strong>
+                    </span>
+
+          <i class="fa-solid fa-arrow-up-right-from-square button-arrow"></i>
+
+        </a>
+
+      </div>
+
+
+      <!-- DIVISOR -->
+      <div class="contact-divider">
+        <span>También puedes visitarnos</span>
+      </div>
+
+
+      <!-- SEDES -->
+      <div class="contact-locations">
+
+        <div class="mini-location">
+
+          <div class="mini-location-icon">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+
+          <div>
+            <strong>Tunja</strong>
+            <span>Lunes a viernes</span>
+          </div>
+
+        </div>
+
+
+        <div class="mini-location">
+
+          <div class="mini-location-icon">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+
+          <div>
+            <strong>Turmequé</strong>
+            <span>Sábados y domingos</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- HORARIO -->
+      <div class="contact-schedule">
+
+        <i class="fa-regular fa-clock"></i>
+
+        <div>
+          <span>Horario de atención</span>
+          <strong>7:00 a.m. — 8:00 p.m.</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<footer th:replace="~{layout/layoutUser :: footer}"></footer>
 
 </body>
 </html>

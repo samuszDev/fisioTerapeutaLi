@@ -1287,4 +1287,958 @@ body {
             0 8px 20px rgba(7, 59, 117, 0.12);
 }
 
+/* =========================================================
+   RESPONSIVE DESIGN — FISIOTERAPIA
+   ========================================================= */
+
+/* Evita desbordamientos horizontales */
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Imágenes y elementos multimedia */
+img,
+svg,
+video {
+    max-width: 100%;
+}
+
+/* =========================
+   TABLETS
+   ========================= */
+@media (max-width: 1100px) {
+
+    .hero-container {
+        width: 92%;
+        gap: 25px;
+    }
+
+    .script-title {
+        font-size: 5rem;
+        margin-top: -80px;
+        margin-left: 20px;
+    }
+
+    .subtitle-badge {
+        margin-left: 35px;
+    }
+
+    .main-heading {
+        font-size: 2.5rem;
+    }
+
+    .hero-photo {
+        transform: translate(-15px, -20px);
+        max-width: 600px;
+    }
+
+    .hero-photo:hover {
+        transform: translate(-15px, -25px) scale(1.02);
+    }
+
+    .blue-shape {
+        right: -170px;
+        width: 520px;
+    }
+
+    .contact-bar {
+        width: 90%;
+        margin-top: -80px;
+        padding: 12px 20px;
+        gap: 12px;
+    }
+
+    .cards-container {
+        width: 92%;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .banner-container_baner {
+        min-height: 330px;
+    }
+
+    .content-1 h2,
+    .content-2 h2 {
+        font-size: 2.2rem;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .content-1 p,
+    .content-2 p {
+        font-size: 1rem;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .person-img {
+        height: 88%;
+        max-height: 350px;
+    }
+
+    .image-left-container {
+        transform: translate(-30px, -80px);
+    }
+
+    .content-container {
+        margin-left: 10px;
+        margin-right: 280px;
+        max-width: 580px;
+        margin-top: -80px;
+    }
+
+    .header-linamurrilo h2,
+    .header-linamurrilo h1,
+    .header-linamurrilo .subtitle3 {
+        margin-left: 0;
+    }
+
+    .feature-card {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .image-top-right {
+        width: 400px;
+        transform: translate(120px, 0);
+    }
+}
+
+
+/* =========================
+   TABLETS PEQUEÑAS
+   ========================= */
+@media (max-width: 768px) {
+
+    /* -------- HERO -------- */
+    .hero-container {
+        width: 92%;
+        min-height: auto;
+        flex-direction: column;
+        align-items: center;
+        padding: 55px 0 35px;
+        text-align: center;
+    }
+
+    .hero-text {
+        width: 100%;
+        max-width: 650px;
+        order: 1;
+    }
+
+    .script-title {
+        font-size: clamp(3.8rem, 14vw, 5.2rem);
+        margin: 0 0 -5px;
+    }
+
+    .subtitle-badge {
+        justify-content: center;
+        margin: 0 0 18px;
+    }
+
+    .subtitle-badge p {
+        font-size: .72rem;
+        letter-spacing: 2px;
+    }
+
+    .main-heading {
+        font-size: clamp(2rem, 7vw, 2.7rem);
+        line-height: 1.2;
+    }
+
+    .description {
+        font-size: .9rem;
+        max-width: 580px;
+        margin: 15px auto 25px;
+    }
+
+    .btn-agenda {
+        margin: 0 auto;
+    }
+
+    .hero-image-wrapper {
+        width: 100%;
+        justify-content: center;
+        order: 2;
+        margin-top: 35px;
+    }
+
+    .blue-shape {
+        right: 50%;
+        top: 0;
+        width: 75%;
+        height: 100%;
+        transform: translateX(50%);
+        opacity: .9;
+    }
+
+    .hero-photo {
+        width: min(90%, 520px);
+        max-width: 520px;
+        transform: none;
+        border-radius: 18px;
+    }
+
+    .hero-photo:hover {
+        transform: scale(1.02);
+    }
+
+    .contact-bar {
+        width: 92%;
+        margin: 10px auto 35px;
+        border-radius: 25px;
+        padding: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px 20px;
+    }
+
+    .contact-item {
+        min-width: 42%;
+        justify-content: center;
+    }
+
+    .contact-divider {
+        display: none;
+    }
+
+
+    /* -------- COLLAGE -------- */
+    .collage-stage {
+        height: auto;
+        min-height: 850px;
+        padding: 25px 10px;
+    }
+
+    .photo-item {
+        position: absolute;
+    }
+
+    .photo-1 {
+        left: 7%;
+        top: 4%;
+        width: 40%;
+        height: 28%;
+    }
+
+    .photo-2 {
+        left: 47%;
+        top: 2%;
+        width: 38%;
+        height: 27%;
+    }
+
+    .photo-9 {
+        left: 29%;
+        top: 23%;
+        width: 43%;
+        height: 28%;
+    }
+
+    .photo-3 {
+        left: 55%;
+        top: 43%;
+        width: 39%;
+        height: 29%;
+    }
+
+    .photo-4 {
+        left: 4%;
+        top: 38%;
+        width: 42%;
+        height: 29%;
+    }
+
+    .photo-5 {
+        left: 12%;
+        top: 64%;
+        width: 43%;
+        height: 29%;
+    }
+
+    .photo-6 {
+        left: 51%;
+        top: 67%;
+        width: 38%;
+        height: 25%;
+    }
+
+    .photo-8,
+    .photo-7 {
+        display: none;
+    }
+
+    .photo-item:hover {
+        transform: scale(1.05) rotate(0deg) translateY(-5px) !important;
+    }
+
+    .collage-stage:hover .photo-item:not(:hover) {
+        opacity: 1;
+        filter:
+                drop-shadow(0 8px 14px rgba(0, 0, 0, .45));
+        transform: scale(1) rotate(var(--rot));
+    }
+
+
+    /* -------- SERVICIOS -------- */
+    .services-header {
+        padding: 0 20px;
+        margin-bottom: 28px;
+    }
+
+    .services-title {
+        font-size: clamp(2rem, 8vw, 2.6rem);
+        margin: 10px;
+    }
+
+    .services-subtitle {
+        font-size: 1rem;
+    }
+
+    .divider {
+        width: min(220px, 70%);
+    }
+
+    .decoracion {
+        left: -280px;
+        width: 430px;
+        height: 430px;
+        opacity: .45;
+    }
+
+    .decoracion1 {
+        right: -60px;
+        width: 75px;
+        height: auto;
+        opacity: .5;
+    }
+
+    .cards-container {
+        width: 92%;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .card-image-wrapper {
+        height: clamp(190px, 48vw, 260px);
+    }
+
+    .card-body {
+        padding: 15px 12px 10px;
+    }
+
+    .card-title {
+        font-size: 1.3rem;
+    }
+
+    .description {
+        min-height: auto;
+    }
+
+
+    /* -------- BANNER -------- */
+    .banner-container_baner {
+        margin-top: 55px;
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .banner-side {
+        flex: none;
+        width: 100%;
+        min-height: 300px;
+        padding: 45px 25px;
+    }
+
+    .left-side {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .right-side {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .content-1,
+    .content-2 {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .content-1 h2,
+    .content-2 h2 {
+        font-size: clamp(2rem, 9vw, 2.7rem);
+        padding: 0;
+    }
+
+    .content-1 p,
+    .content-2 p {
+        font-size: 1rem;
+        padding: 0;
+    }
+
+    .circle {
+        display: none;
+    }
+
+    .person-img {
+        height: 82%;
+        max-height: 320px;
+    }
+
+    .Decoracion3,
+    .Decoracion4 {
+        width: 110px;
+        opacity: .7;
+    }
+
+    .Decoracion3 {
+        top: auto;
+        bottom: 0;
+    }
+
+    .estrela-img {
+        width: 110px;
+        top: 25px;
+        right: 20px;
+    }
+
+
+    /* -------- TARJETA FISIOTERAPIA -------- */
+    .tarjeta-fisioterapia {
+        min-height: auto;
+        flex-direction: column;
+        padding: 55px 20px 70px;
+        gap: 25px;
+    }
+
+    .image-left-container {
+        flex: none;
+        width: 75%;
+        max-width: 300px;
+        transform: none;
+        order: 1;
+    }
+
+    .image-left-container .img-left {
+        max-height: 430px;
+    }
+
+    .content-container {
+        width: 100%;
+        max-width: 650px;
+        margin: 0;
+        order: 2;
+    }
+
+    .header-linamurrilo {
+        text-align: center;
+    }
+
+    .header-linamurrilo h2,
+    .header-linamurrilo h1,
+    .header-linamurrilo .subtitle3 {
+        margin-left: 0;
+    }
+
+    .header-linamurrilo h2 {
+        font-size: 1.45rem;
+    }
+
+    .header-linamurrilo h1 {
+        font-size: clamp(2.1rem, 9vw, 3rem);
+    }
+
+    .header-linamurrilo .subtitle3 {
+        font-size: 1.5rem;
+    }
+
+    .tagline {
+        text-align: center;
+        font-size: 1rem;
+    }
+
+    .features-list {
+        gap: 12px;
+    }
+
+    .feature-card {
+        width: 100%;
+        padding: 12px 15px;
+    }
+
+    .feature-text h4 {
+        font-size: .85rem;
+    }
+
+    .feature-text p {
+        font-size: .8rem;
+    }
+
+    .image-top-right {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        max-height: none;
+        transform: none;
+        order: 3;
+        display: flex;
+        justify-content: center;
+        margin-top: 5px;
+    }
+
+    .image-top-right .img-right {
+        width: min(100%, 500px);
+        border-bottom-left-radius: 35px;
+    }
+
+    .footer-badge {
+        width: 90px;
+        transform: none;
+        bottom: 10px;
+        left: 10px;
+    }
+
+    .footer-badge img {
+        width: 180%;
+    }
+}
+
+
+/* =========================
+   CELULARES
+   ========================= */
+@media (max-width: 480px) {
+
+    body {
+        font-size: 14px;
+    }
+
+    /* Fondos decorativos: menos agresivos en pantallas pequeñas */
+    .onda-izquierda {
+        top: -260px;
+        left: -390px;
+        width: 700px;
+    }
+
+    .onda-izquierda-dorada {
+        left: -260px;
+        width: 500px;
+    }
+
+    .onda-Derecha {
+        top: -130px;
+        right: -430px;
+        width: 600px;
+    }
+
+    /* Hero */
+    .hero-container {
+        padding-top: 40px;
+    }
+
+    .script-title {
+        font-size: clamp(3.2rem, 18vw, 4.2rem);
+    }
+
+    .subtitle-badge {
+        gap: 7px;
+    }
+
+    .subtitle-badge p {
+        font-size: .63rem;
+        letter-spacing: 1.4px;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .line {
+        width: 30px;
+        height: 2px;
+    }
+
+    .main-heading {
+        font-size: 1.9rem;
+    }
+
+    .description {
+        font-size: .82rem;
+        line-height: 1.55;
+    }
+
+    .btn-agenda {
+        width: 100%;
+        max-width: 290px;
+        justify-content: center;
+    }
+
+    .hero-image-wrapper {
+        margin-top: 25px;
+    }
+
+    .hero-photo {
+        width: 94%;
+        border-radius: 14px;
+    }
+
+    .blue-shape {
+        width: 95%;
+        right: 50%;
+    }
+
+    /* Contacto */
+    .contact-bar {
+        width: 94%;
+        padding: 12px 10px;
+        gap: 12px 5px;
+    }
+
+    .contact-item {
+        min-width: 100%;
+        justify-content: flex-start;
+        padding-left: 12px;
+    }
+
+    .icon-circle {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+    }
+
+    .contact-item span {
+        font-size: .74rem;
+        word-break: break-word;
+    }
+
+    /* Collage */
+    .collage-stage {
+        min-height: 760px;
+        padding: 10px 5px;
+    }
+
+    .photo-1 {
+        left: 5%;
+        top: 3%;
+        width: 45%;
+        height: 25%;
+    }
+
+    .photo-2 {
+        left: 48%;
+        top: 2%;
+        width: 44%;
+        height: 24%;
+    }
+
+    .photo-9 {
+        left: 25%;
+        top: 21%;
+        width: 48%;
+        height: 25%;
+    }
+
+    .photo-4 {
+        left: 2%;
+        top: 37%;
+        width: 45%;
+        height: 25%;
+    }
+
+    .photo-3 {
+        left: 53%;
+        top: 39%;
+        width: 45%;
+        height: 27%;
+    }
+
+    .photo-5 {
+        left: 8%;
+        top: 63%;
+        width: 46%;
+        height: 27%;
+    }
+
+    .photo-6 {
+        left: 52%;
+        top: 67%;
+        width: 43%;
+        height: 22%;
+    }
+
+    /* Servicios */
+    .services-header {
+        padding: 0 14px;
+    }
+
+    .services-title {
+        font-size: 2rem;
+    }
+
+    .services-subtitle {
+        font-size: .9rem;
+        line-height: 1.45;
+    }
+
+    .cards-container {
+        width: 94%;
+        gap: 16px;
+    }
+
+    .card {
+        padding: 9px;
+        border-radius: 14px;
+    }
+
+    .card-image-wrapper {
+        height: 190px;
+        border-radius: 10px;
+    }
+
+    .card-title {
+        font-size: 1.18rem;
+    }
+
+    .category {
+        font-size: .72rem;
+    }
+
+    .price {
+        font-size: 1.45rem;
+    }
+
+    .features li {
+        font-size: .77rem;
+    }
+
+    /* Banner */
+    .banner-container_baner {
+        margin-top: 35px;
+    }
+
+    .banner-side {
+        min-height: 280px;
+        padding: 35px 18px;
+    }
+
+    .content-1 h2,
+    .content-2 h2 {
+        font-size: 2rem;
+    }
+
+    .content-1 p,
+    .content-2 p {
+        font-size: .9rem;
+    }
+
+    .person-img {
+        max-height: 285px;
+        height: 80%;
+    }
+
+    .estrela-img {
+        width: 80px;
+        top: 15px;
+        right: 12px;
+    }
+
+    .Decoracion3,
+    .Decoracion4 {
+        width: 80px;
+    }
+
+    /* Fisioterapia */
+    .tarjeta-fisioterapia {
+        padding: 40px 14px 60px;
+    }
+
+    .image-left-container {
+        width: 82%;
+    }
+
+    .header-linamurrilo h2 {
+        font-size: 1.25rem;
+    }
+
+    .header-linamurrilo h1 {
+        font-size: 2rem;
+    }
+
+    .header-linamurrilo .subtitle3 {
+        font-size: 1.3rem;
+        border-bottom-width: 2px;
+    }
+
+    .tagline {
+        font-size: .9rem;
+        line-height: 1.5;
+    }
+
+    .feature-card {
+        padding: 11px;
+        align-items: flex-start;
+    }
+
+    .icon-box {
+        width: 42px;
+        height: 42px;
+        margin-right: 12px;
+    }
+
+    .icon-box img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .feature-text h4 {
+        font-size: .78rem;
+        line-height: 1.25;
+    }
+
+    .feature-text p {
+        font-size: .74rem;
+        line-height: 1.4;
+    }
+
+    .image-top-right .img-right {
+        border-bottom-left-radius: 25px;
+    }
+
+    .footer-badge {
+        width: 65px;
+        left: 5px;
+        bottom: 8px;
+    }
+
+    /* Modal */
+    .lightbox-modal {
+        padding: 12px;
+    }
+
+    .lightbox-card {
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .lightbox-img {
+        max-height: 65vh;
+    }
+
+    .lightbox-title {
+        font-size: .95rem;
+    }
+
+    .lightbox-close {
+        top: -10px;
+        right: -4px;
+        width: 34px;
+        height: 34px;
+    }
+}
+
+
+/* =========================
+   CELULARES MUY PEQUEÑOS
+   ========================= */
+@media (max-width: 360px) {
+
+    .main-heading {
+        font-size: 1.7rem;
+    }
+
+    .script-title {
+        font-size: 3.2rem;
+    }
+
+    .contact-item span {
+        font-size: .68rem;
+    }
+
+    .collage-stage {
+        min-height: 680px;
+    }
+
+    .services-title {
+        font-size: 1.75rem;
+    }
+
+    .card-image-wrapper {
+        height: 165px;
+    }
+
+    .banner-side {
+        min-height: 260px;
+    }
+
+    .content-1 h2,
+    .content-2 h2 {
+        font-size: 1.75rem;
+    }
+
+    .person-img {
+        max-height: 250px;
+    }
+
+    .header-linamurrilo h1 {
+        font-size: 1.8rem;
+    }
+}
+
+
+/* =========================
+   ACCESIBILIDAD / TOUCH
+   ========================= */
+@media (hover: none) and (pointer: coarse) {
+
+    .photo-item:hover,
+    .card:hover,
+    .feature-card:hover,
+    .contact-item:hover,
+    .btn-agenda:hover,
+    .btn-primary:hover,
+    .btn-secondary:hover {
+        transform: none;
+    }
+
+    .collage-stage:hover .photo-item:not(:hover) {
+        opacity: 1;
+        filter: none;
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, .04);
+        border-color: transparent;
+    }
+
+    .photo-item:hover .photo-media img,
+    .card:hover .card-image-wrapper img {
+        transform: none;
+    }
+}
+
+/* Respeta usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+
 
