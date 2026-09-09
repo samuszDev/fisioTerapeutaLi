@@ -16,4 +16,9 @@ public class PaginasController {
         return "sobre-nosotros";
     }
 
+    @GetMapping("/contactanos")
+    public String verContactanos() {
+        return "contactanos";
+    }
+
 }
