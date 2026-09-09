@@ -46,6 +46,45 @@ navItems.forEach(item => {
     });
 });
 
+// FUNCIÓN GLOBAL DE NOTIFICACIONES PERSONALIZADAS (TOAST)
+function mostrarNotificacionPersonalizada(mensaje, tipo = "error") {
+    const alertaAntigua = document.getElementById("customToastAlert");
+    if (alertaAntigua) alertaAntigua.remove();
+
+    const toast = document.createElement("div");
+    toast.id = "customToastAlert";
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #1e293b;
+        color: #ffffff;
+        padding: 16px 22px;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        z-index: 10000;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        border-left: 5px solid ${tipo === 'error' ? '#d9534f' : '#c5a880'};
+        max-width: 420px;
+    `;
+
+    toast.innerHTML = `
+        <div style="font-size: 20px;">${tipo === 'error' ? '⚠️' : 'ℹ️'}</div>
+        <div style="flex: 1; line-height: 1.4;">${mensaje}</div>
+        <button onclick="this.parentElement.remove()" style="background: transparent; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 0 4px;">&times;</button>
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        if (toast) toast.remove();
+    }, 6000);
+}
+
 function openInternalView(viewName) {
     const view = internalViews[viewName];
     if (!view || !modalOverlay) return;
@@ -79,16 +118,20 @@ function openInternalView(viewName) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 })
-                    .then(response => {
+                    .then(async response => {
                         if (response.ok) {
-                            alert("¡Paciente guardado correctamente!");
+                            mostrarNotificacionPersonalizada("¡Paciente guardado correctamente!", "success");
                             closeInternalView();
-                            window.location.reload();
+                            setTimeout(() => window.location.reload(), 1500);
                         } else {
-                            response.text().then(msg => alert("Error del servidor: " + msg));
+                            const msg = await response.text();
+                            mostrarNotificacionPersonalizada("Error del servidor: " + msg, "error");
                         }
                     })
-                    .catch(error => alert("Error al intentar conectar con el backend."));
+                    .catch(error => {
+                        console.error("Error de red:", error);
+                        mostrarNotificacionPersonalizada("Error al intentar conectar con el backend.", "error");
+                    });
             });
         }
     }
@@ -115,20 +158,23 @@ function openInternalView(viewName) {
                 })
                     .then(async response => {
                         if (response.ok) {
-                            alert("¡Cliente actualizado correctamente!");
+                            mostrarNotificacionPersonalizada("¡Cliente actualizado correctamente!", "success");
                             closeInternalView();
-                            window.location.reload();
+                            setTimeout(() => window.location.reload(), 1500);
                         } else {
                             const errorMsg = await response.text();
-                            alert("Error: " + errorMsg);
+                            mostrarNotificacionPersonalizada("Error: " + errorMsg, "error");
                         }
                     })
-                    .catch(err => console.error("Error en petición PUT:", err));
+                    .catch(err => {
+                        console.error("Error en petición PUT:", err);
+                        mostrarNotificacionPersonalizada("Error al conectar con el servidor.", "error");
+                    });
             });
         }
     }
 
-    // 3. NUEVA CITA (AGENDA) - ¡Agregado!
+    // 3. NUEVA CITA (AGENDA)
     if (viewName === "new-appointment") {
         const finishBtn = document.getElementById("modalFinish");
 
@@ -155,17 +201,17 @@ function openInternalView(viewName) {
                 })
                     .then(async response => {
                         if (response.ok) {
-                            alert("¡Cita agendada correctamente!");
+                            mostrarNotificacionPersonalizada("¡Cita agendada correctamente!", "success");
                             closeInternalView();
-                            window.location.reload();
+                            setTimeout(() => window.location.reload(), 1500);
                         } else {
                             const errorMsg = await response.text();
-                            alert("Error al agendar la cita: " + errorMsg);
+                            mostrarNotificacionPersonalizada("Error al agendar la cita: " + errorMsg, "error");
                         }
                     })
                     .catch(error => {
                         console.error("Error de red:", error);
-                        alert("Error al intentar conectar con el servidor.");
+                        mostrarNotificacionPersonalizada("Error al intentar conectar con el servidor.", "error");
                     });
             });
         }
@@ -193,7 +239,7 @@ function openInternalView(viewName) {
                 const idReserva = data.idReserva;
 
                 if (!idReserva) {
-                    alert("Error: No se encontró el ID de la reserva a modificar.");
+                    mostrarNotificacionPersonalizada("Error: No se encontró el ID de la reserva a modificar.", "error");
                     return;
                 }
 
@@ -204,23 +250,23 @@ function openInternalView(viewName) {
                 })
                     .then(async response => {
                         if (response.ok) {
-                            alert("¡Cita actualizada correctamente!");
+                            mostrarNotificacionPersonalizada("¡Cita actualizada correctamente!", "success");
                             closeInternalView();
-                            window.location.reload();
+                            setTimeout(() => window.location.reload(), 1500);
                         } else {
                             const errorMsg = await response.text();
-                            alert("Error al actualizar la cita: " + errorMsg);
+                            mostrarNotificacionPersonalizada("Error al actualizar la cita: " + errorMsg, "error");
                         }
                     })
                     .catch(error => {
                         console.error("Error de red:", error);
-                        alert("Error al intentar conectar con el servidor.");
+                        mostrarNotificacionPersonalizada("Error al intentar conectar con el servidor.", "error");
                     });
             });
         }
     }
 
-    // 5. NUEVO SERVICIO (Restaurado y protegido)
+    // 5. NUEVO SERVICIO
     if (viewName === "new-service") {
         const finishBtn = document.getElementById("modalFinish");
 
@@ -254,17 +300,17 @@ function openInternalView(viewName) {
                 })
                     .then(async response => {
                         if (response.ok) {
-                            alert("¡Servicio creado correctamente!");
+                            mostrarNotificacionPersonalizada("¡Servicio creado correctamente!", "success");
                             closeInternalView();
-                            window.location.reload();
+                            setTimeout(() => window.location.reload(), 1500);
                         } else {
                             const errorMsg = await response.text();
-                            alert("Error del servidor: " + errorMsg);
+                            mostrarNotificacionPersonalizada("Error del servidor: " + errorMsg, "error");
                         }
                     })
                     .catch(error => {
                         console.error("Error de red:", error);
-                        alert("Error al intentar conectar con el backend.");
+                        mostrarNotificacionPersonalizada("Error al intentar conectar con el backend.", "error");
                     });
             });
         }
@@ -292,7 +338,7 @@ function openInternalView(viewName) {
                 const rawData = Object.fromEntries(formData.entries());
 
                 if (!idServicio) {
-                    alert("Error: No se encontró el ID del servicio a modificar.");
+                    mostrarNotificacionPersonalizada("Error: No se encontró el ID del servicio a modificar.", "error");
                     return;
                 }
 
@@ -310,17 +356,17 @@ function openInternalView(viewName) {
                 })
                     .then(async response => {
                         if (response.ok) {
-                            alert("¡Servicio actualizado correctamente!");
+                            mostrarNotificacionPersonalizada("¡Servicio actualizado correctamente!", "success");
                             closeInternalView();
-                            window.location.reload();
+                            setTimeout(() => window.location.reload(), 1500);
                         } else {
                             const errorMsg = await response.text();
-                            alert("Error al actualizar el servicio: " + errorMsg);
+                            mostrarNotificacionPersonalizada("Error al actualizar el servicio: " + errorMsg, "error");
                         }
                     })
                     .catch(error => {
                         console.error("Error de red:", error);
-                        alert("Error al intentar conectar con el servidor.");
+                        mostrarNotificacionPersonalizada("Error al intentar conectar con el servidor.", "error");
                     });
             });
         }

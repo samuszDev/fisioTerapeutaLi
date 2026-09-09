@@ -170,20 +170,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (event.target.classList.contains("btn-delete-service")) {
             const idServicio = event.target.dataset.id;
-            if (confirm("¿Estás seguro de que deseas eliminar este servicio?")) {
+
+            const confirmFunc = typeof showConfirmDialog === "function"
+                ? showConfirmDialog("¿Estás seguro de que deseas eliminar este servicio?")
+                : Promise.resolve(confirm("¿Estás seguro de que deseas eliminar este servicio?"));
+
+            confirmFunc.then(confirmado => {
+                if (!confirmado) return;
+
                 fetch(`/api/modal/servicios/${idServicio}`, {
                     method: "DELETE"
                 })
-                    .then(response => {
+                    .then(async response => {
                         if (response.ok) {
-                            alert("Servicio eliminado correctamente.");
-                            window.location.reload();
+                            if (typeof mostrarNotificacionPersonalizada === "function") {
+                                mostrarNotificacionPersonalizada("Servicio eliminado correctamente.", "success");
+                            } else {
+                                alert("Servicio eliminado correctamente.");
+                            }
+                            setTimeout(() => window.location.reload(), 1500);
                         } else {
-                            response.text().then(msg => alert("Error al eliminar: " + msg));
+                            const msg = await response.text();
+                            if (typeof mostrarNotificacionPersonalizada === "function") {
+                                mostrarNotificacionPersonalizada("Error al eliminar: " + msg, "error");
+                            } else {
+                                alert("Error al eliminar: " + msg);
+                            }
                         }
                     })
-                    .catch(err => console.error("Error de red al eliminar servicio:", err));
-            }
+                    .catch(err => {
+                        console.error("Error de red al eliminar servicio:", err);
+                        if (typeof mostrarNotificacionPersonalizada === "function") {
+                            mostrarNotificacionPersonalizada("Error de red al intentar eliminar el servicio.", "error");
+                        } else {
+                            alert("Error de red al intentar eliminar el servicio.");
+                        }
+                    });
+            });
         }
     });
 });

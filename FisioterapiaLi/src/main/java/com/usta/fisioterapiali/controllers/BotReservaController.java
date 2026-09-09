@@ -709,6 +709,8 @@ public class BotReservaController {
         r.put("nombrePaciente", pendiente.getUsuario().getNombre());
         r.put("servicio", pendiente.getServicio() != null
                 ? pendiente.getServicio().getNombreS() : "");
+        r.put("valor", pendiente.getServicio() != null
+                ? pendiente.getServicio().getPrecioIndividual() : null);
         r.put("sede", pendiente.getSede());
         r.put("fechaInicio", pendiente.getFechaInicio().format(ISO));
         r.put("googleCalendarId", pendiente.getGoogleCalendarId());
