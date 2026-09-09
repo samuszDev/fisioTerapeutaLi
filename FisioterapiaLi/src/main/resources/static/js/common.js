@@ -133,7 +133,11 @@ function openInternalView(viewName) {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Paciente guardado correctamente!", "success");
                             closeInternalView();
-                            if (typeof cargarClientes === "function") cargarClientes();
+                            if (typeof cargarClientes === "function") {
+                                cargarClientes();
+                            } else {
+                                location.reload();
+                            }
                         } else {
                             const msg = await response.text();
                             mostrarNotificacionPersonalizada("Error del servidor: " + msg, "error");
@@ -171,7 +175,11 @@ function openInternalView(viewName) {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Cliente actualizado correctamente!", "success");
                             closeInternalView();
-                            if (typeof cargarClientes === "function") cargarClientes();
+                            if (typeof cargarClientes === "function") {
+                                cargarClientes();
+                            } else {
+                                location.reload();
+                            }
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error: " + errorMsg, "error");
@@ -214,7 +222,11 @@ function openInternalView(viewName) {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Cita agendada correctamente!", "success");
                             closeInternalView();
-                            if (typeof cargarCitas === "function") cargarCitas();
+                            if (typeof cargarCitas === "function") {
+                                cargarCitas();
+                            } else {
+                                location.reload();
+                            }
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error al agendar la cita: " + errorMsg, "error");
@@ -263,7 +275,11 @@ function openInternalView(viewName) {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Cita actualizada correctamente!", "success");
                             closeInternalView();
-                            if (typeof cargarCitas === "function") cargarCitas();
+                            if (typeof cargarCitas === "function") {
+                                cargarCitas();
+                            } else {
+                                location.reload();
+                            }
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error al actualizar la cita: " + errorMsg, "error");
@@ -313,8 +329,8 @@ function openInternalView(viewName) {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Servicio creado correctamente!", "success");
                             closeInternalView();
-                            // Recargar solo la sección disparando un evento de DOMContentLoaded simulado o función local
-                            location.reload(); // Solo si fuera necesario, pero de preferencia se recarga la grilla si existe función global
+                            const event = new Event('DOMContentLoaded');
+                            document.dispatchEvent(event);
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error del servidor: " + errorMsg, "error");
@@ -370,6 +386,8 @@ function openInternalView(viewName) {
                         if (response.ok) {
                             mostrarNotificacionPersonalizada("¡Servicio actualizado correctamente!", "success");
                             closeInternalView();
+                            const event = new Event('DOMContentLoaded');
+                            document.dispatchEvent(event);
                         } else {
                             const errorMsg = await response.text();
                             mostrarNotificacionPersonalizada("Error al actualizar el servicio: " + errorMsg, "error");
