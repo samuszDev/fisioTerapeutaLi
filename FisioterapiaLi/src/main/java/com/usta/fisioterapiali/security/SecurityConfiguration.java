@@ -23,27 +23,15 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth
-                        // 1. Recursos estáticos públicos (para que carguen estilos, imágenes y scripts)
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/public/**").permitAll()
-
-                        // 2. Proteger TODO lo que comience por /admin/ (incluyendo dashboard, agenda, clientes, etc.)
-                        .requestMatchers("/admin/**", "/api/modal/**").authenticated()
-
-                        // 3. Cualquier otra ruta pública
+                .csrf(csrf -> csrf.disable()) // Opcional: deshabilita CSRF para evitar bloqueos en formularios POST de prueba
+                .authorizeHttpRequests(authorize -> authorize
+                        // Acceso total y libre a cualquier URL de la aplicación sin restricciones
                         .anyRequest().permitAll()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/admin/dashboard", true) // Te redirige al dashboard tras iniciar sesión
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                );
+                .formLogin(form -> form.disable()) // Desactiva la redirección al login
+                .logout(logout -> logout.permitAll());
 
         return http.build();
     }
