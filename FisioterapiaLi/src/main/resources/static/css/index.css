@@ -959,13 +959,11 @@ body {
 
 }
 
-/* Encabezado y Títulos */
 .header-linamurrilo h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: #0d3b66;
     font-weight: 500;
-    font-style: italic;
-    margin-left: -50px;
+    margin-left: 160px;
 
 }
 
@@ -976,7 +974,7 @@ body {
     letter-spacing: 1px;
     line-height: 1.1;
     margin-top: 5px;
-    margin-left: -50px;
+    margin-left: 130px;
 
 }
 
@@ -987,7 +985,7 @@ body {
     display: inline-block;
     padding-bottom: 2px;
     margin-bottom: 20px;
-    margin-left: -50px;
+    margin-left: 100px;
 }
 
 .tagline {
@@ -1000,7 +998,6 @@ body {
     color: #0d3b66;
 }
 
-/* Lista de Tarjetas */
 .features-list {
     display: flex;
     flex-direction: column;
@@ -1032,6 +1029,12 @@ body {
     flex-shrink: 0;
 }
 
+.icon-box img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
 .feature-text h4 {
     font-size: 0.95rem;
     color: #0d3b66;
@@ -1057,12 +1060,12 @@ body {
     height: auto;
     max-height: 250px;
     z-index: 2;
-    transform: translate(130px, -80px);
+    transform: translate(230px, 1px);
 }
 
 .image-top-right .img-right {
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: auto;
     object-fit: cover;
     border-bottom-left-radius: 80px;
 }
