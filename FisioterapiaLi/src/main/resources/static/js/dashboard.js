@@ -70,6 +70,17 @@ if (typeof registerInternalViews === "function") {
     });
 }
 
+// Función auxiliar para integrar las cabeceras CSRF en las peticiones AJAX del dashboard
+function getFetchHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
+    if (csrfToken && csrfHeader) {
+        headers[csrfHeader] = csrfToken;
+    }
+    return headers;
+}
+
 // Carga de métricas y agenda de hoy para el Dashboard
 document.addEventListener("DOMContentLoaded", () => {
     const elCitasHoy = document.getElementById("statCitasHoy");
@@ -79,7 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 1. Obtener indicadores generales
     if (elCitasHoy) {
-        fetch("/api/modal/dashboard/stats")
+        fetch("/api/modal/dashboard/stats", {
+            headers: getFetchHeaders()
+        })
             .then(res => res.ok ? res.json() : Promise.reject(res.status))
             .then(data => {
                 elCitasHoy.textContent = data.citasHoy ?? 0;
@@ -93,7 +106,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Cargar tabla de la agenda del día
     const agendaHoyBody = document.getElementById("agendaHoyRows");
     if (agendaHoyBody) {
-        fetch("/api/modal/citas")
+        fetch("/api/modal/citas", {
+            headers: getFetchHeaders()
+        })
             .then(res => res.ok ? res.json() : Promise.reject(res.status))
             .then(citas => {
                 const hoyStr = new Date().toISOString().substring(0, 10);
@@ -132,14 +147,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// NUEVO: LÓGICA PARA CARGAR DATOS Y GUARDAR LA CITA AL ABRIR EL MODAL
+// LÓGICA PARA CARGAR DATOS Y GUARDAR LA CITA AL ABRIR EL MODAL
 document.addEventListener("click", event => {
-    // Detectamos si se hizo clic en el botón de "+ Agendar cita"
     const trigger = event.target.closest('[data-open-view="new-appointment"]');
 
     if (trigger) {
         // 1. Cargar lista de Pacientes en el select
-        fetch("/api/modal/pacientes")
+        fetch("/api/modal/pacientes", {
+            headers: getFetchHeaders()
+        })
             .then(res => res.json())
             .then(pacientes => {
                 const selectP = document.getElementById("selectPaciente");
@@ -153,7 +169,9 @@ document.addEventListener("click", event => {
             .catch(err => console.error("Error al cargar pacientes", err));
 
         // 2. Cargar lista de Servicios en el select
-        fetch("/api/modal/servicios")
+        fetch("/api/modal/servicios", {
+            headers: getFetchHeaders()
+        })
             .then(res => res.json())
             .then(servicios => {
                 const selectS = document.getElementById("selectServicio");
@@ -168,11 +186,10 @@ document.addEventListener("click", event => {
             })
             .catch(err => console.error("Error al cargar servicios", err));
 
-        // 3. Configurar el botón "Finalizado" para ejecutar el POST al backend
+        // 3. Configurar el botón "Finalizado" para ejecutar el POST al backend con CSRF
         setTimeout(() => {
             const finishBtn = document.getElementById("modalFinish");
             if (finishBtn) {
-                // Clonamos el botón para limpiar eventos previos y evitar envíos duplicados
                 const newFinishBtn = finishBtn.cloneNode(true);
                 finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
 
@@ -180,19 +197,17 @@ document.addEventListener("click", event => {
                     const form = document.getElementById("newAppointmentForm");
                     if (!form) return;
 
-                    // Si faltan campos requeridos, el navegador muestra la alerta nativa
                     if (!form.checkValidity()) {
                         form.reportValidity();
                         return;
                     }
 
-                    // Convertir los datos del formulario a JSON
                     const formData = new FormData(form);
                     const data = Object.fromEntries(formData.entries());
 
                     fetch("/api/modal/citas", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: getFetchHeaders(),
                         body: JSON.stringify(data)
                     })
                         .then(async response => {
@@ -202,7 +217,7 @@ document.addEventListener("click", event => {
                                 } else {
                                     alert("¡Cita agendada correctamente!");
                                 }
-                                setTimeout(() => window.location.reload(), 1500); // Recargar tras ver la notificación
+                                setTimeout(() => window.location.reload(), 1500);
                             } else {
                                 const errorMsg = await response.text();
                                 if (typeof mostrarNotificacionPersonalizada === "function") {
@@ -222,6 +237,6 @@ document.addEventListener("click", event => {
                         });
                 });
             }
-        }, 100); // Pequeño retraso para asegurar que el modal ya se dibujó en pantalla
+        }, 100);
     }
 });
