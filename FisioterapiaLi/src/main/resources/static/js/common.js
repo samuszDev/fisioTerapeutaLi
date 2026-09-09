@@ -401,6 +401,69 @@ function openInternalView(viewName) {
         }
     }
 
+    // 7. HISTORIA CLINICA
+    if (viewName === "clinical-history") {
+        const finishBtn = document.getElementById("modalFinish");
+
+        if (finishBtn) {
+            const newFinishBtn = finishBtn.cloneNode(true);
+            finishBtn.parentNode.replaceChild(newFinishBtn, finishBtn);
+
+            newFinishBtn.addEventListener("click", () => {
+                const form = document.getElementById("clinicalHistoryForm");
+                if (!form) return;
+
+                const idUsuario = document.getElementById("historyIdUsuario")?.value;
+                if (!idUsuario) {
+                    alert("No se encontró el paciente para guardar la historia clínica.");
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const rawData = Object.fromEntries(formData.entries());
+
+                const data = {
+                    motivoPrincipalConsulta: rawData.motivoPrincipalConsulta || null,
+                    ocupacionPerfil: rawData.ocupacionPerfil || null,
+                    descripcionDetalladaPaciente: rawData.descripcionDetalladaPaciente || null,
+                    otrosAntecedentes: rawData.otrosAntecedentes || null,
+                    antecedentesPatologicos: formData.getAll("antecedentesPatologicos"),
+                    tiposDolor: formData.getAll("tiposDolor"),
+                    comportamientoDolor: rawData.comportamientoDolor || null,
+                    intensidadDolor: rawData.intensidadDolor !== undefined ? Number(rawData.intensidadDolor) : null,
+                    tensionSistolica: rawData.tensionSistolica ? Number(rawData.tensionSistolica) : null,
+                    tensionDiastolica: rawData.tensionDiastolica ? Number(rawData.tensionDiastolica) : null,
+                    frecuenciaCardiaca: rawData.frecuenciaCardiaca ? Number(rawData.frecuenciaCardiaca) : null,
+                    frecuenciaRespiratoria: rawData.frecuenciaRespiratoria ? Number(rawData.frecuenciaRespiratoria) : null,
+                    saturacionOxigeno: rawData.saturacionOxigeno ? Number(rawData.saturacionOxigeno) : null,
+                    pesoKg: rawData.pesoKg ? Number(rawData.pesoKg) : null,
+                    tallaCm: rawData.tallaCm ? Number(rawData.tallaCm) : null,
+                    objetivosTerapeuticos: rawData.objetivosTerapeuticos || null,
+                    enfermedadActualEvolucion: rawData.enfermedadActualEvolucion || null
+                };
+
+                fetch(`/api/modal/historia-clinica/${idUsuario}`, {
+                    method: "POST",
+                    headers: getFetchHeaders(),
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert("¡Historia clínica guardada correctamente!");
+                            closeInternalView();
+                        } else {
+                            const errorMsg = await response.text();
+                            alert("Error al guardar la historia clínica: " + errorMsg);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error de red:", error);
+                        alert("Error al intentar conectar con el servidor.");
+                    });
+            });
+        }
+    }
+
     modalOverlay.classList.add("open");
     document.body.style.overflow = "hidden";
 }

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.usta.fisioterapiali.entities.HistoriaClinicaEntity;
+import com.usta.fisioterapiali.models.Daos.HistoriaClinicaDao;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +40,10 @@ public class ApiController {
 
     @Autowired
     private RegistrationDao registrationDao;
+
+    @Autowired
+    private HistoriaClinicaDao historiaClinicaDao;
+
 
     private void registrarAccion(String origen, String accion) {
         try {
@@ -463,6 +469,51 @@ public class ApiController {
                     .body("Error al eliminar el paciente: " + e.getMessage());
         }
     }
+
+    //METODOS PARA HISTORIA CLINICA
+    @GetMapping("/historia-clinica/{idUsuario}")
+    public ResponseEntity<?> obtenerHistoriaClinica(@PathVariable Long idUsuario) {
+        try {
+            Optional<HistoriaClinicaEntity> historiaClinica = historiaClinicaDao.findByUsuario_IdUsuario(idUsuario);
+            if (historiaClinica.isPresent()) {
+                return ResponseEntity.ok(historiaClinica.get());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Este paciente aún no tiene historia clínica registrada.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al consultar la historia clínica: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/historia-clinica/{idUsuario}")
+    public ResponseEntity<?> guardarHistoriaClinica(@PathVariable Long idUsuario,
+                                                    @RequestBody HistoriaClinicaEntity historiaClinica) {
+        try {
+            Optional<UserEntity> pacienteOpt = userDao.findById(idUsuario);
+            if (pacienteOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El paciente indicado no existe.");
+            }
+
+            Optional<HistoriaClinicaEntity> existente = historiaClinicaDao.findByUsuario_IdUsuario(idUsuario);
+            existente.ifPresent(hc -> historiaClinica.setIdHistoriaClinica(hc.getIdHistoriaClinica()));
+            historiaClinica.setUsuario(pacienteOpt.get());
+
+            HistoriaClinicaEntity guardada = historiaClinicaDao.save(historiaClinica);
+
+            String accion = (existente.isPresent() ? "Actualización" : "Creación") + " de historia clínica";
+            registrarAccion("HISTORIA_CLINICA", accion);
+
+            HttpStatus status = existente.isPresent() ? HttpStatus.OK : HttpStatus.CREATED;
+            return ResponseEntity.status(status).body(guardada);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al guardar la historia clínica: " + e.getMessage());
+        }
+    }
+
 
     @GetMapping("/dashboard/stats")
     public ResponseEntity<?> obtenerEstadisticasDashboard() {

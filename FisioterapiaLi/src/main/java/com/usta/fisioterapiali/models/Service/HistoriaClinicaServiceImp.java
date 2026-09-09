@@ -1,7 +1,6 @@
 package com.usta.fisioterapiali.models.Service;
 
 import com.usta.fisioterapiali.entities.HistoriaClinicaEntity;
-import com.usta.fisioterapiali.enums.EpsAseguradora;
 import com.usta.fisioterapiali.enums.MotivoConsulta;
 import com.usta.fisioterapiali.models.Daos.HistoriaClinicaDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,11 +62,5 @@ public class HistoriaClinicaServiceImp implements HistoriaClinicaService {
     @Transactional(readOnly = true)
     public List<HistoriaClinicaEntity> findByMotivoPrincipalConsulta(MotivoConsulta motivoPrincipalConsulta) {
         return historiaClinicaDao.findByMotivoPrincipalConsulta(motivoPrincipalConsulta);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<HistoriaClinicaEntity> findByEpsAseguradora(EpsAseguradora epsAseguradora) {
-        return historiaClinicaDao.findByEpsAseguradora(epsAseguradora);
     }
 }
