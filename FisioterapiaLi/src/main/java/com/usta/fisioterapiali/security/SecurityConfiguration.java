@@ -25,6 +25,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/bot/**"))
                 .authorizeHttpRequests(auth -> auth
                         // 1. Recursos estáticos públicos (para que carguen estilos, imágenes y scripts)
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/public/**").permitAll()
