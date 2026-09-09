@@ -190,45 +190,6 @@ if (typeof registerInternalViews === "function") {
 // VARIABLE GLOBAL PARA ALMACENAR LOS CLIENTES
 let todosLosClientes = [];
 
-// FUNCIÓN PARA MOSTRAR NOTIFICACIONES FLOTANTES ESTILIZADAS
-function mostrarNotificacionPersonalizada(mensaje, tipo = "error") {
-    const alertaAntigua = document.getElementById("customToastAlert");
-    if (alertaAntigua) alertaAntigua.remove();
-
-    const toast = document.createElement("div");
-    toast.id = "customToastAlert";
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: #1e293b;
-        color: #ffffff;
-        padding: 16px 22px;
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        z-index: 10000;
-        font-family: 'Poppins', sans-serif;
-        font-size: 14px;
-        border-left: 5px solid ${tipo === 'error' ? '#d9534f' : '#c5a880'};
-        max-width: 420px;
-    `;
-
-    toast.innerHTML = `
-        <div style="font-size: 20px;">${tipo === 'error' ? '⚠️' : 'ℹ️'}</div>
-        <div style="flex: 1; line-height: 1.4;">${mensaje}</div>
-        <button onclick="this.parentElement.remove()" style="background: transparent; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 0 4px;">&times;</button>
-    `;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        if (toast) toast.remove();
-    }, 6000);
-}
-
 // CARGA AUTOMÁTICA Y GESTIÓN DE EVENTOS
 document.addEventListener("DOMContentLoaded", () => {
     cargarClientes();
@@ -324,20 +285,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                     .then(async response => {
                         if (response.ok) {
-                            mostrarNotificacionPersonalizada("Cliente eliminado exitosamente.", "success");
+                            if (typeof mostrarNotificacionPersonalizada === "function") {
+                                mostrarNotificacionPersonalizada("Cliente eliminado exitosamente.", "success");
+                            } else {
+                                alert("Cliente eliminado exitosamente.");
+                            }
                             cargarClientes();
                         } else {
                             const mensajeError = await response.text();
                             if (response.status === 409 || mensajeError.includes("constraint") || mensajeError.includes("foreign key") || mensajeError.includes("Reservation") || mensajeError.includes("citas")) {
-                                mostrarNotificacionPersonalizada("No es posible eliminar este cliente porque tiene citas o reservas asociadas en la agenda. Debes eliminar sus citas primero.", "error");
+                                if (typeof mostrarNotificacionPersonalizada === "function") {
+                                    mostrarNotificacionPersonalizada("No es posible eliminar este cliente porque tiene citas o reservas asociadas en la agenda. Debes eliminar sus citas primero.", "error");
+                                } else {
+                                    alert("No es posible eliminar este cliente porque tiene citas o reservas asociadas en la agenda.");
+                                }
                             } else {
-                                mostrarNotificacionPersonalizada("No se pudo eliminar el cliente: " + mensajeError, "error");
+                                if (typeof mostrarNotificacionPersonalizada === "function") {
+                                    mostrarNotificacionPersonalizada("No se pudo eliminar el cliente: " + mensajeError, "error");
+                                } else {
+                                    alert("No se pudo eliminar el cliente: " + mensajeError);
+                                }
                             }
                         }
                     })
                     .catch(err => {
                         console.error("Error de red al eliminar:", err);
-                        mostrarNotificacionPersonalizada("Ocurrió un error de conexión al intentar eliminar el cliente.", "error");
+                        if (typeof mostrarNotificacionPersonalizada === "function") {
+                            mostrarNotificacionPersonalizada("Ocurrió un error de conexión al intentar eliminar el cliente.", "error");
+                        } else {
+                            alert("Ocurrió un error de conexión al intentar eliminar el cliente.");
+                        }
                     });
             });
         }

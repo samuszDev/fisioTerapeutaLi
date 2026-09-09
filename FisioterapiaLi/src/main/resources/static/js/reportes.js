@@ -49,6 +49,9 @@ function cargarHistorialYMetricas() {
             .catch(error => {
                 console.error("Error al obtener la lista del historial:", error);
                 historialGrid.innerHTML = "<tr><td colspan='4' style='text-align:center; padding: 20px; color: #d9534f;'>Error al cargar los reportes del sistema.</td></tr>";
+                if (typeof mostrarNotificacionPersonalizada === "function") {
+                    mostrarNotificacionPersonalizada("No se pudo cargar el historial de actividad del sistema.", "error");
+                }
             });
     }
 
@@ -60,7 +63,12 @@ function cargarHistorialYMetricas() {
         .then(([citas, pacientes]) => {
             calcularYMostrarMetricas(citas, pacientes);
         })
-        .catch(err => console.error("Error al cargar datos para métricas:", err));
+        .catch(err => {
+            console.error("Error al cargar datos para métricas:", err);
+            if (typeof mostrarNotificacionPersonalizada === "function") {
+                mostrarNotificacionPersonalizada("Error al sincronizar las métricas y reportes.", "error");
+            }
+        });
 }
 
 function calcularYMostrarMetricas(citas, pacientes) {
@@ -89,8 +97,8 @@ function calcularYMostrarMetricas(citas, pacientes) {
                 const fechaCita = new Date(cita.fechaInicio);
                 if (fechaCita.getMonth() === mesActual && fechaCita.getFullYear() === anioActual) {
                     if (cita.pagoConfirmado || estado === "CONFIRMADA" || estado === "ATENDIDA" || estado === "FINALIZADA") {
-                        const valorServicio = cita.servicio && (cita.servicio.precio || cita.servicio.costo)
-                            ? Number(cita.servicio.precio || cita.servicio.costo)
+                        const valorServicio = cita.servicio
+                            ? Number(cita.servicio.precioIndividual || cita.servicio.precio || cita.servicio.costo || 0)
                             : 0;
                         ingresosMes += valorServicio;
                     }
@@ -107,7 +115,7 @@ function calcularYMostrarMetricas(citas, pacientes) {
         });
     }
 
-    // Actualización de los elementos en el DOM (asegúrate de asignar estos IDs a los números en tu HTML de reportes)
+    // Actualización de los elementos en el DOM
     const elIngresos = document.getElementById("statIngresosMes");
     const elAtendidas = document.getElementById("statCitasAtendidas");
     const elCanceladas = document.getElementById("statCancelacionesReportes");

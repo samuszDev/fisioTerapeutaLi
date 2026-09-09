@@ -197,16 +197,28 @@ document.addEventListener("click", event => {
                     })
                         .then(async response => {
                             if (response.ok) {
-                                alert("¡Cita agendada correctamente!");
-                                window.location.reload(); // Recargar el Dashboard para ver los cambios
+                                if (typeof mostrarNotificacionPersonalizada === "function") {
+                                    mostrarNotificacionPersonalizada("¡Cita agendada correctamente!", "success");
+                                } else {
+                                    alert("¡Cita agendada correctamente!");
+                                }
+                                setTimeout(() => window.location.reload(), 1500); // Recargar tras ver la notificación
                             } else {
                                 const errorMsg = await response.text();
-                                alert("Error al agendar: " + errorMsg);
+                                if (typeof mostrarNotificacionPersonalizada === "function") {
+                                    mostrarNotificacionPersonalizada("Error al agendar: " + errorMsg, "error");
+                                } else {
+                                    alert("Error al agendar: " + errorMsg);
+                                }
                             }
                         })
                         .catch(error => {
                             console.error("Error de red:", error);
-                            alert("Error al conectar con el servidor.");
+                            if (typeof mostrarNotificacionPersonalizada === "function") {
+                                mostrarNotificacionPersonalizada("Error al conectar con el servidor.", "error");
+                            } else {
+                                alert("Error al conectar con el servidor.");
+                            }
                         });
                 });
             }
