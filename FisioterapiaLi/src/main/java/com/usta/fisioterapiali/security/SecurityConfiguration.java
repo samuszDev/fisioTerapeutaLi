@@ -17,9 +17,18 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/bot/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/public/**", "/service", "/sobre-nosotros").permitAll()
+                        // El bot de n8n consume estas rutas sin sesion
+                        .requestMatchers("/api/bot/**").permitAll()
+
+                        // Paginas publicas del sitio
+                        .requestMatchers("/", "/index", "/login", "/register", "/contactanos",
+                                "/service", "/sobre-nosotros",
+                                "/css/**", "/js/**", "/images/**", "/public/**").permitAll()
+
+                        // Zona privada
                         .requestMatchers("/admin/**", "/api/modal/**").authenticated()
-                        .anyRequest().authenticated()
+
+                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
