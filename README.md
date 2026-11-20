@@ -75,23 +75,27 @@ La IA solo extrae los datos del mensaje; todas las reglas (horario, disponibilid
 ## Estructura del proyecto
 
 ```
-FisioterapiaLi/
-├── pom.xml
-└── src/main/
-    ├── java/com/usta/fisioterapiali/
-    │   ├── controllers/     # Vistas, API del panel (/api/modal) y API del bot (/api/bot)
-    │   ├── entities/        # Entidades JPA (usuario, reserva, servicio, horario, historia clínica…)
-    │   ├── enums/           # Catálogos (EPS, motivo de consulta, tipo de dolor, roles…)
-    │   ├── models/Daos/     # Repositorios Spring Data
-    │   ├── models/Service/  # Servicios de negocio
-    │   ├── dto/             # Objetos de entrada/salida del bot
-    │   ├── security/        # Configuración de Spring Security
-    │   ├── components/      # Datos iniciales (usuarios, servicios, horarios)
-    │   └── util/            # Cálculo de signos vitales (IMC, tensión, dolor EVA…)
-    └── resources/
-        ├── application.properties
-        ├── templates/       # Páginas públicas y panel administrativo (Admin/)
-        └── static/          # CSS, JS e imágenes
+fisioTerapeutaLi/
+├── FisioterapiaLi/                  # Backend Spring Boot + panel web
+│   ├── pom.xml
+│   └── src/main/
+│       ├── java/com/usta/fisioterapiali/
+│       │   ├── controllers/     # Vistas, API del panel (/api/modal) y API del bot (/api/bot)
+│       │   ├── entities/        # Entidades JPA (usuario, reserva, servicio, horario, historia clínica…)
+│       │   ├── enums/           # Catálogos (EPS, motivo de consulta, tipo de dolor, roles…)
+│       │   ├── models/Daos/     # Repositorios Spring Data
+│       │   ├── models/Service/  # Servicios de negocio
+│       │   ├── dto/             # Objetos de entrada/salida del bot
+│       │   ├── security/        # Configuración de Spring Security
+│       │   ├── components/      # Datos iniciales (usuarios, servicios, horarios)
+│       │   └── util/            # Cálculo de signos vitales (IMC, tensión, dolor EVA…)
+│       └── resources/
+│           ├── application.properties
+│           ├── templates/       # Páginas públicas y panel administrativo (Admin/)
+│           └── static/          # CSS, JS e imágenes
+└── n8n/                             # Automatizaciones (bot de Telegram y recordatorios)
+    ├── README.md
+    └── workflows/               # Flujos de n8n exportados en JSON
 ```
 
 ---
@@ -144,13 +148,20 @@ Al iniciar por primera vez, la aplicación crea las tablas automáticamente y ca
 
 ## Integración con el bot (n8n)
 
-El flujo de n8n está en la rama [`n8n`](https://github.com/samuszDev/fisioTerapeutaLi/tree/n8n) (`Asistente Empresarial Fisioterapeuta Li (Telegram + IA local).json`).
+Los flujos de n8n están en la carpeta [`n8n/workflows/`](n8n/workflows):
 
-1. Importar el JSON en n8n.
+| Flujo | Qué hace |
+|---|---|
+| Asistente Empresarial Fisioterapeuta Li (Telegram + IA local) | Bot de Telegram con IA: agenda, consulta, cancela y reprograma citas, y gestiona la aprobación de pagos |
+| Recordatorios Automáticos | Envía todos los días recordatorios por correo a los pacientes con citas próximas |
+
+La explicación detallada de cada flujo y los pasos de instalación están en el [README de n8n](n8n/README.md). En resumen:
+
+1. Importar los JSON en n8n.
 2. Configurar las credenciales: Telegram, Google Calendar, Google Drive, Gmail, Gemini y Groq.
 3. Verificar que los nodos HTTP apunten al backend (por defecto `http://host.docker.internal:8080`).
 4. Registrar en la tabla `usuario` el **ID de Telegram de la administradora** con rol `ADMIN`, para que el bot la reconozca.
-5. Activar el flujo.
+5. Activar los flujos.
 
 **Flujo de una cita**
 
@@ -199,9 +210,9 @@ Citas, pacientes, servicios, historia clínica, estadísticas del dashboard y re
 
 | Rama | Contenido |
 |---|---|
-| `main` | Versión estable del proyecto |
+| `main` | Versión estable del proyecto completo (backend y flujos de n8n) |
 | `Staging` | Rama de integración y pruebas antes de pasar a `main` |
-| `n8n` | Flujo de n8n del bot de Telegram |
+| `n8n` | Rama de trabajo de los flujos de n8n (la versión estable se publica en `main`, carpeta `n8n/`) |
 
 **Flujo de trabajo sugerido:** desarrollar en una rama propia → unir a `Staging` → probar → pasar a `main`.
 
