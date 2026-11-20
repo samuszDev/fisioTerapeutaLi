@@ -1,0 +1,2210 @@
+{
+  "name": "Asistente Empresarial Fisioterapeuta Li (Telegram + IA local)",
+  "nodes": [
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}-v13"
+      },
+      "id": "22100100-e562-4e49-839a-bf2537cdf8cf",
+      "name": "Memoria de conversación",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        384,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.respuesta || $json.body?.mensaje || 'Tuve un problema. Escríbenos al WhatsApp 3113981422.' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "f53b7d8e-c81b-49b0-911e-08f316aa87ef",
+      "name": "Responder por Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2240,
+        -208
+      ],
+      "webhookId": "14570e79-3179-43a9-87f9-c60597b163d8",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -816,
+        400
+      ],
+      "id": "72b2032f-7fac-471b-95fa-dbf112a2d1a1",
+      "name": "Telegram Trigger",
+      "webhookId": "1a8bf1db-8d8d-4bb9-b34e-5c362a25b29a",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nconst REQUERIDOS = ['nombrePaciente', 'telefono', 'correo', 'servicio', 'fechaInicio'];\n\nconst NOMBRES = {\n  nombrePaciente: 'el nombre completo del paciente',\n  telefono: 'el teléfono',\n  correo: 'el correo electrónico',\n  servicio: 'el servicio que necesitas',\n  fechaInicio: 'la fecha y hora'\n};\n\n// Un borrador a medio llenar caduca a los 30 minutos.\nconst VIGENCIA_MS = 30 * 60 * 1000;\n\nfor (const item of $input.all()) {\n  const texto = item.json.output || '';\n  const chatId = $('Telegram Trigger').item.json.message.chat.id;\n  const mensajeUsuario = String($('Telegram Trigger').item.json.message.text || '');\n  const clave = 'borrador_' + chatId;\n\n  // 0. Boton de panico: /reset borra el borrador de este chat\n  if (/^\\/?(reset|reiniciar|empezar de nuevo)$/i.test(mensajeUsuario.trim())) {\n    delete staticData[clave];\n    item.json.accion = 'otro';\n    item.json.respuesta = 'Listo, empecemos de nuevo. ¿En que te ayudo?';\n    item.json.datos = {};\n    item.json.faltan = [];\n    continue;\n  }\n\n  // 1. Extraer el JSON que devolvio el modelo\n  const match = texto.match(/\\{[\\s\\S]*\\}/);\n  let p = { accion: 'otro', datos: {}, respuesta: texto };\n\n  if (match) {\n    try {\n      p = JSON.parse(match[0]);\n    } catch (e) {\n      p = { accion: 'otro', datos: {}, respuesta: 'No entendi, ¿me lo repites?' };\n    }\n  }\n\n  // 2. Fusionar con lo que ya se habia recogido antes.\n  //    Sin _ts o con _ts vencido = borrador viejo, se descarta.\n  const guardado = staticData[clave];\n  const vigente = guardado\n    && guardado._ts\n    && (Date.now() - guardado._ts) < VIGENCIA_MS;\n\n  if (guardado && !vigente) {\n    delete staticData[clave];\n  }\n\n  const previo = vigente ? guardado : {};\n  const datos = Object.assign({}, previo);\n  delete datos._ts;\n\n  for (const clave2 of Object.keys(p.datos || {})) {\n    const valor = p.datos[clave2];\n    if (valor && String(valor).trim() !== '') {\n      datos[clave2] = valor;\n    }\n  }\n\n  // 3. Revisar que falta\n  const faltan = REQUERIDOS.filter(k => !datos[k]);\n  const esFlujoCita = (p.accion === 'agendar' || p.accion === 'faltan_datos');\n\n  if (esFlujoCita && faltan.length === 0) {\n    // Estan los 5 datos: agendar y limpiar el borrador\n    item.json.accion = 'agendar';\n    item.json.respuesta = 'Dame un momento, estoy revisando la disponibilidad.';\n    delete staticData[clave];\n\n  } else if (esFlujoCita) {\n    // Faltan datos: guardar el borrador con su marca de tiempo\n    staticData[clave] = Object.assign({}, datos, { _ts: Date.now() });\n\n    const lista = faltan.map(k => NOMBRES[k]);\n    const enumerado = lista.length === 1\n      ? lista[0]\n      : lista.slice(0, -1).join(', ') + ' y ' + lista[lista.length - 1];\n\n    item.json.accion = 'faltan_datos';\n    item.json.respuesta = 'Para continuar necesito ' + enumerado + '.';\n\n  } else {\n    // consultar, drive, otro: no toca el borrador\n    item.json.accion = p.accion || 'otro';\n    item.json.respuesta = p.respuesta || '';\n    item.json.datos = p.datos || {};\n    item.json.faltan = [];\n    continue;\n\n  }\n\n  item.json.datos = datos;\n  item.json.faltan = faltan;\n\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        -32
+      ],
+      "id": "669c66b2-e2d9-4f41-b31e-d62bd0233e01",
+      "name": "Parsear salida"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8080/api/bot/pre-reserva",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"nombrePaciente\": \"{{ $json.datos.nombrePaciente }}\",\n  \"telefono\": \"{{ $json.datos.telefono }}\",\n  \"correo\": \"{{ $json.datos.correo }}\",\n  \"servicio\": \"{{ $json.datos.servicio }}\",\n  \"fechaInicio\": \"{{ $json.datos.fechaInicio }}\",\n  \"canal\": \"telegram\",\n  \"telegramUserId\": \"{{ $('Telegram Trigger').item.json.message.chat.id }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        976,
+        -240
+      ],
+      "id": "4369d60f-fb24-4d59-9449-e7928d83b05e",
+      "name": "Crear pre-reserva",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=http://host.docker.internal:8080/api/bot/reserva/{{ $('Crear pre-reserva').item.json.body.reservaId }}/calendar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"googleCalendarId\": \"{{ $json.id }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1712,
+        -512
+      ],
+      "id": "1e10f75b-60c3-4c59-a0b2-78a99c65aad4",
+      "name": "Guardar ID evento"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Crear pre-reserva').item.json.body.mensaje }}\n\n📍 La atención es en la sede de {{ $('Crear pre-reserva').item.json.body.sede }}.{{ $('Crear pre-reserva').item.json.body.estado === 'CONFIRMADA' ? '' : '\\n\\nEnvía la foto de tu comprobante de pago a este chat para confirmar la cita.' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2000,
+        -496
+      ],
+      "id": "8f5149e2-42ea-4e84-902e-e9ddb69b3774",
+      "name": "Confirmar pre-reserva",
+      "webhookId": "24e37d14-a9bc-4681-bd6d-3bebe6928738",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Ese horario ya está ocupado.\n\nTengo disponible: {{ ($json.body.alternativas || []).map(f => f.substring(11,16)).join('  •  ') || 'nada ese día, dime otra fecha' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1616,
+        -368
+      ],
+      "id": "6650c4f2-4388-47c3-bd8a-dc9f2427ac05",
+      "name": "Horario Ocupado",
+      "webhookId": "24e37d14-a9bc-4681-bd6d-3bebe6928738",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:8080/api/bot/usuario/{{ $json.message.from.id }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -288,
+        48
+      ],
+      "id": "3ea4f95f-842c-49d9-8409-a17cc710dfba",
+      "name": "Identificar usuario"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.rol }}",
+                    "rightValue": "ADMIN",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "5a7b0014-ea63-447d-ab68-9a63388dff83"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Admin"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f92235a8-b316-478e-8e21-0c4041967a65",
+                    "leftValue": "={{ $json.body.rol }}",
+                    "rightValue": "FISIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Fisio"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "8e2a1f9d-e369-4d91-8ca3-9b0d61885450",
+      "name": "Rol"
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Eres el asistente de La Fisioterapeuta Li (Lina Murillo) en Boyacá.\nHablas con LINA MURILLO, la administradora. Tiene acceso completo.\n\nHOY ES: {{ $now.setLocale('es').toFormat(\"cccc d 'de' LLLL 'de' yyyy\") }}\nPRÓXIMOS DÍAS:\n{{ Array.from({length: 10}, (_, i) => $now.plus({days: i+1})).map(d => d.setLocale('es').toFormat('cccc') + ' = ' + d.toFormat('yyyy-MM-dd')).join('\\n') }}\n\nRespondes ÚNICAMENTE con un objeto JSON. Sin explicaciones, sin ```json,\nsin texto antes ni después.\n\nFormato exacto:\n{\"accion\":\"...\",\"datos\":{...},\"respuesta\":\"...\"}\n\naccion puede ser:\n- \"agendar\"       → quiere apartar una cita y tienes los 5 datos\n- \"faltan_datos\"  → quiere apartar una cita pero falta algún dato\n- \"consultar\"     → pregunta por la agenda, las citas o la disponibilidad\n- \"drive\"         → algo sobre archivos o carpetas\n- \"cancelar\"      → quiere cancelar o eliminar una cita existente\n- \"reprogramar\"   → quiere mover o cambiar la fecha/hora de una cita existente\n- \"otro\"          → cualquier otra cosa\n\nPara \"agendar\" y \"faltan_datos\", datos lleva:\n{\"nombrePaciente\":\"\",\"telefono\":\"\",\"correo\":\"\",\"servicio\":\"\",\"fechaInicio\":\"\"}\n\nPara \"consultar\", datos lleva:\n{\"fechaConsulta\":\"\",\"fechaConsultaFin\":\"\",\"tipo\":\"\"}\n\ntipo es \"agenda\" si pregunta por sus citas, pacientes o qué tiene agendado.\ntipo es \"disponibilidad\" si pregunta por horas libres, espacios o disponibilidad.\nSi no queda claro, usa \"agenda\".\n\nfechaConsulta es el primer dia a consultar, en formato 2026-09-08.\nfechaConsultaFin solo cambia si preguntan por un rango (\"esta semana\");\nsi preguntan por un solo dia, dejalo igual a fechaConsulta.\nSi no mencionan ninguna fecha, usa la de hoy.\n\nPara \"cancelar\", datos lleva:\n{\"idReserva\":\"\"}\n\nEl numero de la cita lo da el usuario (\"cancela la 3\", \"elimina la cita #16\").\nSi no dice ningun numero, accion = \"faltan_datos\" y en \"respuesta\" pidele\nque consulte primero la agenda para ver el numero.\n\nPara \"reprogramar\", datos lleva:\n{\"idReserva\":\"\",\"fechaInicio\":\"\"}\n\nEl numero de la cita lo da el usuario (\"mueve la 2 al viernes a las 3pm\").\nfechaInicio es la fecha NUEVA, en formato 2026-09-11T15:00:00, sacada de\nla tabla de PROXIMOS DIAS.\nSi falta el numero o la fecha nueva, accion = \"faltan_datos\" y en \"respuesta\"\npide SOLO lo que falte para reprogramar (el numero de la cita o la fecha y\nhora nuevas). Nunca pidas nombre, telefono, correo ni servicio: la cita ya\nexiste. Si dicen \"el mismo horario\" o \"a la misma hora\", pide la hora\nexplicita, porque no sabes a que hora esta la cita actual.\n\nPara \"drive\", datos lleva:\n{\"carpeta\":\"\"}\n\ncarpeta es el nombre de la carpeta que quiere ver: Administracion,\nClientes, Finanzas, Servicios o Comprobantes.\nSi no menciona ninguna, deja carpeta vacia.\n\nPara las demás acciones, datos va vacío: {}\nREGLA DE FECHAS, LA MAS IMPORTANTE:\nNunca calcules una fecha por tu cuenta ni cuentes dias. Busca el dia\nmencionado en la tabla de PROXIMOS DIAS y copia TAL CUAL la fecha que\naparece a su derecha. \"viernes\" en la tabla dice 2026-09-11, entonces\nusas 2026-09-11, no otra.\nSi el usuario da una fecha explicita (\"el 15 de septiembre\"), usala\ndirectamente.\nSi el dia mencionado no esta en la tabla, accion = \"faltan_datos\" y\npide la fecha exacta.\nOTRAS REGLAS\nAntes de preguntar algo, RELEE el mensaje y los mensajes anteriores de la\nconversación. Si el dato ya está ahí, úsalo. No preguntes por información\nque ya te dieron.\n\nSi tienes los 5 datos: accion = \"agendar\", y en \"respuesta\" escribe solo\n\"Dame un momento, estoy revisando la disponibilidad.\"\n\nNUNCA digas que la cita quedó agendada, apartada o confirmada. Tú no\nagendas: solo recoges los datos.\n\nLas fechas van en formato 2026-09-11T16:00:00 y salen de la tabla de\nPRÓXIMOS DÍAS.\n\nNunca inventes un correo. Si no te lo dieron, accion = \"faltan_datos\".\nEn \"respuesta\" escribe siempre el mensaje que verá quien escribe.",
+          "maxIterations": 1
+        }
+      },
+      "id": "dc384f87-61fe-414e-b807-d16b938791e2",
+      "name": "Agente Admin",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Eres el asistente de La Fisioterapeuta Li (Lina Murillo) en Boyacá.\nAtiendes a PACIENTES por Telegram.\n\nHOY ES: {{ $now.setLocale('es').toFormat(\"cccc d 'de' LLLL 'de' yyyy\") }}\nPRÓXIMOS DÍAS:\n{{ Array.from({length: 10}, (_, i) => $now.plus({days: i+1})).map(d => d.setLocale('es').toFormat('cccc') + ' = ' + d.toFormat('yyyy-MM-dd')).join('\\n') }}\n\nRespondes ÚNICAMENTE con un objeto JSON. Sin explicaciones, sin ```json,\nsin texto antes ni después.\n\nFormato exacto:\n{\"accion\":\"...\",\"datos\":{...},\"respuesta\":\"...\"}\n\naccion puede ser:\n- \"agendar\"       → quiere una cita y tienes los 5 datos\n- \"faltan_datos\"  → quiere una cita pero falta algún dato\n- \"consultar\"     → pregunta por horarios libres, disponibilidad o espacios\n                    (\"¿qué horarios hay el jueves?\", \"¿tienen espacio mañana?\")\n- \"otro\"          → precios, servicios, ubicación, cualquier otra cosa\n\nQUÉ VA EN \"datos\" SEGÚN LA ACCIÓN\n\nagendar / faltan_datos:\n{\"nombrePaciente\":\"\",\"telefono\":\"\",\"correo\":\"\",\"servicio\":\"\",\"fechaInicio\":\"\"}\n\nconsultar: \n{\"fechaConsulta\":\"\",\"fechaConsultaFin\":\"\"}\nAmbas con el mismo día en formato 2026-09-10, sacado de PRÓXIMOS DÍAS.\nSi no mencionan fecha, usa la de hoy.\n\notro:\n{}\n\nREGLA DE FECHAS, LA MAS IMPORTANTE:\nNunca calcules una fecha por tu cuenta ni cuentes dias. Busca el dia\nmencionado en la tabla de PROXIMOS DIAS y copia TAL CUAL la fecha que\naparece a su derecha. \"viernes\" en la tabla dice 2026-09-11, entonces\nusas 2026-09-11, no otra.\nSi el usuario da una fecha explicita (\"el 15 de septiembre\"), usala\ndirectamente.\nSi el dia mencionado no esta en la tabla, accion = \"faltan_datos\" y\npide la fecha exacta.\n\nOTRAS REGLAS\nAntes de preguntar algo, RELEE el mensaje del paciente. Si el dato ya está\nahí, úsalo. No preguntes por información que ya te dieron.\n\nSi tienes los 5 datos: accion = \"agendar\", y en \"respuesta\" escribe solo\n\"Dame un momento, estoy revisando la disponibilidad.\"\n\nNUNCA digas que la cita quedó agendada o confirmada. Tú no agendas.\n\nLas fechas van en formato 2026-09-11T16:00:00 y salen de la tabla de\nPRÓXIMOS DÍAS.\n\nNunca inventes un correo. Si no te lo dieron, accion = \"faltan_datos\".\n\nPRIVACIDAD: las horas LIBRES sí puedes consultarlas (accion \"consultar\");\nno revelan datos de nadie. Nunca des nombres, teléfonos ni citas de otros\npacientes, ni la agenda de Lina: eso es accion = \"otro\" y respondes que no\npuedes compartir esa información.\n\nPRIMER CONTACTO: si el paciente solo saluda, pregunta que puedes hacer,\no escribe algo generico sin pedir nada concreto, accion = \"otro\" y en\n\"respuesta\" escribe exactamente esto:\n\nHola, soy el asistente de La Fisioterapeuta Li (Lina Murillo).\n\nPuedo ayudarte a agendar una cita o consultar los horarios disponibles.\n\nPara agendar necesito tu nombre, telefono, correo, el servicio y la fecha.\nAl darme esos datos autorizas su tratamiento para gestionar tu cita,\nconforme a la Ley 1581 de 2012 de Colombia. Tu informacion se maneja de\nforma confidencial y no se comparte con terceros. Puedes pedir su\neliminacion escribiendo al WhatsApp 3113981422.\n\n¿En que te ayudo?\n\nAtendemos de lunes a domingo, de 7:00 a.m. a 8:00 p.m.\nSede Tunja de lunes a viernes, sede Turmeque sabados y domingos.\n\nEste aviso se da UNA sola vez, en el primer mensaje de la conversacion.\nNo lo repitas despues.",
+          "maxIterations": 1
+        }
+      },
+      "id": "9b4396e0-e65f-4035-8108-aed4aa5dc3de",
+      "name": "Agente Cliente",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.statusCode === 400 ? $json.body.mensaje : 'Tuve un problema tecnico al agendar. Intenta en un momento o escribenos al WhatsApp 3113981422.' }}{{ $json.statusCode === 400 && ($json.body.alternativas || []).length ? '\\n\\nTe sirve a las: ' + $json.body.alternativas.map(f => f.substring(11,16)).join('  •  ') : '' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        -320
+      ],
+      "id": "5e8fe1a2-11a4-4f00-9b03-8480b02c9baa",
+      "name": "Datos incompletos",
+      "webhookId": "24e37d14-a9bc-4681-bd6d-3bebe6928738",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.statusCode }}",
+                    "rightValue": 201,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "183c88b6-c389-4945-8a2c-de8954d8ab6e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Creada"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "71ced970-e286-4bf6-b4c3-3a87829d482d",
+                    "leftValue": "={{ $json.statusCode }}",
+                    "rightValue": 409,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ocupado"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        -416
+      ],
+      "id": "7bfc9eb7-f99f-4961-970d-e1cd9d45329f",
+      "name": "Estado Reserva"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "d12f4a393c72051931ae4256f4c99915f087b355281b03b9c1a6394c4322b5e2@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FisioLi"
+        },
+        "start": "={{ $json.body.fechaInicio }}",
+        "end": "={{ $json.body.fechaFin }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Parsear salida').item.json.datos.correo }}"
+          ],
+          "description": "=Servicio: {{ $json.body.servicio }} Valor: {{ $json.body.valor }} Reserva ID: {{ $json.body.reservaId }} Estado: {{ $json.body.estado === 'CONFIRMADA' ? 'PAGO CONFIRMADO' : 'pendiente de pago' }}",
+          "summary": "={{ $json.body.estado === 'CONFIRMADA' ? '' : '[PENDIENTE PAGO] ' }}Cita {{ $json.body.nombrePaciente }} en {{ $json.body.sede }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1392,
+        -528
+      ],
+      "id": "00f24b38-9c02-4d35-8f9d-6e20b78dd7cc",
+      "name": "Crear Pre-Reserva",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "P36nsO778XgxKV46",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "agendar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b7f94096-7864-414c-acab-c101d8d8a5d8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Agendar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "82f1f434-da0b-4591-a14d-172bfde6e827",
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "consultar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Consultar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "fd3e8a45-441a-40bb-a64b-7c4c68044345",
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "drive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Drive"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8796b4a8-e084-4539-b92b-ab0ce4046dec",
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "faltan_datos",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Faltan datos"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c4253194-78e9-4446-8353-ab643abf154d",
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "cancelar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cancelar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "85bf178f-0b44-4726-a7d3-cd64c05aba4e",
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "reprogramar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reprogramar"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        704,
+        -112
+      ],
+      "id": "827a2425-4a2c-461e-b507-ef27d60c9664",
+      "name": "Enrutar Acción"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -32
+      ],
+      "id": "dd015f89-f607-4a6a-a2f0-48520a2e85c3",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VZnL9IvdLZylfJnd",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = [];\nfor (const item of $input.all()) {\nconst datos = item.json.datos || {};\nconst hoy = DateTime.now().setZone('America/Bogota');\nlet desde = String(datos.fechaConsulta || '').substring(0, 10);\nlet hasta = String(datos.fechaConsultaFin || '').substring(0, 10);\n// Si el agente no dio fecha valida, usar hoy\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(desde)) {\ndesde = hoy.toFormat('yyyy-MM-dd');\n}\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(hasta)) {\nhasta = desde;\n}\n// Si vienen al reves, intercambiar\nif (hasta < desde) {\nconst tmp = desde; desde = hasta; hasta = tmp;\n}\nitem.json.desde = desde;\nitem.json.hasta = hasta;\nout.push(item);\n}\nreturn out;\n// Si la IA detectó \"mañana\", calcula la fecha correspondiente; si ya dio una fecha (YYYY-MM-DD), consérvala:\nlet fechaConsulta = $input.first().json.fecha;\n\nif (!fechaConsulta || fechaConsulta.toLowerCase() === 'mañana') {\n    const manana = new Date();\n    manana.setDate(manana.getDate() + 1);\n    fechaConsulta = manana.toISOString().split('T')[0];\n}\n\nreturn [{ json: { fecha: fechaConsulta } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        64
+      ],
+      "id": "409695a5-4f77-4b2a-a8d6-a617114a2a37",
+      "name": "Calcular Rango Fechas"
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:8080/api/bot/{{ ['ADMIN','FISIO'].includes($('Identificar usuario').first().json.body.rol) && $('Parsear salida').item.json.datos.tipo !== 'disponibilidad' ? 'agenda-admin' : 'disponibilidad' }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fecha",
+              "value": "={{ $json.desde }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1504,
+        64
+      ],
+      "id": "d3b5ecab-5120-4efa-ab31-ed188025d71e",
+      "name": "Consular Agenda"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  const status = item.json.statusCode;\n  const desde = $('Calcular Rango Fechas').item.json.desde;\n  const body = item.json.body;\n\n  if (status !== 200) {\n    item.json.respuesta = 'No pude consultar la agenda en este momento.';\n    continue;\n  }\n\n    // Caso ADMIN: array de citas\n  if (Array.isArray(body)) {\n    if (body.length === 0) {\n      item.json.respuesta = 'No hay citas agendadas para el ' + desde + '.';\n      continue;\n    }\n\n    const ESTADOS = {\n      PRE_RESERVA: 'Pendiente de pago',\n      CONFIRMADA: 'Confirmada',\n      CANCELADA: 'Cancelada',\n      PENDIENTE: 'Pendiente de pago'\n    };\n\n    const lineas = body\n      .sort((a, b) => String(a.hora).localeCompare(String(b.hora)))\n      .map(c => '#' + c.idReserva + '  ' + c.hora + '  ' + c.paciente\n        + '\\n     ' + c.servicio\n        + '\\n     ' + (ESTADOS[c.estado] || c.estado));\n    item.json.respuesta = 'Agenda del ' + desde + '\\n\\n' + lineas.join('\\n\\n')\n      + '\\n\\nTotal: ' + body.length + ' cita(s).';\n    continue;\n  }\n\n  // Caso CLIENTE: objeto con disponibles\n  const libres = (body && body.disponibles) || [];\n  if (libres.length === 0) {\n    item.json.respuesta = (body && body.mensaje)\n      || 'No hay horarios libres el ' + desde + '. Dime otra fecha.';\n  } else {\n    item.json.respuesta = 'Horarios disponibles el ' + desde + ':\\n\\n'\n      + libres.join('  •  ');\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        32
+      ],
+      "id": "633f1cbf-3571-4329-b764-f0f4dbfce450",
+      "name": "Formatear Respuesta Agenda"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        128,
+        32
+      ],
+      "id": "97c9115f-979d-48e6-9e96-33a9e77b8972",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "rIPROWn8nfMFPc4X",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "r-cb",
+                    "leftValue": "={{ $json.callback_query ? 'si' : 'no' }}",
+                    "rightValue": "si",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aprobacion"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "r-ph",
+                    "leftValue": "={{ $json.message && $json.message.photo ? 'si' : 'no' }}",
+                    "rightValue": "si",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Comprobante"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        384
+      ],
+      "id": "670829c1-a40c-4eb3-ba40-3537782036d3",
+      "name": "Tipo de Update"
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:8080/api/bot/reserva/pendiente/{{ $json.message.from.id }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -176,
+        704
+      ],
+      "id": "da61e80b-1c08-4e16-a4e4-9acbef7ad33c",
+      "name": "Buscar reserva pendiente"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "if-ex",
+              "leftValue": "={{ $json.body.existe ? 'si' : 'no' }}",
+              "rightValue": "si",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        704
+      ],
+      "id": "48f966ef-6611-4951-b80d-152451352e3a",
+      "name": "¿Hay reserva pendiente?"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "1393920332",
+        "file": "={{ $('Telegram Trigger').item.json.message.photo[$('Telegram Trigger').item.json.message.photo.length - 1].file_id }}",
+        "additionalFields": {
+          "caption": "=Comprobante recibido de {{ $('Buscar reserva pendiente').item.json.body.nombrePaciente }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        640
+      ],
+      "id": "59c1d5c6-3adc-4b18-89fc-80eabf4176e3",
+      "name": "Comprobante a Lina",
+      "webhookId": "c510545d-4ee3-454c-be01-933b90d8ec39",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1393920332",
+        "text": "=*Comprobante de pago recibido*\n\nPaciente: {{ $('Buscar reserva pendiente').item.json.body.nombrePaciente }}\nServicio: {{ $('Buscar reserva pendiente').item.json.body.servicio }}\nFecha: {{ $('Buscar reserva pendiente').item.json.body.fechaInicio.substring(0,10) }} a las {{ $('Buscar reserva pendiente').item.json.body.fechaInicio.substring(11,16) }}\nValor: ${{ $('Buscar reserva pendiente').item.json.body.valor.toLocaleString('es-CO') }}\nSede: {{ $('Buscar reserva pendiente').item.json.body.sede }}\nReserva: #{{ $('Buscar reserva pendiente').item.json.body.reservaId }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Confirmar pago",
+                    "additionalFields": {
+                      "callback_data": "=confirmar:{{ $('Buscar reserva pendiente').item.json.body.reservaId }}:{{ $('Telegram Trigger').item.json.message.chat.id }}"
+                    }
+                  },
+                  {
+                    "text": "Rechazar",
+                    "additionalFields": {
+                      "callback_data": "=rechazar:{{ $('Buscar reserva pendiente').item.json.body.reservaId }}:{{ $('Telegram Trigger').item.json.message.chat.id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        640
+      ],
+      "id": "cfe06334-ed52-47b5-b9f6-9d99d46f9fb4",
+      "name": "Botones de aprobacion",
+      "webhookId": "a61a1c30-8532-4ee9-be82-7ec57aa82717",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Recibí tu comprobante. Se lo pasé a Lina para que lo revise; en cuanto lo apruebe te confirmo la cita por aquí.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        640
+      ],
+      "id": "37a37eb0-e50e-44a7-bd29-b2e304ec8231",
+      "name": "Aviso recepcion al paciente",
+      "webhookId": "e02250af-abc8-4a71-80ee-669e252e1a39",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "No encuentro una cita pendiente de pago a tu nombre. Escríbeme primero qué cita quieres apartar y te paso los datos para el pago.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        848
+      ],
+      "id": "a5ea653b-496c-4e3c-a120-14cd8eb4fc9e",
+      "name": "Sin reserva pendiente",
+      "webhookId": "04d4b718-efd5-4c0f-aa3b-8866edc26752",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = [];\n\nfor (const item of $input.all()) {\n  const cb = item.json.callback_query || {};\n  const partes = String(cb.data || '').split(':');\n\n  out.push({ json: {\n    accionPago:      partes[0] || '',\n    reservaId:       partes[1] || '',\n    chatPaciente:    partes[2] || '',\n    callbackQueryId: cb.id || '',\n    adminId:         String((cb.from && cb.from.id) || ''),\n    chatAdmin:       (cb.message && cb.message.chat) ? cb.message.chat.id : null,\n    messageId:       cb.message ? cb.message.message_id : null\n  }});\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        1072
+      ],
+      "id": "80a018e4-5b78-4527-b661-1db901eba3bf",
+      "name": "Leer callback"
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $json.callbackQueryId }}",
+        "additionalFields": {
+          "text": "Procesando..."
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        1072
+      ],
+      "id": "ac9a1392-b366-414a-9aeb-9ac41517e70a",
+      "name": "Responder boton",
+      "webhookId": "481419e1-cfca-4829-ba78-2422f4dbc106",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:8080/api/bot/usuario/{{ $('Leer callback').item.json.adminId }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        272,
+        1072
+      ],
+      "id": "f72933b3-7fe2-4ef7-b4f5-5a88580872b4",
+      "name": "Verificar admin"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=http://host.docker.internal:8080/api/bot/reserva/{{ $('Leer callback').item.json.reservaId }}/confirmar",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        992,
+        848
+      ],
+      "id": "9aa34510-f0b0-443a-9c8b-9d9e6b95d311",
+      "name": "Confirmar pago"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "d12f4a393c72051931ae4256f4c99915f087b355281b03b9c1a6394c4322b5e2@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FisioLi"
+        },
+        "eventId": "={{ $json.body.googleCalendarId }}",
+        "updateFields": {
+          "description": "=Servicio: {{ $json.body.servicio }}\nValor: {{ $json.body.valor }}\nReserva ID: {{ $json.body.reservaId }}\nEstado: PAGO CONFIRMADO",
+          "summary": "=Cita {{ $json.body.nombrePaciente }} en {{ $json.body.sede }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        848
+      ],
+      "id": "26ffb011-692a-453c-91bb-b61960756996",
+      "name": "Quitar PENDIENTE PAGO",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "P36nsO778XgxKV46",
+          "name": "Google Calendar account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Confirmar pago').item.json.body.correo }}",
+        "subject": "=Cita confirmada — La Fisioterapeuta Li",
+        "emailType": "text",
+        "message": "=Hola {{ $('Confirmar pago').item.json.body.nombrePaciente }},\n\nTu cita quedó CONFIRMADA.\n\nServicio: {{ $('Confirmar pago').item.json.body.servicio }}\nFecha: {{ $('Confirmar pago').item.json.body.fechaInicio.substring(0,10) }}\nHora: {{ $('Confirmar pago').item.json.body.fechaInicio.substring(11,16) }}\nSede: {{ $('Confirmar pago').item.json.body.sede }}\nValor pagado: ${{ $('Confirmar pago').item.json.body.valor.toLocaleString('es-CO') }}\nAntes de tu sesión:\n- Ropa cómoda o deportiva y calzado adecuado.\n- Toalla personal (opcional) e hidratación.\n- Llega de 5 a 10 minutos antes.\n\nPolítica de cancelación: los cambios de agenda deben hacerse con mínimo 24 horas\nde anticipación. Si no asistes o cancelas fuera de ese plazo, la cita se da por\nrealizada y se pierde el valor pagado.\n\nCualquier duda, escríbenos al WhatsApp 3113981422.\n\nTus datos personales y de salud se tratan conforme a la Ley 1581 de 2012\ny unicamente para la gestion de tus citas. Puedes solicitar su consulta,\ncorreccion o eliminacion escribiendo al WhatsApp 3113981422.\n\nLa Fisioterapeuta Li — Lina Murillo",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        848
+      ],
+      "id": "9628111e-bb32-4e36-bd88-02182f5ebc25",
+      "name": "Correo de confirmacion",
+      "webhookId": "06d338fd-b230-4a9d-b5c2-b9ef31b7ecac",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5Uck7yeLCNvXi5fD",
+          "name": "Gmail account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Leer callback').item.json.chatAdmin }}",
+        "text": "=Listo. Cita #{{ $('Confirmar pago').item.json.body.reservaId }} de {{ $('Confirmar pago').item.json.body.nombrePaciente }} quedó confirmada. Evento actualizado en el calendario y correo enviado a {{ $('Confirmar pago').item.json.body.correo }}.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1648,
+        848
+      ],
+      "id": "759ec114-660a-4758-b2d2-62d61d2b969a",
+      "name": "Aviso a Lina",
+      "webhookId": "6b7a1ae0-5e49-4a27-828f-95a08139ed35",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Confirmar pago').item.json.body.telegramUserId }}",
+        "text": "=*Cita confirmada*\n\n{{ $('Confirmar pago').item.json.body.servicio }}\n{{ $('Confirmar pago').item.json.body.fechaInicio.substring(0,10) }} a las {{ $('Confirmar pago').item.json.body.fechaInicio.substring(11,16) }}\nValor pagado: ${{ $('Confirmar pago').item.json.body.valor.toLocaleString('es-CO') }}\nSede: {{ $('Confirmar pago').item.json.body.sede }}\n\nTe llegó el detalle al correo. Recuerda llegar de 5 a 10 minutos antes y que los cambios de agenda se hacen con mínimo 24 horas de anticipación.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1856,
+        848
+      ],
+      "id": "32588304-678d-4d71-8c81-4c765d59edc0",
+      "name": "Confirmacion al paciente",
+      "webhookId": "88a73fd1-f3f7-4ae4-8a09-a357cfc495eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Leer callback').item.json.chatAdmin }}",
+        "text": "=No tienes permiso para aprobar pagos. Solo la administradora puede confirmar comprobantes.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        1168
+      ],
+      "id": "bacc894c-3307-4410-8cfb-dc3c79155247",
+      "name": "No confirmada",
+      "webhookId": "396fd851-f085-4533-a5bb-07a06cbd952d",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=http://host.docker.internal:8080/api/bot/reserva/{{ $json.datos.idReserva }}/cancelar",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        992,
+        -416
+      ],
+      "id": "d8ee620d-18a7-4ecd-b0ef-237dc7e3df88",
+      "name": "Cancelar Cita"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "d12f4a393c72051931ae4256f4c99915f087b355281b03b9c1a6394c4322b5e2@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FisioLi"
+        },
+        "eventId": "={{ $json.body.googleCalendarId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "alwaysOutputData": true,
+      "position": [
+        1232,
+        -640
+      ],
+      "id": "1c9e251d-bcea-48b8-8c29-6334a77cffaa",
+      "name": "Borrar Evento",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "P36nsO778XgxKV46",
+          "name": "Google Calendar account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $('Cancelar Cita').item.json;\nconst status = res.statusCode;\nconst body = res.body || {};\n\nfor (const item of $input.all()) {\n  if (status === 200) {\n    item.json.respuesta = body.mensaje || 'Cita cancelada.';\n  } else if (status === 404) {\n    item.json.respuesta = 'No encontre esa cita. Consulta la agenda para ver el numero correcto.';\n  } else {\n    item.json.respuesta = 'No pude cancelar la cita en este momento. Intenta de nuevo.';\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        -656
+      ],
+      "id": "e71a7e65-6d60-4319-a76c-a2ae527022eb",
+      "name": "Mensaje Cancelacion"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=http://host.docker.internal:8080/api/bot/reserva/{{ $json.datos.idReserva }}/reprogramar",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fechaInicio",
+              "value": "={{ $json.datos.fechaInicio }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        992,
+        -624
+      ],
+      "id": "ea1d35a6-a014-4d60-9c95-ddb61662bbd3",
+      "name": "Reprogramar Cita"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "repr-ok",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1216,
+        -784
+      ],
+      "id": "877368a2-03df-41be-aa5b-19077110ec5f",
+      "name": "¿Se reprogramo?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "d12f4a393c72051931ae4256f4c99915f087b355281b03b9c1a6394c4322b5e2@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FisioLi"
+        },
+        "eventId": "={{ $json.body.googleCalendarId }}",
+        "updateFields": {
+          "end": "={{ $json.body.fechaFin }}",
+          "start": "={{ $json.body.fechaInicio }}",
+          "summary": "={{ $json.body.estado === 'CONFIRMADA' ? '' : '[PENDIENTE PAGO] ' }}Cita {{ $json.body.nombrePaciente }} en {{ $json.body.sede }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "alwaysOutputData": true,
+      "position": [
+        1488,
+        -976
+      ],
+      "id": "5229896d-866a-4dd4-aa88-622693ce3685",
+      "name": "Mover Evento",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "P36nsO778XgxKV46",
+          "name": "Google Calendar account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $('Reprogramar Cita').item.json;\nconst body = res.body || {};\n\nfor (const item of $input.all()) {\n  item.json.respuesta = body.mensaje || 'Cita reprogramada.';\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        -848
+      ],
+      "id": "e9c675e6-683a-4e38-9c33-19fbec5660d1",
+      "name": "Mensaje Reprogramada"
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $('Reprogramar Cita').item.json;\nconst status = res.statusCode;\nconst body = res.body || {};\n\nlet texto = body.mensaje || 'No pude reprogramar esa cita.';\n\nif (status === 404) {\n  texto = 'No encontre esa cita. Consulta la agenda para ver el numero correcto.';\n}\n\nconst alt = body.alternativas || [];\nif (alt.length) {\n  texto += '\\n\\nTe sirve a las: '\n    + alt.map(f => String(f).substring(11, 16)).join('  •  ');\n}\n\nfor (const item of $input.all()) {\n  item.json.respuesta = texto;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        -816
+      ],
+      "id": "13af6d7e-22c7-4755-9f86-31e4196624cd",
+      "name": "Mensaje No Reprogramada"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.photo[$('Telegram Trigger').item.json.message.photo.length - 1].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "alwaysOutputData": true,
+      "position": [
+        272,
+        640
+      ],
+      "id": "cc83e928-c9d9-4648-98c1-233b348fb06d",
+      "name": "Descargar Comprobante",
+      "webhookId": "1d93a73e-26db-45a3-ae2c-471f777897be",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "name": "=comprobante-reserva-{{ $('Buscar reserva pendiente').item.json.body.reservaId }}-{{ $('Buscar reserva pendiente').item.json.body.nombrePaciente.toLowerCase().replaceAll(' ', '-') }}.jpg",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1HXutILJYpWWZEevH3qPsIR-5qQweSola",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "alwaysOutputData": true,
+      "position": [
+        512,
+        640
+      ],
+      "id": "cfbed40b-0440-4455-bc6a-0218cbc4da52",
+      "name": "Subir a Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "M2PW2lbC9gzzX32K",
+          "name": "Google Drive account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.datos.carpeta }}",
+        "limit": 1,
+        "filter": {
+          "whatToSearch": "folders"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        912,
+        208
+      ],
+      "id": "18e7dead-6b06-4046-acea-a9a5c65ca352",
+      "name": "Buscar carpeta",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "M2PW2lbC9gzzX32K",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        208
+      ],
+      "id": "57af38d5-e089-404d-b80a-9bf51adc8591",
+      "name": "Listar Archivos",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "M2PW2lbC9gzzX32K",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const carpetaPedida = $('Parsear salida').item.json.datos.carpeta || '';\nconst PERMITIDAS = ['administracion', 'clientes', 'finanzas', 'servicios', 'comprobantes'];\n\nconst normalizar = s => String(s).toLowerCase()\n  .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');\n\nif (!PERMITIDAS.includes(normalizar(carpetaPedida))) {\n  return [{ json: { respuesta: 'No tengo acceso a esa carpeta. Puedo mostrarte: '\n    + 'Administracion, Clientes, Finanzas, Servicios o Comprobantes.' }}];\n}\n\nconst archivos = $input.all().filter(i => i.json && i.json.name);\n\nconst texto = archivos.length === 0\n  ? 'La carpeta ' + carpetaPedida + ' esta vacia.'\n  : 'Archivos en ' + carpetaPedida + ':\\n\\n'\n    + archivos.slice(0, 20).map(a => '• ' + a.json.name).join('\\n')\n    + (archivos.length > 20 ? '\\n\\n(' + archivos.length + ' archivos en total)' : '');\n\nreturn [{ json: { respuesta: texto } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        208
+      ],
+      "id": "13bd1e65-640c-4e85-be17-540536afdef2",
+      "name": "Respuesta Drive"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Leer callback').item.json.chatPaciente }}",
+        "text": "=Tu comprobante de la reserva #{{ $('Leer callback').item.json.reservaId }} no fue aprobado.\n\nPuede ser que la imagen no se vea con claridad o que el pago no se haya visto reflejado todavía.\n\nPuedes enviarme de nuevo la foto del comprobante a este chat, o escribirle directamente a Lina al WhatsApp 3113981422 para resolverlo.\n\nTu cita sigue apartada mientras tanto.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "alwaysOutputData": true,
+      "position": [
+        992,
+        1008
+      ],
+      "id": "239881fa-497f-4dfe-8dcb-e3488b5b7d9d",
+      "name": "Aviso rechazo al paciente",
+      "webhookId": "d4339367-b025-4692-bbdf-17b23cc28b65",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Leer callback').item.json.chatAdmin }}",
+        "text": "=Rechazaste el comprobante de la reserva #{{ $('Leer callback').item.json.reservaId }}. Ya le avisé al paciente para que lo reenvíe o te escriba por WhatsApp. La cita sigue apartada y pendiente de pago.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1200,
+        1008
+      ],
+      "id": "2a4114f2-de74-4976-91cb-6e6ce1b760c5",
+      "name": "Aviso rechazo a Lina",
+      "webhookId": "0edfee02-3d9b-43b8-90a1-1bb010842894",
+      "credentials": {
+        "telegramApi": {
+          "id": "zSYm8T5XNLdzaLmY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-rol",
+              "leftValue": "={{ $json.body.rol }}",
+              "rightValue": "ADMIN",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        1072
+      ],
+      "id": "f22dfece-0e2f-4600-a95c-51b4ce6d3510",
+      "name": "¿Es Admin?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "es-conf",
+              "leftValue": "={{ $('Leer callback').item.json.accionPago }}",
+              "rightValue": "confirmar",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        928
+      ],
+      "id": "2e067894-f3e6-40cc-b956-7689b007eefa",
+      "name": "¿Confirmo o rechazo?"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Memoria de conversación": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Admin",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Agente Cliente",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Tipo de Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear salida": {
+      "main": [
+        [
+          {
+            "node": "Enrutar Acción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear pre-reserva": {
+      "main": [
+        [
+          {
+            "node": "Estado Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar ID evento": {
+      "main": [
+        [
+          {
+            "node": "Confirmar pre-reserva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Identificar usuario": {
+      "main": [
+        [
+          {
+            "node": "Rol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rol": {
+      "main": [
+        [
+          {
+            "node": "Agente Admin",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Admin",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Admin": {
+      "main": [
+        [
+          {
+            "node": "Parsear salida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estado Reserva": {
+      "main": [
+        [
+          {
+            "node": "Crear Pre-Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Horario Ocupado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Datos incompletos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Pre-Reserva": {
+      "main": [
+        [
+          {
+            "node": "Guardar ID evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Cliente": {
+      "main": [
+        [
+          {
+            "node": "Parsear salida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrutar Acción": {
+      "main": [
+        [
+          {
+            "node": "Crear pre-reserva",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calcular Rango Fechas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar carpeta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cancelar Cita",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reprogramar Cita",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Cliente",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "Agente Admin",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Calcular Rango Fechas": {
+      "main": [
+        [
+          {
+            "node": "Consular Agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consular Agenda": {
+      "main": [
+        [
+          {
+            "node": "Formatear Respuesta Agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Respuesta Agenda": {
+      "main": [
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Admin",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agente Cliente",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipo de Update": {
+      "main": [
+        [
+          {
+            "node": "Leer callback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar reserva pendiente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Identificar usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar reserva pendiente": {
+      "main": [
+        [
+          {
+            "node": "¿Hay reserva pendiente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay reserva pendiente?": {
+      "main": [
+        [
+          {
+            "node": "Descargar Comprobante",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sin reserva pendiente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comprobante a Lina": {
+      "main": [
+        [
+          {
+            "node": "Botones de aprobacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Botones de aprobacion": {
+      "main": [
+        [
+          {
+            "node": "Aviso recepcion al paciente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer callback": {
+      "main": [
+        [
+          {
+            "node": "Responder boton",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Responder boton": {
+      "main": [
+        [
+          {
+            "node": "Verificar admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar admin": {
+      "main": [
+        [
+          {
+            "node": "¿Es Admin?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmar pago": {
+      "main": [
+        [
+          {
+            "node": "Quitar PENDIENTE PAGO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quitar PENDIENTE PAGO": {
+      "main": [
+        [
+          {
+            "node": "Correo de confirmacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Correo de confirmacion": {
+      "main": [
+        [
+          {
+            "node": "Aviso a Lina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aviso a Lina": {
+      "main": [
+        [
+          {
+            "node": "Confirmacion al paciente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelar Cita": {
+      "main": [
+        [
+          {
+            "node": "Borrar Evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Borrar Evento": {
+      "main": [
+        [
+          {
+            "node": "Mensaje Cancelacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensaje Cancelacion": {
+      "main": [
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reprogramar Cita": {
+      "main": [
+        [
+          {
+            "node": "¿Se reprogramo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Se reprogramo?": {
+      "main": [
+        [
+          {
+            "node": "Mover Evento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mensaje No Reprogramada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover Evento": {
+      "main": [
+        [
+          {
+            "node": "Mensaje Reprogramada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensaje No Reprogramada": {
+      "main": [
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensaje Reprogramada": {
+      "main": [
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar Comprobante": {
+      "main": [
+        [
+          {
+            "node": "Subir a Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir a Drive": {
+      "main": [
+        [
+          {
+            "node": "Comprobante a Lina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar carpeta": {
+      "main": [
+        [
+          {
+            "node": "Listar Archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Archivos": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta Drive": {
+      "main": [
+        [
+          {
+            "node": "Responder por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aviso rechazo al paciente": {
+      "main": [
+        [
+          {
+            "node": "Aviso rechazo a Lina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es Admin?": {
+      "main": [
+        [
+          {
+            "node": "¿Confirmo o rechazo?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No confirmada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Confirmo o rechazo?": {
+      "main": [
+        [
+          {
+            "node": "Confirmar pago",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aviso rechazo al paciente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "751f1f75-a8d0-487e-87a8-f3c42534b192",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "23baff71a30de1b6cef0823c40b7e9c338bfd77c3fde3e1b5272e8991b9a611d"
+  },
+  "nodeGroups": [],
+  "id": "DigDWvLpXVcuT755",
+  "tags": []
+}
